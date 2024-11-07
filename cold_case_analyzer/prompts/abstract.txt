@@ -1,6 +1,3 @@
-f"""Here is the text of a Court Decision:
-{cd}
 Find the official abstract stated in the case, usually right at the beginning. This task is successfully accomplished if it is a precise "copy-paste" of the Regeste paragraph of the file. This term varies according to country to country (e.g., Brazil: Ementa).  The translation of certain legal concepts can be challenging. It is a good abstract if it conveys the same meaning (not necessarily obtained via a literal translation).
 
 Otherwise, this has to return a general description of the information in the file. It's successfully accomplished if (i) it is concise; (ii) it manages to condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less. 
-"""
