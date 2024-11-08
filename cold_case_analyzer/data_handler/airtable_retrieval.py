@@ -1,5 +1,6 @@
 import pandas as pd
 from pyairtable import Api
+from config import AIRTABLE_API_KEY, AIRTABLE_BASE_ID
 
 # data processing
 def remove_fields_prefix(df):
@@ -25,23 +26,3 @@ def fetch_data(table_id):
         return df
     else:
         return pd.DataFrame()  # Return an empty DataFrame if no records
-
-# implementation
-df = fetch_data(AIRTABLE_CD_TABLE)
-
-columns_to_check = [
-    "Relevant facts / Summary of the case", 
-    "Relevant rules of law", 
-    "Choice of law issue", 
-    "Court's position"
-]
-
-df = df.dropna(subset=columns_to_check)
-
-cases = df['Case'].to_list()
-abstracts = df['Abstract'].to_list()
-texts = df['Content'].to_list()
-facts = df['Relevant facts / Summary of the case'].to_list()
-rules = df['Relevant rules of law'].to_list()
-issues = df['Choice of law issue'].to_list()
-positions = df["Court's position"].to_list()
