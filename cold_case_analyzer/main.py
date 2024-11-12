@@ -16,6 +16,8 @@ def main():
         "Court's position"
     ]
     df = df.dropna(subset=columns_to_check)
+    df = df[0:2]
+    print("Length of df: ", len(df))
 
     # Prepare to store analysis results
     results = []
@@ -25,7 +27,8 @@ def main():
     for idx, text in enumerate(df['Content']):
         i += 1
         print(f"Now analyzing case {i}", "\n")
-        analyzer = CaseAnalyzer(text)
+        model = "gpt-4o" # other valid option: "llama3.1"
+        analyzer = CaseAnalyzer(text, model)
         analysis_results = analyzer.analyze()
         
         # Append results to the list

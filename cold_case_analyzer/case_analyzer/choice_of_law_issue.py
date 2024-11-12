@@ -1,8 +1,8 @@
-from llm_handler.model_access import prompt_llama
+from llm_handler.model_access import prompt_model
 
-def extract_choice_of_law_issue(text, prompt):
+def extract_choice_of_law_issue(text, prompt, model):
     prompt_issue = f"""Here is the text of a Court Decision:
                 {text}
                 {prompt}
                 """
-    return prompt_llama(prompt_issue)
+    return prompt_model(prompt_issue, model)

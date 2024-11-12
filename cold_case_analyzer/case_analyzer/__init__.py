@@ -13,35 +13,36 @@ def load_prompt(filename):
         return file.read()
 
 class CaseAnalyzer:
-    def __init__(self, text):
+    def __init__(self, text, model):
         self.text = text
+        self.model = model
 
     def get_abstract(self):
         prompt = load_prompt('abstract.txt')
-        return extract_abstract(self.text, prompt)
+        return extract_abstract(self.text, prompt, self.model)
 
     def get_relevant_facts(self):
         prompt = load_prompt('facts.txt')
-        return extract_relevant_facts(self.text, prompt)
+        return extract_relevant_facts(self.text, prompt, self.model)
 
     def get_rules_of_law(self):
         prompt = load_prompt('rules.txt')
-        return extract_rules_of_law(self.text, prompt)
+        return extract_rules_of_law(self.text, prompt, self.model)
 
     def get_choice_of_law_issue(self):
         prompt = load_prompt('issue.txt')
-        return extract_choice_of_law_issue(self.text, prompt)
+        return extract_choice_of_law_issue(self.text, prompt, self.model)
 
     def get_courts_position(self):
         prompt = load_prompt('position.txt')
-        return extract_courts_position(self.text, prompt)
+        return extract_courts_position(self.text, prompt, self.model)
 
     def analyze(self):
         """Runs all analysis methods and returns results in a dictionary."""
         return {
-            "Abstract": "mock abstract",#self.get_abstract(),
-            "Relevant Facts": "mock facts",#self.get_relevant_facts(),
-            "Rules of Law": "mock rules",#self.get_rules_of_law(),
-            "Choice of Law Issue": "mock issue",#self.get_choice_of_law_issue(),
-            "Court's Position": "mock position",#self.get_courts_position(),
+            "Abstract": self.get_abstract(),
+            "Relevant Facts": self.get_relevant_facts(),
+            "Rules of Law": self.get_rules_of_law(),
+            "Choice of Law Issue": self.get_choice_of_law_issue(),
+            "Court's Position": self.get_courts_position(),
         }
