@@ -1,1 +1,1 @@
-Determine the choice of law issue presented in the case. This involves identifying conflicts or issues related to determining the applicable legal framework based on jurisdiction or subject matter.
+Your task is to identify the main Private International Law issue from a court decision. Your response will be a concise yes or no question.
