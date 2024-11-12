@@ -1,8 +1,9 @@
-from llm_handler.model_access import prompt_llama
+from llm_handler.model_access import prompt_model
 
-def extract_abstract(text, prompt):
-    prompt_abstract = f"""Here is the text of a Court Decision:
+def extract_abstract(text, prompt, model):
+    prompt_abstract = f"""{prompt}
+    
+                Court Decision:
                 {text}
-                {prompt}
                 """
-    return prompt_llama(prompt_abstract)
+    return prompt_model(prompt_abstract, model)
