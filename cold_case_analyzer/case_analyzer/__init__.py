@@ -35,19 +35,20 @@ class CaseAnalyzer:
         prompt = load_prompt('issue.txt')
         return extract_choice_of_law_issue(self.text, classification_prompt, prompt, self.model)
 
-    def get_courts_position(self):
+    def get_courts_position(self, coli):
         prompt = load_prompt('position.txt')
-        return extract_courts_position(self.text, prompt, self.model)
+        return extract_courts_position(self.text, prompt, coli, self.model)
 
     def analyze(self):
         """Runs all analysis methods and returns results in a dictionary."""
         start_time = time.time()
+        coli = self.get_choice_of_law_issue()
         results = {
             "Abstract": self.get_abstract(),
             "Relevant Facts": self.get_relevant_facts(),
             "Rules of Law": self.get_rules_of_law(),
-            "Choice of Law Issue": self.get_choice_of_law_issue(),
-            "Court's Position": self.get_courts_position(),
+            "Choice of Law Issue": coli,
+            "Court's Position": self.get_courts_position(coli),
         }
 
         end_time = time.time()

@@ -1,1 +1,2 @@
-Summarize the court's position on the case, detailing the reasoning and conclusions the court reached. Include an overview of any significant legal interpretations or judgments provided.
+Summarize the court's position on the choice of law issue within a court decision. Your response is phrased in a general way, generalizing the issue so that it could be applied to other private international law cases.
+Your output is a direct answer to the issue laid out here:
