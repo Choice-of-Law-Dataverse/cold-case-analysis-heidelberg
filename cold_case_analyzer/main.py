@@ -2,12 +2,14 @@ import os
 import pandas as pd
 from datetime import datetime
 from data_handler.airtable_retrieval import fetch_data
+from data_handler.airtable_concepts import fetch_and_prepare_data
 from case_analyzer import CaseAnalyzer
 from config import AIRTABLE_CD_TABLE
 
 def main():
     # Fetch data from Airtable
     df = fetch_data(AIRTABLE_CD_TABLE)
+    concepts = fetch_and_prepare_data()
 
     # Filter out cases missing key information
     columns_to_check = [
@@ -17,8 +19,9 @@ def main():
         "Court's position"
     ]
     df = df.dropna(subset=columns_to_check)
-    df = df[0:2]
+    #df = df[0:2]
     print("Length of df: ", len(df))
+    print("Now starting the analysis...")
 
     # Prepare to store analysis results
     results = []
@@ -29,7 +32,7 @@ def main():
     for idx, text in enumerate(df['Content']):
         i += 1
         print(f"Now analyzing case {i}", "\n")
-        analyzer = CaseAnalyzer(text, model)
+        analyzer = CaseAnalyzer(text, model, concepts)
         analysis_results = analyzer.analyze()
         
         # Append results to the list

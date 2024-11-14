@@ -14,9 +14,10 @@ def load_prompt(filename):
         return file.read()
 
 class CaseAnalyzer:
-    def __init__(self, text, model):
+    def __init__(self, text, model, concepts):
         self.text = text
         self.model = model
+        self.concepts = concepts
 
     def get_abstract(self):
         prompt = load_prompt('abstract.txt')
@@ -33,7 +34,7 @@ class CaseAnalyzer:
     def get_choice_of_law_issue(self):
         classification_prompt = load_prompt('issue_classification.txt')
         prompt = load_prompt('issue.txt')
-        return extract_choice_of_law_issue(self.text, classification_prompt, prompt, self.model)
+        return extract_choice_of_law_issue(self.text, classification_prompt, prompt, self.model, self.concepts)
 
     def get_courts_position(self, coli):
         prompt = load_prompt('position.txt')
