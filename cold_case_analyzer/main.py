@@ -21,14 +21,18 @@ def main():
     df = df.dropna(subset=columns_to_check)
     #df = df[0:2]
     print("Length of df: ", len(df))
+    print("writing df as ground truths to storage")
+    gt_output_folder = os.path.join(os.path.dirname(__file__), 'data')
+    os.makedirs(gt_output_folder, exist_ok=True)
+    gt_output_file = os.path.join(gt_output_folder, 'ground_truths.csv')
+    df.to_csv(gt_output_file, index=False)
     print("Now starting the analysis...")
-
     # Prepare to store analysis results
     results = []
 
     # Analyze each case
     i = 0
-    model = "gpt-4o"  # other valid option: "llama3.1"
+    model = "llama3.1"#"gpt-4o"  # other valid option: "llama3.1"
     for idx, text in enumerate(df['Content']):
         i += 1
         print(f"Now analyzing case {i}", "\n")
@@ -53,6 +57,5 @@ def main():
     # Save the DataFrame to CSV
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
-
 if __name__ == "__main__":
     main()
