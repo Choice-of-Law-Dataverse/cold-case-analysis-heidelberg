@@ -33,6 +33,7 @@ def prompt_gpt_4o(prompt_text):
     client = OpenAI()
     completion = client.chat.completions.create(
         model="gpt-4o",
+        temperature=0,
         messages=[
             {"role": "user", "content": prompt_text}
         ]
