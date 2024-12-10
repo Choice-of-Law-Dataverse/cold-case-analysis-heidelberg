@@ -28,4 +28,4 @@ def extract_choice_of_law_issue(text, quote, classification_prompt, prompt, mode
                 Here is the section of the Court Decision containing Choice of Law related information:
                 {quote}
                 """
-    return prompt_model(prompt_issue, model)
+    return classification, prompt_model(prompt_issue, model)
