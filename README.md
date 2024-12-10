@@ -2,7 +2,7 @@
 automated analysis of court decisions
 
 | Category | Description | Task |
-| ... | ... | ... |
+| --- | --- | --- |
 | Abstract | Official abstract of the decision, otherwise AI-generated | Extraction |
 | Relevant Facts | A short summary of the facts of the case (who are the parties, what happened, what is the dispute about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
 | Relevant Rules of Law | The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment. | Extraction |
