@@ -1,8 +1,11 @@
 import subprocess
 from openai import OpenAI
-from config import OPENAI_API_KEY
+from config import OPENAI_API_KEY, LLAMA_API_KEY
+import json
+from llamaapi import LlamaAPI
 
 OpenAI.api_key = OPENAI_API_KEY
+llama = LlamaAPI(LLAMA_API_KEY)
 
 def prompt_model(prompt_text, model):
     if model == "llama3.1":
@@ -13,26 +16,23 @@ def prompt_model(prompt_text, model):
         return None
 
 def prompt_llama(prompt_text):
-    # Pass the prompt text directly as input without flags
-    process = subprocess.run(
-        ["ollama", "run", "llama3.1"],
-        input=prompt_text,  # Provide the prompt directly
-        capture_output=True,
-        text=True
-    )
-
-    # Handle errors if they occur
-    if process.returncode != 0:
-        print("Error:", process.stderr)
-        return None
-    
-    # Return the model's output
-    return process.stdout.strip()
+    api_request_json = {
+        "model": "llama3.1-405b",
+        "messages": [
+            {"role": "user", "content": prompt_text}
+        ],
+        "stream": False,
+        "temperature": 0
+    }
+    response = llama.run(api_request_json)
+    parsed_response = json.dumps(response.json(), indent=2)
+    return parsed_response["choices"][0]["message"]["content"]
 
 def prompt_gpt_4o(prompt_text):
     client = OpenAI()
     completion = client.chat.completions.create(
         model="gpt-4o",
+        temperature=0,
         messages=[
             {"role": "user", "content": prompt_text}
         ]

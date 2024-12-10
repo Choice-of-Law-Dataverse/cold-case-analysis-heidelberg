@@ -14,40 +14,43 @@ def load_prompt(filename):
         return file.read()
 
 class CaseAnalyzer:
-    def __init__(self, text, model, concepts):
+    def __init__(self, text, quote, model, concepts):
         self.text = text
+        self.quote = quote
         self.model = model
         self.concepts = concepts
 
     def get_abstract(self):
         prompt = load_prompt('abstract.txt')
-        return extract_abstract(self.text, prompt, self.model)
+        return extract_abstract(self.text, self.quote, prompt, self.model)
 
     def get_relevant_facts(self):
         prompt = load_prompt('facts.txt')
-        return extract_relevant_facts(self.text, prompt, self.model)
+        return extract_relevant_facts(self.text, self.quote, prompt, self.model)
 
     def get_rules_of_law(self):
         prompt = load_prompt('rules.txt')
-        return extract_rules_of_law(self.text, prompt, self.model)
+        return extract_rules_of_law(self.text, self.quote, prompt, self.model)
 
     def get_choice_of_law_issue(self):
         classification_prompt = load_prompt('issue_classification.txt')
         prompt = load_prompt('issue.txt')
-        return extract_choice_of_law_issue(self.text, classification_prompt, prompt, self.model, self.concepts)
+        classification, choice_of_law_issue = extract_choice_of_law_issue(self.text, self.quote, classification_prompt, prompt, self.model, self.concepts)
+        return classification, choice_of_law_issue
 
     def get_courts_position(self, coli):
         prompt = load_prompt('position.txt')
-        return extract_courts_position(self.text, prompt, coli, self.model)
+        return extract_courts_position(self.text, self.quote, prompt, coli, self.model)
 
     def analyze(self):
         """Runs all analysis methods and returns results in a dictionary."""
         start_time = time.time()
-        coli = self.get_choice_of_law_issue()
+        classification, coli = self.get_choice_of_law_issue()
         results = {
             "Abstract": self.get_abstract(),
             "Relevant Facts": self.get_relevant_facts(),
             "Rules of Law": self.get_rules_of_law(),
+            "Choice of Law Issue Classification": classification,
             "Choice of Law Issue": coli,
             "Court's Position": self.get_courts_position(coli),
         }

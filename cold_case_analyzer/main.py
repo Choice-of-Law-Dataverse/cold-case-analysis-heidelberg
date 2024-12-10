@@ -13,10 +13,7 @@ def main():
 
     # Filter out cases missing key information
     columns_to_check = [
-        "Relevant facts / Summary of the case", 
-        "PIL provisions", 
-        "Choice of law issue", 
-        "Court's position"
+        "Original text"
     ]
     df = df.dropna(subset=columns_to_check)
     #df = df[0:2]
@@ -26,17 +23,19 @@ def main():
     os.makedirs(gt_output_folder, exist_ok=True)
     gt_output_file = os.path.join(gt_output_folder, 'ground_truths.csv')
     df.to_csv(gt_output_file, index=False)
+
     print("Now starting the analysis...")
     # Prepare to store analysis results
     results = []
 
     # Analyze each case
     i = 0
-    model = "llama3.1"#"gpt-4o"  # other valid option: "llama3.1"
-    for idx, text in enumerate(df['Content']):
+    model = "llama3.1"#"gpt-4o" # other valid option: "llama3.1"
+    for idx, text in enumerate(df['Original text']):
+        quote = df['Quote'].iloc[i]
         i += 1
         print(f"Now analyzing case {i}", "\n")
-        analyzer = CaseAnalyzer(text, model, concepts)
+        analyzer = CaseAnalyzer(text, quote, model, concepts)
         analysis_results = analyzer.analyze()
         
         # Append results to the list
@@ -57,5 +56,6 @@ def main():
     # Save the DataFrame to CSV
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
+
 if __name__ == "__main__":
     main()
