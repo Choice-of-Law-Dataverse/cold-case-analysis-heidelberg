@@ -30,7 +30,7 @@ def main():
 
     # Analyze each case
     i = 0
-    model = "gpt-4o"#"llama3.1"  # other valid option: "llama3.1"
+    model = "llama3.1"#"gpt-4o" # other valid option: "llama3.1"
     for idx, text in enumerate(df['Original text']):
         quote = df['Quote'].iloc[i]
         i += 1
