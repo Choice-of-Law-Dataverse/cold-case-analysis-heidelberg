@@ -1,5 +1,8 @@
-# cold-case-analysis-llm
-automated analysis of court decisions
+# CoLD Case Analysis LLM
+[**Website**](https://www.choiceoflawdataverse.com/)  
+
+## What is the Case Analysis LLM?
+An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
 
 | Category | Description | Task |
 | --- | --- | --- |
@@ -9,36 +12,11 @@ automated analysis of court decisions
 | Choice of Law Issue | Questions arising from the choice of law issue(s)/agreement/clause/interpretation(s) | Classification → Interpretation |
 | Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
 
-## project structure
-```
-├── cold_case_analyzer/  
-│   ├── config.py  
-│   ├── main.py  
-│   ├── case_analyzer/  
-│   │   ├── __init__.py  
-│   │   ├── abstracts.py  
-│   │   ├── relevant_facts.py  
-│   │   ├── rules_of_law.py  
-│   │   ├── choice_of_law_issue.py  
-│   │   └── courts_position.py  
-│   ├── data_handler/  
-│   │   ├── __init__.py  
-│   │   └── airtable_retrieval.py  
-│   ├── llm_handler/  
-│   │   ├── __init__.py  
-│   │   ├── fine_tuning.py  
-│   │   └── model_access.py  
-│   ├── prompts/  
-│   │   ├── abstract.txt  
-│   │   ├── facts.txt  
-│   │   ├── rules.txt  
-│   │   ├── issue.txt  
-│   │   ├── issue_classification.txt  
-│   │   └── position.txt
-```
+## What is the Choice of Law Dataverse (CoLD)?
+CoLD is a research project at the University of Lucerne, aiming to make Private International Law more accessible by developing and leveraging digital tools.
 
 ## Data
-The first application uses Swiss Court Decisions. Here is an overview for the cases used:
+For developing the Case Analysis LLM, we used Swiss Court Decisions in the first iteration. Here is an overview for the cases used:
 
 | **Nr.** | **ID**     | **case**                                 | **Year** | **Language** | **Link**                                                                                                                                                                                                                                           |
 |---------|------------|------------------------------------------|---------:|-------------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
