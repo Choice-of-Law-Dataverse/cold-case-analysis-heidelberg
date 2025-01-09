@@ -1,4 +1,4 @@
-## project structure
+## Project Structure
 ```
 ├── cold_case_analyzer/  
 │   ├── config.py  
