@@ -10,7 +10,7 @@ automated analysis of court decisions
 | Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
 
 ## project structure
-
+```
 ├── cold_case_analyzer/  
 │   ├── config.py  
 │   ├── main.py  
@@ -34,4 +34,9 @@ automated analysis of court decisions
 │   │   ├── rules.txt  
 │   │   ├── issue.txt  
 │   │   ├── issue_classification.txt  
-│   │   └── position.txt  
+│   │   └── position.txt
+```
+
+## Data
+The first application uses Swiss Court Decisions. Here is an overview for the cases used:
+
