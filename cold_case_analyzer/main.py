@@ -16,7 +16,7 @@ def main():
         "Original text"
     ]
     df = df.dropna(subset=columns_to_check)
-    #df = df[0:2]
+    #df = df[df['ID'] == "CHE-1045"] # for selecting specific cases
     print("Length of df: ", len(df))
     print("writing df as ground truths to storage")
     gt_output_folder = os.path.join(os.path.dirname(__file__), 'data')
@@ -30,7 +30,7 @@ def main():
 
     # Analyze each case
     i = 0
-    model = "llama3.1"#"gpt-4o" # other valid option: "llama3.1"
+    model = "gpt-4o"#"llama3.1" # other valid option: "llama3.1"
     for idx, text in enumerate(df['Original text']):
         quote = df['Quote'].iloc[i]
         i += 1
