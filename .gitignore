@@ -163,3 +163,5 @@ cython_debug/
 
 # Data
 cold_case_analyzer/data/*
+!cold_case_analyzer/data/concepts.xlsx
+!cold_case_analyzer/data/cases.xlsx
