@@ -8,7 +8,7 @@
 4. Install dependencies using `pip install -r requirements.txt`
 5. Run the case analyzer using `python cold_case_analyzer/main.py`
 
-* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
+\* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
 
 ## What is the Case Analysis LLM?
 An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
