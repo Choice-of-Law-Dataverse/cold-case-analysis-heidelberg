@@ -1,5 +1,14 @@
 # CoLD Case Analysis LLM
-[**Website**](https://www.choiceoflawdataverse.com/)  
+[**Website**](https://www.choiceoflawdataverse.com/) to our research project.
+
+## How to run it on your machine?
+1. Create a file for API secrets under ".env". Use the example.env file for reference
+2. Prepare the dataset under "cold_case_analyzer/data/cases.xlsx". Please note that you have to adhere to the given format with the pre-defined column names*
+3. (Optional) Create a new virtual environment using `python -m venv .venv`
+4. Install dependencies using `pip install -r requirements.txt`
+5. Run the case analyzer using `python cold_case_analyzer/main.py`
+
+* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
 
 ## What is the Case Analysis LLM?
 An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
