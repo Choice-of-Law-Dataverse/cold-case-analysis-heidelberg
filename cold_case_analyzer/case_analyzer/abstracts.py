@@ -1,5 +1,6 @@
 from llm_handler.model_access import prompt_model
 
+
 def extract_abstract(text, quote, prompt, model):
     prompt_abstract = f"""{prompt}
     
