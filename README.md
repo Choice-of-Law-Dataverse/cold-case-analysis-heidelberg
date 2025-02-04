@@ -2,7 +2,7 @@
 [**Website**](https://www.choiceoflawdataverse.com/) to our research project.
 
 ## How to run it on your machine?
-1. Create a file for API secrets under ".env". Use the example.env file for reference
+1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
 2. Prepare the dataset under "cold_case_analyzer/data/cases.xlsx". Please note that you have to adhere to the given format with the pre-defined column names*
 3. (Optional) Create a new virtual environment using `python -m venv .venv`
 4. Install dependencies using `pip install -r requirements.txt`
