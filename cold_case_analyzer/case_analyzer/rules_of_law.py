@@ -1,5 +1,6 @@
 from llm_handler.model_access import prompt_model
 
+
 def extract_rules_of_law(text, quote, prompt, model):
     prompt_rules = f"""{prompt}
     
