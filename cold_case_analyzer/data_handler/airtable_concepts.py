@@ -14,7 +14,7 @@ def process_list_like_values(df):
     return df
 
 # data fetching
-def fetch_and_prepare_data():
+def fetch_and_prepare_concepts():
     api = Api(AIRTABLE_API_KEY)
     table = api.table(AIRTABLE_BASE_ID, AIRTABLE_CONCEPTS_TABLE)
     records = table.all()
