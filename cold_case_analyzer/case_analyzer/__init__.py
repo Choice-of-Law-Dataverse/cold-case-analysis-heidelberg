@@ -1,5 +1,6 @@
 import os
 import time
+from. col_section import extract_col_section
 from .abstracts import extract_abstract
 from .relevant_facts import extract_relevant_facts
 from .rules_of_law import extract_rules_of_law
@@ -21,6 +22,10 @@ class CaseAnalyzer:
         self.quote = quote
         self.model = model
         self.concepts = concepts
+
+    def get_col_section(self):
+        prompt = load_prompt("col_section.txt")
+        return extract_col_section(self.text, prompt, self.model)
 
     def get_abstract(self):
         prompt = load_prompt("abstract.txt")
@@ -56,6 +61,7 @@ class CaseAnalyzer:
         start_time = time.time()
         classification, coli = self.get_choice_of_law_issue()
         results = {
+            "Col Section": self.get_col_section(),
             "Abstract": self.get_abstract(),
             "Relevant Facts": self.get_relevant_facts(),
             "Rules of Law": self.get_rules_of_law(),
