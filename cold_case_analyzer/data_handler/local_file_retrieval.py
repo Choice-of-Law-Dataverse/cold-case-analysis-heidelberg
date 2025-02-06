@@ -9,7 +9,7 @@ def fetch_local_data():
     """
     # Compute the absolute path to the "data" folder.
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
-    file_path = os.path.join(base_dir, "cases.xlsx")
+    file_path = os.path.join(base_dir, "cases_test.xlsx")
 
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"File not found: {file_path}")
@@ -40,4 +40,19 @@ def fetch_local_concepts():
         print(f"Error reading Excel file at {file_path}: {e}")
         raise
 
+    return df
+
+def fetch_local_ground_truths():
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    file_path = os.path.join(base_dir, "ground_truths.xlsx")
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+    
+    try:
+        df = pd.read_excel(file_path)
+    except Exception as e:
+        print(f"Error reading Excel file at {file_path}: {e}")
+        raise
+    
     return df
