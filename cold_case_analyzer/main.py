@@ -1,20 +1,18 @@
 import os
-import pandas as pd
 from datetime import datetime
+import pandas as pd
+import questionary
 from data_handler.airtable_retrieval import fetch_data
 from data_handler.airtable_concepts import fetch_and_prepare_concepts
 from data_handler.local_file_retrieval import fetch_local_data, fetch_local_concepts
 from case_analyzer import CaseAnalyzer
+from evaluator import evaluate_results
 from config import AIRTABLE_CD_TABLE
-import questionary
 
 
 def main_own_data(model_name):
     df = fetch_local_data()
-    print("df: ", df)
-    print("type: ", type(df["Original text"]))
     concepts = fetch_local_concepts()
-    print("concepts: ", concepts)
 
     print("Now starting the analysis...")
     results = []
@@ -41,6 +39,10 @@ def main_own_data(model_name):
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
+
+    should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
+    if should_evaluate == "Yes":
+        evaluate_results(output_file)
 
 
 def main_airtable(model_name):
