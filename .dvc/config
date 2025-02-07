@@ -1,0 +1,5 @@
+[core]
+    remote = az-remote
+    autostage = true
+['remote "az-remote"']
+    url = azure://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis
