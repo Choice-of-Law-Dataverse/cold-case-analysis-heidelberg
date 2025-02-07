@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 from bert_score import score
+from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 
 import colorama
 from colorama import Fore, Style
@@ -18,7 +20,7 @@ COLUMNS_TO_COMPARE = [
     "Court's Position",
 ]
 
-def evaluate_results(results_csv: str):
+def evaluate_results(inputs: pd.DataFrame, results_csv: str):
     """
     Evaluates model-generated results by:
       1. Loading ground-truth data (same columns as results).
@@ -27,6 +29,7 @@ def evaluate_results(results_csv: str):
       4. Doing a no-reference G-Eval (placeholder) for each column of generated text.
       5. Printing results to terminal with color formatting.
     
+    :param inputs: DataFrame containing original court decision texts (includes 'ID' column).
     :param results_csv: Path to the CSV file containing the model's generated outputs.
                        This file must contain columns 'ID' + those in COLUMNS_TO_COMPARE.
     """
@@ -49,6 +52,16 @@ def evaluate_results(results_csv: str):
         results_df, 
         on="ID", 
         suffixes=("_gt", "_gen"),  # so "Col Section" => "Col Section_gt" and "Col Section_gen"
+        how="inner"
+    )
+
+    if "Original text" not in inputs.columns:
+        raise ValueError("Ensure 'inputs' DataFrane has the column 'Original text'")
+    
+    merged_df = pd.merge(
+        merged_df,
+        inputs[["ID", "Original text"]],
+        on="ID",
         how="inner"
     )
 
@@ -91,15 +104,33 @@ def evaluate_results(results_csv: str):
         print(f"  F1:        {sum(all_f1)/len(all_f1):.4f}\n")
 
     # 4) G-Eval (no-reference) placeholder for each column
-    #    (In reality, you might do a more advanced approach, e.g., GPT-based or custom model.)
-    def g_eval(generated_text: str) -> float:
-        """
-        Example placeholder G-Eval logic.
-        """
-        return float(len(generated_text) % 10)  # Dummy: length-based mod 10
+    correctness_metric = GEval(
+        name="Correctness",
+        # Instead of 'criteria', you can supply 'evaluation_steps', but not both at once:
+        evaluation_steps=[
+            "Check whether the facts in the 'actual output' contradict any facts in the 'input'.",
+            "Penalize omissions of crucial details that appear in the 'input'.",
+            "Penalize vague or contradictory claims.",
+        ],
+        evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT]
+    )
 
-    # We'll compute G-Eval column-wise and optionally row-by-row
+    # 5) Now compute G-Eval column-by-column by measuring each row
     for col in COLUMNS_TO_COMPARE:
+        original_texts = merged_df["Original text"].fillna("").tolist()
         generated_texts = merged_df[f"{col}_gen"].fillna("").tolist()
-        g_scores = [g_eval(txt) for txt in generated_texts]
-        avg_score = sum(g_scores) / len(g_scores) if g_scores else 0.
+
+        g_scores = []
+        for orig, gen in zip(original_texts, generated_texts):
+            test_case = LLMTestCase(
+                input=orig,
+                actual_output=gen
+                # no expected_output because we are doing a no-reference approach
+            )
+            correctness_metric.measure(test_case)
+            # correctness_metric.score is updated each time we call measure
+            # we can store that for averaging
+            g_scores.append(correctness_metric.score)
+
+        avg_score = sum(g_scores) / len(g_scores) if g_scores else 0.0
+        print(f"{Fore.MAGENTA}Column: {col} - G-Eval Average: {avg_score:.4f}{Style.RESET_ALL}")

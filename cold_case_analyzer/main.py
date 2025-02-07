@@ -11,9 +11,10 @@ from config import AIRTABLE_CD_TABLE
 
 
 def main_own_data(model_name):
+    
     df = fetch_local_data()
     concepts = fetch_local_concepts()
-
+    """
     print("Now starting the analysis...")
     results = []
 
@@ -39,10 +40,12 @@ def main_own_data(model_name):
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
-
+    """
+    print("Skipped all generation and using data from a previous iteration.")
+    output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
     should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
     if should_evaluate == "Yes":
-        evaluate_results(output_file)
+        evaluate_results(df, output_file)
 
 
 def main_airtable(model_name):
