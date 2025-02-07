@@ -1,5 +1,5 @@
 # CoLD Case Analysis LLM
-[**Website**](https://www.choiceoflawdataverse.com/) to our research project.
+[**Website**](https://www.cold.global/) to our research project.
 
 ## How to run it on your machine?
 1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
