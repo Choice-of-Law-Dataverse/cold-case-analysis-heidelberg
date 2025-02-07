@@ -26,7 +26,7 @@
 An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
 
 | Category | Description | Task |
-| --- | --- | --- |
+| :-- | :-- | :-- |
 | Abstract | Official abstract of the decision, otherwise AI-generated | Extraction |
 | Relevant Facts | A short summary of the facts of the case (who are the parties, what happened, what is the dispute about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
 | Relevant Rules of Law | The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment. | Extraction |
@@ -42,7 +42,7 @@ CoLD is a research project at the University of Lucerne, aiming to make Private 
 For developing the Case Analysis LLM, we used Swiss Court Decisions in the first iteration. Here is an overview for the cases used:
 
 | **Nr.** | **Title** | **Year** | **Language** |
-|:--------|:---------|:--------|:------------|
+| :-- | :-- | :-- | :-- |
 | 1 | [BGE 131 III 289](https://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F131-III-289%3Ade&lang=de&type=show_document) | 2005 | German |
 | 2 | [BGE 81 II 175](https://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F81-II-175%3Ade&lang=de&type=show_document) | 1955 | German |
 | 3 | [BGE 78 II 74](https://entscheide.weblaw.ch/dumppdf.php?link=BGE-78-II-74) | 1952 | French |
