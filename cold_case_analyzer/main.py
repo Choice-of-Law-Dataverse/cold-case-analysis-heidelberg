@@ -42,7 +42,8 @@ def main_own_data(model_name):
     print(f"Results saved to {output_file}")
     """
     print("Skipped all generation and using data from a previous iteration.")
-    output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
+    #output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
+    output_file = "cold_case_analyzer/data/case_analysis_results_20250204_172632_gpt-4o.csv"
     should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
     if should_evaluate == "Yes":
         evaluate_results(df, output_file)
