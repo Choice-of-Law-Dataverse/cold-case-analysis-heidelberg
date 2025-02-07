@@ -52,7 +52,9 @@ def main_own_data(model_name):
 def main_airtable(model_name):
     # Fetch data from Airtable
     df = fetch_data(AIRTABLE_CD_TABLE)
-    concepts = fetch_and_prepare_data()
+    df.to_csv('cold_case_analyzer/data/raw/input.csv', index=False)
+    concepts = fetch_and_prepare_concepts()
+    concepts.to_csv('cold_case_analyzer/data/raw/concepts.csv', index=False)
 
     # Filter out cases missing key information
     columns_to_check = ["Original text"]
@@ -60,7 +62,7 @@ def main_airtable(model_name):
     print("Length of df: ", len(df))
 
     print("Writing df as ground truths to storage")
-    gt_output_folder = os.path.join(os.path.dirname(__file__), "data")
+    gt_output_folder = os.path.join(os.path.dirname(__file__), "data", "raw")
     os.makedirs(gt_output_folder, exist_ok=True)
     gt_output_file = os.path.join(gt_output_folder, "ground_truths.csv")
     df.to_csv(gt_output_file, index=False)
@@ -69,13 +71,14 @@ def main_airtable(model_name):
     results = []
 
     # Analyze each case
-    for i, (idx, text) in enumerate(df["Original text"].iteritems(), start=1):
-        quote = df["Quote"].iloc[i - 1]
-        print(f"Now analyzing case {i}\n")
+    for idx, row in df.iterrows():
+        text = row['Original text']
+        quote = row['Quote']
+        print(f"Now analyzing case {idx}\n")
         analyzer = CaseAnalyzer(text, quote, model_name, concepts)
         analysis_results = analyzer.analyze()
 
-        results.append({"ID": df["ID"].iloc[idx], **analysis_results})
+        results.append({"ID": row['ID'], **analysis_results})
 
     results_df = pd.DataFrame(results)
 
