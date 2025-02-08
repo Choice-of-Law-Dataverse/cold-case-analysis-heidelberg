@@ -1,5 +1,5 @@
 # CoLD Case Analysis LLM
-[**Website**](https://www.choiceoflawdataverse.com/) to our research project.
+Consult the Choice of Law Dataverse (CoLD) [**Website**](https://www.choiceoflawdataverse.com/) to learn more about our main research project.
 
 ## How to run it on your machine?
 1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
@@ -8,7 +8,7 @@
 4. Install dependencies using `pip install -r requirements.txt`
 5. Run the case analyzer using `python cold_case_analyzer/main.py`
 
-\* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
+\*Disclaimer note: It is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete soon.
 
 ## What is the Case Analysis LLM?
 An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
@@ -16,7 +16,7 @@ An automated analysis of court decisions related to choice of law in internation
 | Category | Description | Task |
 | --- | --- | --- |
 | Abstract | Official abstract of the decision, otherwise AI-generated | Extraction |
-| Relevant Facts | A short summary of the facts of the case (who are the parties, what happened, what is the dispute about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
+| Relevant Facts | A short summary of the facts of the case (who the parties are, what happened, what the dispute is about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
 | Relevant Rules of Law | The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment. | Extraction |
 | Choice of Law Issue | Questions arising from the choice of law issue(s)/agreement/clause/interpretation(s) | Classification → Interpretation |
 | Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
@@ -25,9 +25,9 @@ An automated analysis of court decisions related to choice of law in internation
 CoLD is a research project at the University of Lucerne, aiming to make Private International Law more accessible by developing and leveraging digital tools.
 
 ## Data
-For developing the Case Analysis LLM, we used Swiss Court Decisions in the first iteration. Here is an overview for the cases used:
+To develop the Case Analysis LLM, we used Swiss Court Decisions in the first iteration. Here is an overview of the cases used:
 
-| **Nr.** | **ID**     | **case**                                 | **Year** | **Language** | **Link**                                                                                                                                                                                                                                           |
+| **Nr.** | **ID**     | **Case**                                 | **Year** | **Language** | **Link**                                                                                                                                                                                                                                           |
 |---------|------------|------------------------------------------|---------:|-------------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 1       | CHE-1017   | BGE 131 III 289                          | 2005     | DE           | <https://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F131-III-289%3Ade&lang=de&type=show_document>                                                                                                                        |
 | 2       | CHE-1019   | BGE 81 II 175                            | 1955     | DE           | <https://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F81-II-175%3Ade&lang=de&type=show_document>                                                                                                                         |
@@ -62,4 +62,3 @@ For developing the Case Analysis LLM, we used Swiss Court Decisions in the first
 | 31      | CHE-1331   | BGer 4A 559/2022                         | 2023     | DE           | <https://www.bger.ch/ext/eurospider/live/fr/php/aza/http/index.php?highlight_docid=aza://03-08-2023-4A_559-2022&lang=fr&zoom=&type=show_document>                                                                                                  |
 | 32      | CHE-1332   | BGer 4C.458/2004                         | 2005     | IT           | <https://www.bger.ch/ext/eurospider/live/de/php/aza/http/index.php?lang=de&type=show_document&highlight_docid=aza://17-05-2005-4C-458-2004>                                                                                                        |
 | 33      | CHE-1333   | BGE 140 III 473                          | 2014     | DE           | <https://www.bger.ch/ext/eurospider/live/de/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F140-III-473%3Ade&lang=de&type=show_document>                                                                                                        |
-
