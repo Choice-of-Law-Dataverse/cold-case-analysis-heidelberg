@@ -2,7 +2,7 @@
 [**Website**](https://www.cold.global/) to our research project.
 
 ## Overview
-- What is the Case Analyzer?
+- [What is the Case Analyzer?](#what-is-the-case-analyzer)
 - How to run the Case Analyzer on your machine
 - Data
     - Court Cases
@@ -13,16 +13,7 @@
 
 ---
 
-## How to run it on your machine?
-1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
-2. Prepare the dataset under "cold_case_analyzer/data/cases.xlsx". Please note that you have to adhere to the given format with the pre-defined column names*
-3. (Optional) Create a new virtual environment using `python -m venv .venv`
-4. Install dependencies using `pip install -r requirements.txt`
-5. Run the case analyzer using `python cold_case_analyzer/main.py`
-
-\* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
-
-## What is the Case Analysis LLM?
+## What is the Case Analyzer?
 An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
 
 | Category | Description | Task |
@@ -33,8 +24,14 @@ An automated analysis of court decisions related to choice of law in internation
 | Choice of Law Issue | Questions arising from the choice of law issue(s)/agreement/clause/interpretation(s) | Classification → Interpretation |
 | Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
 
-## What is the Choice of Law Dataverse (CoLD)?
-CoLD is a research project at the University of Lucerne, aiming to make Private International Law more accessible by developing and leveraging digital tools.
+## How to run the Case Analyzer on your machine
+1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
+2. Prepare the dataset under "cold_case_analyzer/data/cases.xlsx". Please note that you have to adhere to the given format with the pre-defined column names*
+3. (Optional) Create a new virtual environment using `python -m venv .venv`
+4. Install dependencies using `pip install -r requirements.txt`
+5. Run the case analyzer using `python cold_case_analyzer/main.py`
+
+\* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
 
 ## Data
 
@@ -81,7 +78,7 @@ For developing the Case Analysis LLM, we used Swiss Court Decisions in the first
 
 See the ground truth for all 33 cases [here](ground_truth.csv).
 
-### Prompts
+## Prompts
 
 **Abstract**
 > Your task is to extract the abstract from a court decision. Your response consists of the abstract only, no explanations or other additional information. The official abstract stated in the case is usually right at the beginning, sometimes called "Regeste". If the abstract is not in english, translate it to english. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less.
@@ -105,6 +102,9 @@ Your output is a direct answer to the issue laid out here:
 **Rules**
 > Your task is to extract rules of law from a court decision that is related to choice of law. Your response is a list object of the rules of law sorted by the impact of the rules for the choice of law issue present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant rule of law usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If there is no provision from such a prominent legislation found, double-check whether there is any other legal provision or another court decision, cited as a precedent, used in regards to the choice of law context in this court decision. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find rules of law in the court decision or you are not sure, return [\"NA\"]. If any language other than English is used to describe a provision, use their English name/abbreviation.
 
-### Results
+## Results
 
 See results for the 3 example cases [here](results.csv).
+
+## What is the Choice of Law Dataverse (CoLD)?
+CoLD is a research project at the University of Lucerne, aiming to make Private International Law more accessible by developing and leveraging digital tools.
