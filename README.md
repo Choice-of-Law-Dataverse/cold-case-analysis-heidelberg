@@ -1,5 +1,5 @@
 # Developing a Large Language Model for Swiss Cases on Choice of Law
-- [Website](https://www.cold.global/) about our research project.
+- [Website](https://www.cold.global/) about our research project
 - [Presentation slides (PDF)](/presentation_slides.pdf)
 - [Handout (PDF)](/handout.pdf)
 
