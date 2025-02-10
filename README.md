@@ -1,5 +1,7 @@
 # CoLD Case Analysis LLM
-[**Website**](https://www.cold.global/) to our research project.
+- [Website](https://www.cold.global/) to our research project.
+- [Presentation slides (PDF)](/presentation_slides.pdf)
+- [Handout (PDF)](/handout.pdf)
 
 ## Overview
 - [What is the Case Analyzer?](#what-is-the-case-analyzer)
