@@ -79,15 +79,15 @@ For developing the Case Analysis LLM, we used Swiss Court Decisions in the first
 
 ### Ground Truth
 
-Open the ground truth for all 33 cases [here](https://github.com/Choice-of-Law-Dataverse/cold-case-analysis/blob/task/t530/conference-adjustments/ground_truth.csv).
+Open the ground truth for all 33 cases [here](ground_truth.csv).
 
 ### Prompts
 
 **Abstract**
-```
-Your task is to extract the abstract from a court decision. Your response consists of the abstract only, no explanations or other additional information. The official abstract stated in the case is usually right at the beginning, sometimes called "Regeste". If the abstract is not in english, translate it to english. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less.
+
+> Your task is to extract the abstract from a court decision. Your response consists of the abstract only, no explanations or other additional information. The official abstract stated in the case is usually right at the beginning, sometimes called "Regeste". If the abstract is not in english, translate it to english. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less.
 If there are any legal provisions mentioned, use their English name/abbreviation.
-```
+
 
 **Facts**
 ```
