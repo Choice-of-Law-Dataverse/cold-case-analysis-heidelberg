@@ -1,44 +1,59 @@
+import os
+from datetime import datetime
+import pandas as pd
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 from colorama import Fore, Style
 
 def evaluate_g_eval(merged_df, columns_to_compare):
     """
-    For each column in `columns_to_compare`, runs no-reference G-Eval by comparing 
-    the generated text (`col + '_gen'`) to the original text (`merged_df['Original text']`).
+    For each column in `columns_to_compare`, run a no‐reference G‐Eval for every case (row)
+    individually, print each score, and save the detailed results to a CSV file.
     """
-
-    print(f"\n{Fore.CYAN}========== G-EVAL EVALUATION =========={Style.RESET_ALL}\n")
-
-    # Setup the metric once, reusing for all rows
-    correctness_metric = GEval(
-        name="Correctness",
-        evaluation_steps=[
-            "Check whether the facts in the 'actual output' contradict any facts in the 'input'.",
-            "Penalize omissions of crucial details that appear in the 'input'.",
-            "Penalize vague or contradictory claims.",
-        ],
-        # Using no-reference: only input + actual_output
-        evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT]
-    )
-
+    print(f"\n{Fore.CYAN}========== G-EVAL EVALUATION (Detailed Per Case) =========={Style.RESET_ALL}\n")
+    
+    detailed_results = []
+    original_texts = merged_df["Original text"].fillna("").tolist()
+    
+    # For each column you want to evaluate...
     for col in columns_to_compare:
-        # We'll compare the model output to the original text (row by row)
-        original_texts = merged_df["Original text"].fillna("").tolist()
         generated_texts = merged_df[f"{col}_gen"].fillna("").tolist()
-
-        g_scores = []
-        for orig, gen in zip(original_texts, generated_texts):
+        
+        # Process each case individually.
+        for idx, (orig, gen) in enumerate(zip(original_texts, generated_texts)):
+            # Create a new GEval instance per test case so that the score is not cumulative.
+            correctness_metric = GEval(
+                name="Correctness",
+                evaluation_steps=[
+                    "Check whether the facts in the 'actual output' contradict any facts in the 'input'.",
+                    "Penalize omissions of crucial details that appear in the 'input'.",
+                    "Penalize vague or contradictory claims.",
+                ],
+                evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT]
+            )
             test_case = LLMTestCase(
                 input=orig,
                 actual_output=gen
-                # No expected_output since this is no-reference style
             )
-            # Evaluate
             correctness_metric.measure(test_case)
-            # correctness_metric.score is updated with each measure
-            g_scores.append(correctness_metric.score)
-
-        # Compute the average
-        avg_score = sum(g_scores) / len(g_scores) if g_scores else 0.0
-        print(f"{Fore.MAGENTA}Column: {col} - G-Eval Average: {avg_score:.4f}{Style.RESET_ALL}")
+            score_value = correctness_metric.score
+            case_id = merged_df.iloc[idx]["ID"]
+            print(f"Case {case_id} - Column '{col}': G-Eval Score: {score_value:.4f}")
+            
+            detailed_results.append({
+                "ID": case_id,
+                "Column": col,
+                "G_Eval_Score": score_value
+            })
+    
+    # Create output folder (e.g., within your data/evaluations folder).
+    output_folder = os.path.join(os.path.dirname(__file__), "..", "data", "evaluations")
+    os.makedirs(output_folder, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(output_folder, f"geval_evaluation_detailed_{timestamp}.csv")
+    
+    # Save the detailed results to CSV.
+    df_results = pd.DataFrame(detailed_results)
+    df_results.to_csv(output_file, index=False)
+    print(f"\nDetailed G-Eval evaluation results saved to: {output_file}\n")

@@ -1,45 +1,50 @@
+import os
+from datetime import datetime
+import pandas as pd
 from bert_score import score
 from colorama import Fore, Style
 
 def evaluate_bertopic(merged_df, columns_to_compare):
     """
-    Computes BERTScore for each column in `columns_to_compare`.
-    Expects that for each column `col`, merged_df has:
-      - `col + '_gt'` for ground-truth text
-      - `col + '_gen'` for model-generated text
+    For each column in `columns_to_compare`, compute BERTScore for every case (row) individually,
+    print the detailed scores (precision, recall, F1), and store the results in a CSV file.
     """
-
-    print(f"\n{Fore.CYAN}========== BERTScore EVALUATION =========={Style.RESET_ALL}\n")
-
-    all_precision = []
-    all_recall = []
-    all_f1 = []
-
+    print(f"\n{Fore.CYAN}========== BERTScore EVALUATION (Detailed Per Case) =========={Style.RESET_ALL}\n")
+    
+    detailed_results = []
+    
     for col in columns_to_compare:
-        # references = ground truth
+        # Prepare lists for references (ground-truth) and candidates (generated) for this column.
         references = merged_df[f"{col}_gt"].fillna("").tolist()
-        # candidates = generated answers
         candidates = merged_df[f"{col}_gen"].fillna("").tolist()
-
-        # If your text is non-English, set lang='...' accordingly
+        
+        # Compute BERTScore in batch.
         P, R, F1 = score(candidates, references, lang="en", verbose=False)
-
-        p_avg = P.mean().item()
-        r_avg = R.mean().item()
-        f_avg = F1.mean().item()
-
-        all_precision.append(p_avg)
-        all_recall.append(r_avg)
-        all_f1.append(f_avg)
-
-        print(f"{Fore.GREEN}Column: {col}{Style.RESET_ALL}")
-        print(f"  BERTScore Precision: {p_avg:.4f}")
-        print(f"  BERTScore Recall:    {r_avg:.4f}")
-        print(f"  BERTScore F1:        {f_avg:.4f}\n")
-
-    # Optionally, print an overall average
-    if all_precision:
-        print(f"{Fore.YELLOW}--- AVERAGE BERTScore (across all compared columns) ---{Style.RESET_ALL}")
-        print(f"  Precision: {sum(all_precision)/len(all_precision):.4f}")
-        print(f"  Recall:    {sum(all_recall)/len(all_recall):.4f}")
-        print(f"  F1:        {sum(all_f1)/len(all_f1):.4f}\n")
+        
+        # Loop over each case, printing and storing individual scores.
+        for idx, (p, r, f) in enumerate(zip(P, R, F1)):
+            p_val = p.item()
+            r_val = r.item()
+            f_val = f.item()
+            case_id = merged_df.iloc[idx]["ID"]
+            print(f"Case {case_id} - Column '{col}': Precision: {p_val:.4f}, Recall: {r_val:.4f}, F1: {f_val:.4f}")
+            
+            detailed_results.append({
+                "ID": case_id,
+                "Column": col,
+                "BERT_Precision": p_val,
+                "BERT_Recall": r_val,
+                "BERT_F1": f_val
+            })
+    
+    # Create output folder (e.g., within your data/evaluations folder).
+    output_folder = os.path.join(os.path.dirname(__file__), "..", "data", "evaluations")
+    os.makedirs(output_folder, exist_ok=True)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(output_folder, f"bertopic_evaluation_detailed_{timestamp}.csv")
+    
+    # Save the detailed results to CSV.
+    df_results = pd.DataFrame(detailed_results)
+    df_results.to_csv(output_file, index=False)
+    print(f"\nDetailed BERTScore evaluation results saved to: {output_file}\n")
