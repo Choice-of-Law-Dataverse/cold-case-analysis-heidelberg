@@ -79,7 +79,7 @@ For developing the Case Analysis LLM, we used Swiss Court Decisions in the first
 
 ### Ground Truth
 
-Open the ground truth for all 33 cases [here](ground_truth.csv).
+See the ground truth for all 33 cases [here](ground_truth.csv).
 
 ### Prompts
 
@@ -104,3 +104,7 @@ Your output is a direct answer to the issue laid out here:
 
 **Rules**
 > Your task is to extract rules of law from a court decision that is related to choice of law. Your response is a list object of the rules of law sorted by the impact of the rules for the choice of law issue present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant rule of law usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If there is no provision from such a prominent legislation found, double-check whether there is any other legal provision or another court decision, cited as a precedent, used in regards to the choice of law context in this court decision. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find rules of law in the court decision or you are not sure, return [\"NA\"]. If any language other than English is used to describe a provision, use their English name/abbreviation.
+
+### Results
+
+See results for the 3 example cases [here](results.csv).
