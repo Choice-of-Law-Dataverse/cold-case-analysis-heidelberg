@@ -8,7 +8,7 @@ def fetch_local_data():
     cold-case-analysis/cold_case_analyzer/data/cases.xlsx
     """
     # Compute the absolute path to the "data" folder.
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data/raw"))
     file_path = os.path.join(base_dir, "cases_test.xlsx")
 
     if not os.path.exists(file_path):
@@ -26,7 +26,7 @@ def fetch_local_data():
 def fetch_local_concepts():
     """
     Loads analysis concepts from the Excel file located at:
-    cold-case-analysis/cold_case_analyzer/data/concepts.xlsx
+    cold-case-analysis/cold_case_analyzer/data/raw/concepts.xlsx
     """
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
     file_path = os.path.join(base_dir, "concepts.xlsx")
@@ -43,7 +43,7 @@ def fetch_local_concepts():
     return df
 
 def fetch_local_ground_truths():
-    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data/raw"))
     file_path = os.path.join(base_dir, "ground_truths.xlsx")
 
     if not os.path.exists(file_path):
