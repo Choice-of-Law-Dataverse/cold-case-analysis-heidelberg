@@ -3,3 +3,4 @@
     autostage = true
 ['remote "az-remote"']
     url = azure://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis
+    sas_token = sp=r
