@@ -3,13 +3,13 @@
 
 ## Overview
 - [What is the Case Analyzer?](#what-is-the-case-analyzer)
-- How to run the Case Analyzer on your machine
-- Data
-    - Court Cases
-    - Ground Truth
-- Prompts
-- Results
-- What is the Choice of Law Dataverse (CoLD)?
+- [How to run the Case Analyzer on your machine](#how-to-run-the-case-analyzer-on-your-machine)
+- [Data](#data)
+    - [Court Cases](#court-cases)
+    - [Ground Truth](#ground-truth)
+- [Prompts](#prompts)
+- [Results](#results)
+- [What is the Choice of Law Dataverse (CoLD)?](#what-is-the-choice-of-law-dataverse-cold)
 
 ---
 
