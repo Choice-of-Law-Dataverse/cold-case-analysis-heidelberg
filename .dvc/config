@@ -1,6 +1,8 @@
 [core]
-    remote = az-remote
+    remote = storage
     autostage = true
 ['remote "az-remote"']
     url = azure://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis
-    sas_token = sp=r
+    sas_token = 
+['remote "storage"']
+    url = gdrive://18tws9vq0vK6GaZvXNq_XO7AsJD1rtHQ0
