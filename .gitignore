@@ -162,7 +162,8 @@ cython_debug/
 #.idea/
 
 # Data
-cold_case_analyzer/data/*
+cold_case_analyzer/data/*.csv
+cold_case_analyzer/data/*.xlsx
 !cold_case_analyzer/data/raw/*
 !cold_case_analyzer/data/processed/*
 !cold_case_analyzer/data/concepts.xlsx
