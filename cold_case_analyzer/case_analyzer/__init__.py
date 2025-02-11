@@ -62,6 +62,7 @@ class CaseAnalyzer:
         col_section = self.get_col_section()
         classification, coli = self.get_choice_of_law_issue(col_section)
         results = {
+            """
             "Col Section": col_section,
             "Abstract": self.get_abstract(col_section),
             "Relevant Facts": self.get_relevant_facts(col_section),
@@ -69,6 +70,14 @@ class CaseAnalyzer:
             "Choice of Law Issue Classification": classification,
             "Choice of Law Issue": coli,
             "Court's Position": self.get_courts_position(coli, col_section),
+            """
+            "Quote": col_section,
+            "Abstract": self.get_abstract(col_section),
+            "Relevant facts / Summary of the case": self.get_relevant_facts(col_section),
+            "PIL provisions": self.get_rules_of_law(col_section),
+            "Themes": classification,
+            "Choice of law issue": coli,
+            "Court's position": self.get_courts_position(coli, col_section),
         }
 
         end_time = time.time()

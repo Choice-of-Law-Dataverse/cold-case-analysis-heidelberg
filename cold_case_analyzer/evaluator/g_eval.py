@@ -22,182 +22,125 @@ def evaluate_g_eval(merged_df, columns_to_compare):
     column_metric_config = {
         "Col Section": [
             {
-                "name": "Col Section - Metric 1",
+                "name": "Col Section - Accuracy",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Col Section - Metric 1",
-                    "Placeholder: Step 2 for Col Section - Metric 1"
+                    "Check whether the text contains only paragraphs relevant for private international law.",
+                    "The paragraphs must justify the court's decision on the choice of law issue.",
+                    "Penalize if the focus lies not on the methodological part of the court decision but instead the facts or contractual details of the case."   
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Col Section - Metric 2",
+                "name": "Col Section - Conciseness",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Col Section - Metric 2",
-                    "Placeholder: Step 2 for Col Section - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Col Section - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Col Section - Metric 3",
-                    "Placeholder: Step 2 for Col Section - Metric 3"
+                    "The answer cannot consist of more than 3 paragraphs."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Abstract": [
             {
-                "name": "Abstract - Metric 1",
+                "name": "Abstract - Accuracy",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Abstract - Metric 1",
-                    "Placeholder: Step 2 for Abstract - Metric 1"
+                    "Check whether the abstract contains all the information relevant for an abstract of a court decision.",
+                    "The correct lanugage to describe all important aspects is essential."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Abstract - Metric 2",
+                "name": "Abstract - Conciseness",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Abstract - Metric 2",
-                    "Placeholder: Step 2 for Abstract - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Abstract - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Abstract - Metric 3",
-                    "Placeholder: Step 2 for Abstract - Metric 3"
+                    "Evaluate the ressourcefulness in the sense that the important information is condensed in a short paragraph.",
+                    "The text must not unnecessarily elaborate on minor aspects."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Relevant Facts": [
             {
-                "name": "Relevant Facts - Metric 1",
+                "name": "Relevant Facts - Accuracy",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Relevant Facts - Metric 1",
-                    "Placeholder: Step 2 for Relevant Facts - Metric 1"
+                    "Check whether the relevant facts contains all the information relevant for the relevant facts of a court decision.",
+                    "The correct lanugage to describe all important aspects is essential."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Relevant Facts - Metric 2",
+                "name": "Relevant Facts - Focus on PIL",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Relevant Facts - Metric 2",
-                    "Placeholder: Step 2 for Relevant Facts - Metric 2"
+                    "Evaluate whether the case is described through a private international law lens"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Relevant Facts - Metric 3",
+                "name": "Relevant Facts - Conciseness",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Relevant Facts - Metric 3",
-                    "Placeholder: Step 2 for Relevant Facts - Metric 3"
+                    "Evaluate the ressourcefulness in the sense that the important information is condensed in a short paragraph.",
+                    "The text must not unnecessarily elaborate on minor aspects.",
+                    "The relevant facts must include the procedural history in a short manner."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Rules of Law": [
             {
-                "name": "Rules of Law - Metric 1",
+                "name": "Rules of Law - Adherence to Format",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Rules of Law - Metric 1",
-                    "Placeholder: Step 2 for Rules of Law - Metric 1"
+                    "Check whether the text resembles a list in the format '[rule1, rule2, ...]'"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Rules of Law - Metric 2",
+                "name": "Rules of Law - Accuracy",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Rules of Law - Metric 2",
-                    "Placeholder: Step 2 for Rules of Law - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Rules of Law - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Rules of Law - Metric 3",
-                    "Placeholder: Step 2 for Rules of Law - Metric 3"
+                    "Evaluate whether the list contains the relevant private international law provisions.",
+                    "Are the provisions sorted in descending order by their relevance for the choice of law issue at hand?"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Choice of Law Issue Classification": [
             {
-                "name": "Choice of Law Issue Classification - Metric 1",
+                "name": "Choice of Law Issue Classification - Accuracy",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue Classification - Metric 1",
-                    "Placeholder: Step 2 for Choice of Law Issue Classification - Metric 1"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Choice of Law Issue Classification - Metric 2",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue Classification - Metric 2",
-                    "Placeholder: Step 2 for Choice of Law Issue Classification - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Choice of Law Issue Classification - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue Classification - Metric 3",
-                    "Placeholder: Step 2 for Choice of Law Issue Classification - Metric 3"
+                    "Does the answer contain only the name of themes separated by comma, if multiple themes were assigned?",
+                    "Were the corresponding choice of law themes accurately identified?"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Choice of Law Issue": [
             {
-                "name": "Choice of Law Issue - Metric 1",
+                "name": "Choice of Law Issue - Correct Identification of CoLI",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue - Metric 1",
-                    "Placeholder: Step 2 for Choice of Law Issue - Metric 1"
+                    "Was the choice of law issue correctly identifier?",
+                    "Does the phrasing of the question use the correct language to precisely describe the issue?"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Choice of Law Issue - Metric 2",
+                "name": "Choice of Law Issue - Precision of Phrasing",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue - Metric 2",
-                    "Placeholder: Step 2 for Choice of Law Issue - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Choice of Law Issue - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Choice of Law Issue - Metric 3",
-                    "Placeholder: Step 2 for Choice of Law Issue - Metric 3"
+                    "Was the choice of law issue phrased as a question?",
+                    "Is the choice of law issue formally correct?"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
         "Court's Position": [
             {
-                "name": "Court's Position - Metric 1",
+                "name": "Court's Position - Answering CoLI",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Court's Position - Metric 1",
-                    "Placeholder: Step 2 for Court's Position - Metric 1"
+                    "Does the court's position contain all the relevant information?",
+                    "Does the court's position use the correct language to describe all important aspects?"
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
             {
-                "name": "Court's Position - Metric 2",
+                "name": "Court's Position - Conciseness",
                 "evaluation_steps": [
-                    "Placeholder: Step 1 for Court's Position - Metric 2",
-                    "Placeholder: Step 2 for Court's Position - Metric 2"
-                ],
-                "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
-            },
-            {
-                "name": "Court's Position - Metric 3",
-                "evaluation_steps": [
-                    "Placeholder: Step 1 for Court's Position - Metric 3",
-                    "Placeholder: Step 2 for Court's Position - Metric 3"
+                    "Evaluate the ressourcefulness in the sense that the important information is condensed in a short paragraph.",
+                    "The text must not unnecessarily elaborate on minor aspects."
                 ],
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },

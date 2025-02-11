@@ -14,7 +14,7 @@ def main_own_data(model_name):
     
     df = fetch_local_data()
     concepts = fetch_local_concepts()
-    """
+
     print("Now starting the analysis...")
     results = []
 
@@ -40,9 +40,9 @@ def main_own_data(model_name):
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
-    """
-    print("Skipped all generation and using data from a previous iteration.")
-    output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
+
+    #print("Skipped all generation and using data from a previous iteration.")
+    #output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
     #output_file = "cold_case_analyzer/data/case_analysis_results_20250204_172632_gpt-4o.csv"
     should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
     if should_evaluate == "Yes":
@@ -59,6 +59,8 @@ def main_airtable(model_name):
     # Filter out cases missing key information
     columns_to_check = ["Original text"]
     df = df.dropna(subset=columns_to_check)
+    # keep only the first three rows of df
+    df = df.iloc[0:3]
     print("Length of df: ", len(df))
 
     print("Writing df as ground truths to storage")
@@ -91,6 +93,10 @@ def main_airtable(model_name):
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
+    
+    should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
+    if should_evaluate == "Yes":
+        evaluate_results(df, output_file)
 
 
 def main():
