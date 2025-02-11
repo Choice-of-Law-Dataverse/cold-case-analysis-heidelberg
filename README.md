@@ -1,5 +1,5 @@
 # Developing a Large Language Model for Swiss Cases on Choice of Law
-- [Website](https://www.cold.global/) about our research project
+- [Website](https://www.cold.global/) to learn more about our main research project
 - [Presentation slides (PDF)](/5_IPR_Nachwuchstagung/presentation_slides.pdf)
 - [Handout (PDF)](/5_IPR_Nachwuchstagung/handout.pdf)
 
@@ -21,7 +21,7 @@ An automated analysis of court decisions related to choice of law in internation
 | Category | Description | Task |
 | :-- | :-- | :-- |
 | Abstract | Official abstract of the decision, otherwise AI-generated | Extraction |
-| Relevant Facts | A short summary of the facts of the case (who are the parties, what happened, what is the dispute about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
+| Relevant Facts | A short summary of the facts of the case (who the parties are, what happened, what the dispute is about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
 | Relevant Rules of Law | The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment. | Extraction |
 | Choice of Law Issue | Questions arising from the choice of law issue(s)/agreement/clause/interpretation(s) | Classification → Interpretation |
 | Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
@@ -33,12 +33,12 @@ An automated analysis of court decisions related to choice of law in internation
 4. Install dependencies using `pip install -r requirements.txt`
 5. Run the case analyzer using `python cold_case_analyzer/main.py`
 
-\* Also, it is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete eventually, but right now it is still needed.
+\* Disclaimer note: It is still necessary to include a separate column with the "Quote"/the Choice of Law section of the original case text. We aim to make this column obsolete soon.
 
 ## Data
 
 ### Court Cases
-For developing the Case Analyzer, we used Swiss Court Decisions in the first iteration. Here is an overview for the cases used:
+To develop the Case Analyzer, we used Swiss Court Decisions in the first iteration. Here is an overview of the cases used:
 
 | **Nr.** | **Title** | **Year** | **Language** |
 | :-- | :-- | :-- | :-- |
