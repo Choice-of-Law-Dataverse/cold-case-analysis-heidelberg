@@ -72,4 +72,4 @@ def evaluate_results(inputs: pd.DataFrame, results_csv: str):
     evaluate_bertopic(merged_df, COLUMNS_TO_COMPARE)
 
     # --- Evaluate with G-Eval ---
-    #evaluate_g_eval(merged_df, COLUMNS_TO_COMPARE)
+    evaluate_g_eval(merged_df, COLUMNS_TO_COMPARE)

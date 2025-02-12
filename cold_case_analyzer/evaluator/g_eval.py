@@ -15,12 +15,12 @@ def evaluate_g_eval(merged_df, columns_to_compare):
     print(f"\n{Fore.CYAN}========== G-EVAL EVALUATION (Detailed Per Case for Multiple Unique Metrics) =========={Style.RESET_ALL}\n")
     
     detailed_results = []
-    original_texts = merged_df["Original text"].fillna("").tolist()
+    original_texts = merged_df["Original text_y"].fillna("").tolist()
 
     # Define unique metric configurations for each column.
     # Replace the placeholder evaluation steps and parameters with your specific details.
     column_metric_config = {
-        "Col Section": [
+        "Quote": [
             {
                 "name": "Col Section - Accuracy",
                 "evaluation_steps": [
@@ -56,7 +56,7 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
-        "Relevant Facts": [
+        "Relevant facts / Summary of the case": [
             {
                 "name": "Relevant Facts - Accuracy",
                 "evaluation_steps": [
@@ -82,7 +82,7 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
-        "Rules of Law": [
+        "PIL provisions": [
             {
                 "name": "Rules of Law - Adherence to Format",
                 "evaluation_steps": [
@@ -99,7 +99,7 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
-        "Choice of Law Issue Classification": [
+        "Themes": [
             {
                 "name": "Choice of Law Issue Classification - Accuracy",
                 "evaluation_steps": [
@@ -109,7 +109,7 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
-        "Choice of Law Issue": [
+        "Choice of law issue": [
             {
                 "name": "Choice of Law Issue - Correct Identification of CoLI",
                 "evaluation_steps": [
@@ -127,7 +127,7 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 "evaluation_params": [LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
             },
         ],
-        "Court's Position": [
+        "Court's position": [
             {
                 "name": "Court's Position - Answering CoLI",
                 "evaluation_steps": [
@@ -168,7 +168,8 @@ def evaluate_g_eval(merged_df, columns_to_compare):
                 metric = GEval(
                     name=metric_config["name"],
                     evaluation_steps=metric_config["evaluation_steps"],
-                    evaluation_params=metric_config["evaluation_params"]
+                    evaluation_params=metric_config["evaluation_params"],
+                    model="gpt-4o-mini-2024-07-18"
                 )
                 metric.measure(test_case)
                 score_value = metric.score

@@ -106,7 +106,7 @@ def main():
     ).ask()
 
     model_choice = questionary.select(
-        "Select the model:", choices=["gpt-4o", "llama3.1"]
+        "Select the model:", choices=["gpt-4o", "gpt-4o-mini", "llama3.1"]
     ).ask()
 
     if data_source == "Own data":

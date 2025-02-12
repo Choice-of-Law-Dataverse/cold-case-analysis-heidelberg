@@ -13,6 +13,8 @@ def prompt_model(prompt_text, model):
         return prompt_llama(prompt_text)
     elif model == "gpt-4o":
         return prompt_gpt_4o(prompt_text)
+    elif model == "gpt-4o-mini":
+        return prompt_gpt_4o_mini(prompt_text)
     else:
         return None
 
@@ -33,6 +35,15 @@ def prompt_gpt_4o(prompt_text):
     client = OpenAI()
     completion = client.chat.completions.create(
         model="gpt-4o",
+        temperature=0,
+        messages=[{"role": "user", "content": prompt_text}],
+    )
+    return completion.choices[0].message.content
+
+def prompt_gpt_4o_mini(prompt_text):
+    client = OpenAI()
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini-2024-07-18",
         temperature=0,
         messages=[{"role": "user", "content": prompt_text}],
     )
