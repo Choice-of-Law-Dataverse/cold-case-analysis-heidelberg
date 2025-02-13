@@ -60,7 +60,7 @@ def main_airtable(model_name):
     columns_to_check = ["Original text"]
     df = df.dropna(subset=columns_to_check)
     # keep only the first three rows of df
-    df = df.iloc[0:3]
+    #df = df.iloc[0:3]
     print("Length of df: ", len(df))
 
     print("Writing df as ground truths to storage")
