@@ -33,10 +33,10 @@
 
 \graphicspath{{images/}}
 
-\title{Developing a Large Language Model System for Swiss Cases on Choice of Law}
+\title{Developing and Evaluating a Large Language Model System for Swiss Cases on Choice of Law}
 
  
-\date{}
+\date{14.02.2025}
 
 \begin{document}
 
@@ -62,7 +62,7 @@ OpenAI's XXX model, a pre-trained language model, is the primary model employed 
 A standard case law brief can be seen as a general synthesis based on an official court document. A concise yet informative case law brief helps practioners, students, and scholars, by condensing pages of information into paragraphs. 
 
 	- explain JD differences and why they matter
-It is important to note that only a small fraction of cases can be considered 'PIL cases', e.g., cases where the core dispute explicitely refersto 'party autonomy' and the PIL problem is further elaborated in the decision. In general, PIL aspects often appear in disguise during court proceedings handling foreign elements.
+It is important to note that only a small fraction of cases can be considered `PIL cases', e.g., cases where the core dispute explicitely refersto `party autonomy' and the PIL problem is further elaborated in the decision. In general, PIL aspects often appear in disguise during court proceedings handling foreign elements.
   - explain original procedure with human evaluation
 The analysis of a PIL case requires the nuanced differentiation between the merits of the dispute, which usually structures the entire court decision, and the PIL aspects, usually mentioned only en passant. These parenthetic aspects however, are the primary focus of a PIL analysis. Concretely, what a PIL-interested legal person is interested in are the following categories: (1) the section of the text dealing with the methodological choice of law issue, (2) the abstract of the case, (3) the relevant facts, (4) the private international law provisions used in the PIL argumentation, (5) the types of choice of law issues dealt with, (6) the actual choice of law issue phrased as a question, and (7) the court's position on the choice of law issue.
 
@@ -77,9 +77,12 @@ Thus, an automated evaluation approach might prove useful. To figure out the tru
 - findings
 
 The human evaluations proves that the generated answers reach a certain required standard for case law briefs. To determine the reliability of automated evaluation metrics, the correlation between BERTScore, G-Eval, and human evaluation scores was calculated. When comparing the scores returned from the automated evaluation with the human evaluation, it becomes clear that XXX. Fig X shows this and table X shows that.
+The results indicate that automated evaluation methods (BERTScore and G-Eval) correlate with human evaluation to some extent.
+The correlation between BERTScore and human evaluation likely varies by category, which Figure 1 visualizes.
+If G-Eval proves reliable, it could enable large-scale automated assessments of LLM-generated legal analyses, reducing the need for costly human review. However, it does not. Thus, this study proves that when it comes to evaluation, humans are still needed. But how about ``reasoning'' models? This study is also going to generate answers using reasoning models and go through the same evaluation process.
 
 \section*{References}
-%...
+...
 
 \vskip 40pt
 \underline {Guidelines:}
@@ -106,8 +109,8 @@ The human evaluations proves that the generated answers reach a certain required
 
 \begin{figure}[htp]
 \centering
-\includegraphics[width=14cm]{BERTScore-boxplots.png}
-\caption{BERTScore evaluation metrics across all categories}
+\includegraphics[width=14cm]{category_correlation_heatmap_with_separators.png}
+\caption{Figure 1: BERTScore evaluation metrics across all categories}
 \label{fig:image}
 \end{figure}
 
