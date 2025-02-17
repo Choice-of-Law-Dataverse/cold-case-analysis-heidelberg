@@ -9,6 +9,8 @@
 \usepackage{fancyhdr}
 \usepackage{lipsum}
 \usepackage{comment}
+\usepackage[backend=biber, style=authoryear]{biblatex}
+\addbibresource{references.bib}
 
 
 \renewcommand{\headrulewidth}{0pt}
@@ -51,25 +53,21 @@
 
 \section*{Extended Abstract}
 
-This study explores the development and evaluation of a Large Language Model (LLM) system tailored for analyzing Swiss case law on choice of law in private international law (PIL). Using a dataset of 33 multilingual court decisions (German, French, and Italian), we assess whether LLM-generated case law analyses can match human expert assessments across five key categories: abstract, relevant facts, choice of law issue, applicable legal provisions, and court reasoning.
+Recent advances in Large Language Models (LLMs) promise to streamline legal text analysis by summarising complex cases with minimal human oversight \cite{}. However, the reliability of these automated analyses remains uncertain, especially in specialized domains such as Swiss Private International Law (PIL) \cite{}. This study investigates whether LLM-generated case summaries can align with expert legal reasoning when applied to choice-of-law considerations in PIL disputes. Automating time-consuming and analysis steps in this realm could significantly increase efficiency and reduce the costs of legal review, particularly in multilingual jurisdictions.
 
-A structured evaluation process was implemented to assess model performance. Human legal experts first reviewed and rated LLM-generated case summaries based on predefined accuracy and conciseness criteria. Automated metrics, specifically BERTScore and G-Eval, were then used to compare these evaluations. BERTScore measures textual similarity between model-generated and human-authored responses, while G-Eval employs an LLM-based self-assessment approach that does not require external reference data. If proven reliable, G-Eval could facilitate scalable and cost-effective evaluations of legal analyses.
+Drawing from a dataset of 33 court decisions in German, French, and Italian, the project evaluates LLM performance across five categories central to PIL cases: the abstract, relevant facts, choice of law issues, applicable legal provisions, and court's positions. The methodology combines (1) human expert evaluation, in which experienced legal scholars rated the model outputs using predefined accuracy and conciseness criteria, and (2) automated metrics, including a large-scale self-evaluation approach termed ``G-Eval'' \cite{G-Eval}.
 
-Leveraging OpenAI’s GPT-4o model, a system is constructed which is not only reproducible but also dependable and efficient. Especially when comparing it to ad hoc prompting in generic chat tools like ChatGPT. By chaining prompts and storing structured outputs in tabular form, the system reduces errors and ensures an intersubjectively comprehensible approach for analyzing court decisions. Using a reproducible pipeline provides consistency across repeated test cycles and allows for easy adaptation or extension to new legal questions. Setting model parameters to deliver deterministic outputs and adopting a transparent set of rules to guide prompt sequences and categorization criteria further solidify the reliability of this LLM pipeline. In essence, by embedding domain knowledge, streamlining data processing, and methodically structuring the reasoning steps, automated legal analysis becomes more accurate, efficient, and replicable – a clear advantage over one-off prompting in a generalized LLM interface.
+A key technical contribution of this work is a reproducible prompt-chaining pipeline. Rather than generating legal summaries via ad hoc queries in a generic chat interface \cite{}, the pipeline enforces deterministic model outputs and tabulates them in a structured format. This design aims to minimize variability and promote transparency in LLM-driven analyses \cite{}, ensuring that each reasoning step is clearly documented [include figure with prompt design from Heidelberg paper?]. Preliminary tests of the pipeline revealed that in several categories (e.g., the abstract and choice of law issue as well as the court's position), the LLM results closely paralleled human assessments \cite{Heidelberg [ask AB, which categories were particularly good/bad]}. In contrast, certain dimensions of factual precision (e.g., summarizing intricate case details) and identifying abstract choice of law themes proved more challenging for the LLM.
 
-By formulating prompts with clear instructions, contextual clues, or a step-by-step outline, practitioners can nudge LLMs to produce thorough interpretations of complex legal issues – ranging from fact-finding and norm application to the consistent justification of conclusions. Applying the right prompting techniques allows the generation of answers, that closely mimic the output of a process that would require humans to deliberately, and methodically reason, approximating a form of “System-2 thinking” \citep{Alammar, Grootendorst}.  Although LLMs like GPT-4 exhibit remarkable abilities to replicate legal logic and apply relevant statutes \citep{Spaic, Jovanovic}, they rely on statistical patterns rather than genuine human cognition. Does their performance thus falter with highly intricate cases or insufficient context? This study aims to answer this question by evaluating the performance of G-Eval in assessing LLM-generated legal analyses.
+In an effort to automate even the evaluation process, we compare human judgments to G-Eval scores. We explore how well an LLM-based tool can reflect expert consensus without relying on additional training data or manual intervention. To quantify these observations, we conduct ANOVA analyses on the evaluation scores. The results indicate that while G-Eval approximates human feedback in some categories, statistically significant discrepancies emerge in others. Specifically, the model struggles to encapsulate nuanced factual details relevant for summarising a case, whereas the model applies overly strict measures when it comes to extracted PIL rules from a case. These inconsistencies underscore the importance of maintaining expert oversight for the most complex reasoning tasks — particularly where subtle statutory interpretations or factual contexts demand deeper human insight.
 
-The second step - evaluation - investigates the extent to which numerical vectorization techniques can capture the intricate reasoning present in legal texts. PIL cases pose distinct challenges as choice of law considerations often appear as secondary issues within broader legal disputes. An effective LLM-based analysis must be capable of distinguishing these nuanced elements, identifying applicable legal provisions, and synthesizing judicial reasoning.
+Looking ahead, the study plans to employ more advanced ``reasoning” models, as opposed to basic ``instruct” models \cite{}, to determine whether they can bridge the observed performance gaps. In parallel, iterative consultation with legal experts will refine the evaluation framework to better capture the domain-specific intricacies of PIL decisions. Although LLMs have shown remarkable potential for replicating certain aspects of legal reasoning \cite{Heidelberg, Spaic, Jovanovic}, their statistical nature imposes inherent limitations. This research thus highlights a tension: while automated approaches can enhance efficiency for routine or large-scale document review, reliance on human expertise remains critical for high-stakes legal interpretation.
 
-The statistical analysis (ANOVA) of evaluation metrics reveals mixed findings. In some areas, such as Relevant Facts - Accuracy, Court’s Position - Conciseness, and Choice of Law Issue - Correct Identification of CoLI, no significant difference was found between human and G-Eval scores (p > 0.05), suggesting that automated evaluation can approximate human judgments in certain cases. However, statistically significant discrepancies (p < 0.05) emerged in key categories such as Rules of Law - Adherence to Format, Relevant Facts - Conciseness, Relevant Facts - Focus on PIL, and Rules of Law - Accuracy. These differences indicate that while G-Eval is promising, it still struggles with aspects of structural and domain-specific evaluation.
+Overall, the project contributes a scalable and transparent methodology for assessing LLM-generated legal analyses and clarifies key benchmarks for future improvements. By systematically identifying where automation succeeds — and where it falters — this work paves the way for more reliable AI-driven legal tools, fostering interdisciplinary dialogue between legal practitioners, data scientists, and AI researchers.
 
-Figure 1 presents these results, illustrating the areas where automated evaluation aligns well with human judgment and where inconsistencies persist. While G-Eval shows potential in automating aspects of legal text evaluation, the findings highlight the continued necessity of expert oversight, particularly for complex reasoning tasks. Future research will explore reasoning-enhanced LLMs and refine evaluation frameworks to further bridge the gap between machine-generated and human-authored legal analyses.
-
-If G-Eval proves reliable, it could enable large-scale automated assessments of LLM-generated legal analyses, reducing the need for costly human review. However, it does not. Thus, this study proves that when it comes to evaluation, humans are still needed. But how about ``reasoning'' models? This study is also going to generate answers using reasoning models and go through the same evaluation process.
-
-\section*{References}
-...
-
+%\section*{References}
+%...
+\printbibliography
 \begin{comment}
 \vskip 40pt
 \underline {Guidelines:}
@@ -91,9 +89,8 @@ If G-Eval proves reliable, it could enable large-scale automated assessments of 
   \item References
   \item Figure or Table
 \end{itemize}
-
-\newpage
 \end{comment}
+\newpage
 
 \begin{figure}[htp]
 \centering
