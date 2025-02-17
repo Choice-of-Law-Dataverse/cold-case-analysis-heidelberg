@@ -1,0 +1,404 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{alammar_hands-large_2024}{book}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=071e8b59bcc6de28244fea3bf962a165}{%
+           family={Alammar},
+           familyi={A\bibinitperiod},
+           given={Jay},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a07dee61406b9c48310bff46188c983b}{%
+           family={Grootendorst},
+           familyi={G\bibinitperiod},
+           given={Maarten},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{location}{1}{%
+        {Beijing Boston Farnham}%
+      }
+      \list{publisher}{1}{%
+        {O'Reilly}%
+      }
+      \strng{namehash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{fullhash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{bibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{authorbibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{authornamehash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{authorfullhash}{0650457fefbcc1b47ed66572b476e1c2}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Intro -- Copyright -- Table of Contents -- Preface -- An Intuition-First Philosophy -- Prerequisites -- Book Structure -- Part I: Understanding Language Models -- Part II: Using Pretrained Language Models -- Part III: Training and Fine-Tuning Language Models -- Hardware and Software Requirements -- API Keys -- Conventions Used in This Book -- Using Code Examples -- O'Reilly Online Learning -- How to Contact Us -- Acknowledgments -- Part I. Understanding Language Models -- Chapter 1. An Introduction to Large Language Models -- What Is Language AI? -- A Recent History of Language AI -- Representing Language as a Bag-of-Words -- Better Representations with Dense Vector Embeddings -- Types of Embeddings -- Encoding and Decoding Context with Attention -- Attention Is All You Need -- Representation Models: Encoder-Only Models -- Generative Models: Decoder-Only Models -- The Year of Generative AI -- The Moving Definition of a "Large Language Model" -- The Training Paradigm of Large Language Models -- Large Language Model Applications: What Makes Them So Useful? -- Responsible LLM Development and Usage -- Limited Resources Are All You Need -- Interfacing with Large Language Models -- Proprietary, Private Models -- Open Models -- Open Source Frameworks -- Generating Your First Text -- Summary -- Chapter 2. Tokens and Embeddings -- LLM Tokenization -- How Tokenizers Prepare the Inputs to the Language Model -- Downloading and Running an LLM -- How Does the Tokenizer Break Down Text? -- Word Versus Subword Versus Character Versus Byte Tokens -- Comparing Trained LLM Tokenizers -- Tokenizer Properties -- Token Embeddings -- A Language Model Holds Embeddings for the Vocabulary of Its Tokenizer -- Creating Contextualized Word Embeddings with Language Models -- Text Embeddings (for Sentences and Whole Documents) -- Word Embeddings Beyond LLMs}
+      \field{edition}{1st edition}
+      \field{isbn}{978-1-09-815096-9 978-1-09-815093-8}
+      \field{shorttitle}{Hands-on large language models}
+      \field{title}{Hands-on large language models: language understanding and generation}
+      \field{year}{2024}
+      \verb{file}
+      \verb Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\DR5W2J4U\\Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:application/pdf
+      \endverb
+    \endentry
+    \entry{anon_2025}{misc}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=7079c72c21415131774625ba1d64f4b0}{%
+           family={Anonymous},
+           familyi={A\bibinitperiod}}}%
+      }
+      \strng{namehash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{fullhash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{bibnamehash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{authorbibnamehash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{authornamehash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{authorfullhash}{7079c72c21415131774625ba1d64f4b0}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Conference presentation of the same research project with a focus on legal subjects}
+      \field{year}{2025}
+    \endentry
+    \entry{liu2023gevalnlgevaluationusing}{misc}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=621013bf54d3546375ad71f17f020b5b}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Yang},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5491649d7b9eeab75bf54d1832e83bc5}{%
+           family={Iter},
+           familyi={I\bibinitperiod},
+           given={Dan},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e8acff368822f4c09bf6b92fc68f8b56}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Yichong},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5e5b074eac11025ce8ec1e809f999edf}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Shuohang},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=add220557fbbab6ea5f9cc7268088bd3}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Ruochen},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=18da93aeef135dea4a44b078bf8271ed}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Chenguang},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{df83681b9acfd53a0c867d0eb509f8f3}
+      \strng{fullhash}{726e740ec42570f6413a711091ba533b}
+      \strng{bibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
+      \strng{authorbibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
+      \strng{authornamehash}{df83681b9acfd53a0c867d0eb509f8f3}
+      \strng{authorfullhash}{726e740ec42570f6413a711091ba533b}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.CL}
+      \field{eprinttype}{arXiv}
+      \field{title}{G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment}
+      \field{year}{2023}
+      \verb{eprint}
+      \verb 2303.16634
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2303.16634
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2303.16634
+      \endverb
+    \endentry
+    \entry{pereira_inacia_2024}{article}{}
+      \name{author}{10}{}{%
+        {{un=0,uniquepart=base,hash=64fb6827b9dd5c8596e3c61903009a67}{%
+           family={Pereira},
+           familyi={P\bibinitperiod},
+           given={Jayr},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=09f79c17b7020a03847dd7053ae90763}{%
+           family={Assumpcao},
+           familyi={A\bibinitperiod},
+           given={Andre},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=33648ef8c176f4b2af2bf47aa238dffb}{%
+           family={Trecenti},
+           familyi={T\bibinitperiod},
+           given={Julio},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=46eb7ef11e8c7eedab0a8e3eeb5f7b7c}{%
+           family={Airosa},
+           familyi={A\bibinitperiod},
+           given={Luiz},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c98501cf2fc7f32deb00b41dd757eaf6}{%
+           family={Lente},
+           familyi={L\bibinitperiod},
+           given={Caio},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=b229da19022c29a994363da928a6351a}{%
+           family={Cléto},
+           familyi={C\bibinitperiod},
+           given={Jhonatan},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bf22d0fad2fccbbfb8fe710349426c67}{%
+           family={Dobins},
+           familyi={D\bibinitperiod},
+           given={Guilherme},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c83183446726fb79444e5f7d3c99276e}{%
+           family={Nogueira},
+           familyi={N\bibinitperiod},
+           given={Rodrigo},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4825640db5d095a4330334b8135ac933}{%
+           family={Mitchell},
+           familyi={M\bibinitperiod},
+           given={Luis},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=36c66359473506179a7f6b211ea9375e}{%
+           family={Lotufo},
+           familyi={L\bibinitperiod},
+           given={Roberto},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{8ea06e604d45973c4b08b1c886df688d}
+      \strng{fullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
+      \strng{bibnamehash}{8ea06e604d45973c4b08b1c886df688d}
+      \strng{authorbibnamehash}{8ea06e604d45973c4b08b1c886df688d}
+      \strng{authornamehash}{8ea06e604d45973c4b08b1c886df688d}
+      \strng{authorfullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{This paper introduces INACIA ( In strução A ssistida c om I nteligência A rtificial), a groundbreaking system designed to integrate Large Language Models (LLMs) into the operational framework of Brazilian Federal Court of Accounts (TCU). The system automates various stages of case analysis, including basic information extraction, admissibility examination, Periculum in mora and Fumus boni iuris analyses, and recommendations generation. Through a series of experiments, we demonstrate INACIA’s potential in extracting relevant information from case documents, evaluating its legal plausibility, and formulating propositions for judicial decision-making. Utilizing a validation dataset alongside LLMs, our evaluation methodology presents a novel approach to assessing system performance, correlating highly with human judgment. These results underscore INACIA’s potential in complex legal task handling while also acknowledging the current limitations. This study discusses possible improvements and the broader implications of applying AI in legal contexts, suggesting that INACIA represents a significant step towards integrating AI in legal systems globally, albeit with cautious optimism grounded in the empirical findings.}
+      \field{annotation}{Their approach looks “somewhat” similar to ours. Can we use their approach to evaluation for our endeavor?}
+      \field{issn}{2691-199X, 2639-0175}
+      \field{journaltitle}{Digital Government: Research and Practice}
+      \field{month}{3}
+      \field{shorttitle}{{INACIA}}
+      \field{title}{{INACIA}: {Integrating} {Large} {Language} {Models} in {Brazilian} {Audit} {Courts}: {Opportunities} and {Challenges}}
+      \field{urlday}{24}
+      \field{urlmonth}{10}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \field{pages}{3652951}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1145/3652951
+      \endverb
+      \verb{file}
+      \verb Pereira et al. - 2024 - INACIA Integrating Large Language Models in Brazi.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\25IACIFV\\Pereira et al. - 2024 - INACIA Integrating Large Language Models in Brazi.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://dl.acm.org/doi/10.1145/3652951
+      \endverb
+      \verb{url}
+      \verb https://dl.acm.org/doi/10.1145/3652951
+      \endverb
+      \keyw{LLM Evaluation,SW,Information Extraction}
+    \endentry
+    \entry{qin_is_2023}{misc}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=3c1f92939d19d163ffda0180d3b48d8b}{%
+           family={Qin},
+           familyi={Q\bibinitperiod},
+           given={Chengwei},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=983273ab2d972b56d8b64d220726b6aa}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Aston},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1f25727354024f085075161aad1e48b6}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Zhuosheng},
+           giveni={Z\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=719873368af3060ec9f44bd7ae6cfa08}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Jiaao},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f95714ad66afcfa71b317b3bec07d01d}{%
+           family={Yasunaga},
+           familyi={Y\bibinitperiod},
+           given={Michihiro},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=6ff611991cba7ee48521ab941158ac2f}{%
+           family={Yang},
+           familyi={Y\bibinitperiod},
+           given={Diyi},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \list{publisher}{1}{%
+        {arXiv}%
+      }
+      \strng{namehash}{00540bd8b667d0a90b75d446ee63d95a}
+      \strng{fullhash}{b153261abd101542d96f65990ca32ca3}
+      \strng{bibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
+      \strng{authorbibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
+      \strng{authornamehash}{00540bd8b667d0a90b75d446ee63d95a}
+      \strng{authorfullhash}{b153261abd101542d96f65990ca32ca3}
+      \field{sortinit}{Q}
+      \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Spurred by advancements in scale, large language models (LLMs) have demonstrated the ability to perform a variety of natural language processing (NLP) tasks zero-shot—i.e., without adaptation on downstream data. Recently, the debut of ChatGPT 1 has drawn a great deal of attention from the natural language processing (NLP) community due to the fact that it can generate high-quality responses to human input and self-correct previous mistakes based on subsequent conversations. However, it is not yet known whether ChatGPT can serve as a generalist model that can perform many NLP tasks zero-shot. In this work, we empirically analyze the zero-shot learning ability of ChatGPT by evaluating it on 20 popular NLP datasets covering 7 representative task categories. With extensive empirical studies, we demonstrate both the effectiveness and limitations of the current version of ChatGPT. We find that ChatGPT performs well on many tasks favoring reasoning capabilities (e.g., arithmetic reasoning) while it still faces challenges when solving specific tasks such as sequence tagging. We additionally provide in-depth analysis through qualitative case studies.}
+      \field{month}{11}
+      \field{note}{arXiv:2302.06476 [cs]}
+      \field{title}{Is {ChatGPT} a {General}-{Purpose} {Natural} {Language} {Processing} {Task} {Solver}?}
+      \field{urlday}{14}
+      \field{urlmonth}{9}
+      \field{urlyear}{2024}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{file}
+      \verb Qin et al. - 2023 - Is ChatGPT a General-Purpose Natural Language Proc.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\QUYUFTZA\\Qin et al. - 2023 - Is ChatGPT a General-Purpose Natural Language Proc.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/2302.06476
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/2302.06476
+      \endverb
+      \keyw{Computer Science - Computation and Language,Computer Science - Artificial Intelligence,LLM - GPT Ability of Zero Shot Learning,OS}
+    \endentry
+    \entry{university_of_belgrade_faculty_of_law_serbia_artificial_2024}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=e278466f7c01e740a7d41beec1ee37ae}{%
+           family={{University of Belgrade Faculty of Law, Serbia}},
+           familyi={U\bibinitperiod}}}%
+        {{un=0,uniquepart=base,hash=8dcac33e8a53639998856a416ffe6b20}{%
+           family={Spaić},
+           familyi={S\bibinitperiod},
+           given={Bojan},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2873c75b000a63a8558ac5fc3903e1ba}{%
+           family={Jovanović},
+           familyi={J\bibinitperiod},
+           given={Miodrag},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{24b011017027da77a810e3b5feb9bcae}
+      \strng{fullhash}{24b011017027da77a810e3b5feb9bcae}
+      \strng{bibnamehash}{24b011017027da77a810e3b5feb9bcae}
+      \strng{authorbibnamehash}{24b011017027da77a810e3b5feb9bcae}
+      \strng{authornamehash}{24b011017027da77a810e3b5feb9bcae}
+      \strng{authorfullhash}{24b011017027da77a810e3b5feb9bcae}
+      \field{sortinit}{U}
+      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{shorttitle}
+      \field{abstract}{Despite the widespread adoption of generative transformer large language models and the interest of the global legal community, discussions about the models in philosophy of law mainly have been focusing on what LLMs cannot do. In making the first steps towards a philosophical analysis of the capabilities of AI models in the field of law, we follow the basic idea of Turing’s „imitation game“. Proceeding from the frequently raised characterization of legal reasoning as „artificial“, the paper identifies the undisputed minimum core of the „artificiality“ thesis and asks to what extent it can be imitated by artificial intelligence. To answer this question, we test the legal reasoning capabilities of ChatGPT, the most advanced, up-to-date LLM version of artificial intelligence. The conclusion is that in all relevant types of activities usually associated with legal reasoning – fact-finding, interpretation, qualification, and decision-making – ChatGPT can generate outcomes as if it reasons legally.}
+      \field{issn}{00032565, 24062693}
+      \field{journaltitle}{Anali Pravnog fakulteta u Beogradu}
+      \field{month}{9}
+      \field{number}{3}
+      \field{shorttitle}{Artificial {Reason} and {Artificial} {Intelligence}}
+      \field{title}{Artificial {Reason} and {Artificial} {Intelligence}: the {Legal} {Reasoning} {Capabilities} of {GPT}-4}
+      \field{urlday}{27}
+      \field{urlmonth}{12}
+      \field{urlyear}{2024}
+      \field{volume}{72}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \field{pages}{383\bibrangedash 422}
+      \range{pages}{40}
+      \verb{doi}
+      \verb 10.51204/Anali_PFBU_24302A
+      \endverb
+      \verb{file}
+      \verb University of Belgrade Faculty of Law, Serbia et al. - 2024 - Artificial Reason and Artificial Intelligence the.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\Z456C8YA\\University of Belgrade Faculty of Law, Serbia et al. - 2024 - Artificial Reason and Artificial Intelligence the.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://anali.rs/artificial-reason-and-artificial-intelligence-the-legal-reasoning-capabilities-of-gpt-4/?lang=en
+      \endverb
+      \verb{url}
+      \verb https://anali.rs/artificial-reason-and-artificial-intelligence-the-legal-reasoning-capabilities-of-gpt-4/?lang=en
+      \endverb
+      \keyw{OS}
+    \endentry
+  \enddatalist
+  \missing{anon_2025 [ask AB}
+  \missing{which categories were particularly good/bad]}
+\endrefsection
+\endinput
+

@@ -1,0 +1,19 @@
+[0] Config.pm:307> INFO - This is Biber 2.19
+[0] Config.pm:310> INFO - Logfile is 'ic2s2_2025_cold_case_analysis.blg'
+[39] biber:340> INFO - === Mon Feb 17, 2025, 21:34:44
+[47] Biber.pm:419> INFO - Reading 'ic2s2_2025_cold_case_analysis.bcf'
+[76] Biber.pm:979> INFO - Found 8 citekeys in bib section 0
+[82] Biber.pm:4419> INFO - Processing section 0
+[87] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[104] bibtex.pm:1713> INFO - LaTeX decoding ...
+[240] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[294] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[294] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[294] Biber.pm:4239> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[294] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[300] bbl.pm:660> INFO - Writing 'ic2s2_2025_cold_case_analysis.bbl' with encoding 'UTF-8'
+[302] bbl.pm:763> INFO - Output to ic2s2_2025_cold_case_analysis.bbl
+[302] Biber.pm:131> WARN - ISBN '978-1-09-815096-9 978-1-09-815093-8' in entry 'alammar_hands-large_2024' is invalid - run biber with '--validate_datamodel' for details.
+[302] Biber.pm:131> WARN - I didn't find a database entry for 'anon_2025 [ask AB' (section 0)
+[302] Biber.pm:131> WARN - I didn't find a database entry for 'which categories were particularly good/bad]' (section 0)
+[303] Biber.pm:133> INFO - WARNINGS: 3
