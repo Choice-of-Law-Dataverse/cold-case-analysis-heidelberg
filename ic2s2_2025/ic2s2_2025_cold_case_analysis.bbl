@@ -1,5 +1,5 @@
 % $ biblatex auxiliary file $
-% $ biblatex bbl format version 3.2 $
+% $ biblatex bbl format version 3.3 $
 % Do not modify the above lines!
 %
 % This is an auxiliary file used by the 'biblatex' package.
@@ -18,8 +18,8 @@
 
 
 \refsection{0}
-  \datalist[entry]{nyt/global//global/global}
-    \entry{alammar_hands-large_2024}{book}{}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{alammar_hands_large_2024}{book}{}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=071e8b59bcc6de28244fea3bf962a165}{%
            family={Alammar},
@@ -45,10 +45,12 @@
       }
       \strng{namehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{fullhash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{fullhashraw}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{bibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authorbibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authornamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authorfullhash}{0650457fefbcc1b47ed66572b476e1c2}
+      \strng{authorfullhashraw}{0650457fefbcc1b47ed66572b476e1c2}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
       \field{extradatescope}{labelyear}
@@ -65,7 +67,7 @@
       \verb Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\DR5W2J4U\\Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:application/pdf
       \endverb
     \endentry
-    \entry{anon_2025}{misc}{}
+    \entry{anon_2025}{misc}{}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=7079c72c21415131774625ba1d64f4b0}{%
            family={Anonymous},
@@ -73,10 +75,12 @@
       }
       \strng{namehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{fullhash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{fullhashraw}{7079c72c21415131774625ba1d64f4b0}
       \strng{bibnamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authorbibnamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authornamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authorfullhash}{7079c72c21415131774625ba1d64f4b0}
+      \strng{authorfullhashraw}{7079c72c21415131774625ba1d64f4b0}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
       \field{extradatescope}{labelyear}
@@ -86,7 +90,136 @@
       \field{title}{Conference presentation of the same research project with a focus on legal subjects}
       \field{year}{2025}
     \endentry
-    \entry{liu2023gevalnlgevaluationusing}{misc}{}
+    \entry{atil2024llmstabilitydetailedanalysis}{misc}{}{}
+      \name{author}{6}{}{%
+        {{un=0,uniquepart=base,hash=b676878b548b3d328968b23a651efed4}{%
+           family={Atil},
+           familyi={A\bibinitperiod},
+           given={Berk},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=38078bd3c4317277e93b6344176f946f}{%
+           family={Chittams},
+           familyi={C\bibinitperiod},
+           given={Alexa},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5e57990e28dd50c2e23ac796d3bc8509}{%
+           family={Fu},
+           familyi={F\bibinitperiod},
+           given={Liseng},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bd09fd2d3ef295f8cf65713a7df17b2c}{%
+           family={Ture},
+           familyi={T\bibinitperiod},
+           given={Ferhan},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=679453ab55198606e36e465c7e4fe069}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Lixinyu},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4e44355534bafedc3196ae27a87a720c}{%
+           family={Baldwin},
+           familyi={B\bibinitperiod},
+           given={Breck},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{42e67ed1284f7fa4b6aceb462afe6d89}
+      \strng{fullhash}{138c5e5ae6b2c3f90a91111ed388cc93}
+      \strng{fullhashraw}{138c5e5ae6b2c3f90a91111ed388cc93}
+      \strng{bibnamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
+      \strng{authorbibnamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
+      \strng{authornamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
+      \strng{authorfullhash}{138c5e5ae6b2c3f90a91111ed388cc93}
+      \strng{authorfullhashraw}{138c5e5ae6b2c3f90a91111ed388cc93}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{eprintclass}{cs.CL}
+      \field{eprinttype}{arXiv}
+      \field{title}{LLM Stability: A detailed analysis with some surprises}
+      \field{year}{2024}
+      \verb{eprint}
+      \verb 2408.04667
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2408.04667
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2408.04667
+      \endverb
+    \endentry
+    \entry{deroy_applicability_2024}{article}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=961adaef5480efcdb13b30e8ac31d5f8}{%
+           family={Deroy},
+           familyi={D\bibinitperiod},
+           given={Aniket},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=1,uniquepart=given,hash=45724464df7ed6d504e7dc91fb12689a}{%
+           family={Ghosh},
+           familyi={G\bibinitperiod},
+           given={Kripabandhu},
+           giveni={K\bibinitperiod},
+           givenun=1}}%
+        {{un=1,uniquepart=given,hash=774457d50d919c98a5a2094951ce31e7}{%
+           family={Ghosh},
+           familyi={G\bibinitperiod},
+           given={Saptarshi},
+           giveni={S\bibinitperiod},
+           givenun=1}}%
+      }
+      \list{language}{1}{%
+        {en}%
+      }
+      \strng{namehash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{fullhash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{fullhashraw}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{bibnamehash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{authorbibnamehash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{authornamehash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{authorfullhash}{3208582540c3eed92199cbd0e5c36ece}
+      \strng{authorfullhashraw}{3208582540c3eed92199cbd0e5c36ece}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Automatic summarization of legal case judgements, which are known to be long and complex, has traditionally been tried via extractive summarization models. In recent years, generative models including abstractive summarization models and Large language models (LLMs) have gained huge popularity. In this paper, we explore the applicability of such models for legal case judgement summarization. We applied various domain-specific abstractive summarization models and general-domain LLMs as well as extractive summarization models over two sets of legal case judgements – from the United Kingdom (UK) Supreme Court and the Indian Supreme Court – and evaluated the quality of the generated summaries. We also perform experiments on a third dataset of legal documents of a different type – Government reports from the United States. Results show that abstractive summarization models and LLMs generally perform better than the extractive methods as per traditional metrics for evaluating summary quality. However, detailed investigation shows the presence of inconsistencies and hallucinations in the outputs of the generative models, and we explore ways to reduce the hallucinations and inconsistencies in the summaries. Overall, the investigation suggests that further improvements are needed to enhance the reliability of abstractive models and LLMs for legal case judgement summarization. At present, a human-in-the-loop technique is more suitable for performing manual checks to identify inconsistencies in the generated summaries.}
+      \field{issn}{0924-8463, 1572-8382}
+      \field{journaltitle}{Artificial Intelligence and Law}
+      \field{month}{7}
+      \field{title}{Applicability of large language models and generative models for legal case judgement summarization}
+      \field{urlday}{11}
+      \field{urlmonth}{9}
+      \field{urlyear}{2024}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{doi}
+      \verb 10.1007/s10506-024-09411-z
+      \endverb
+      \verb{file}
+      \verb Deroy et al. - 2024 - Applicability of large language models and generat.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\E62FJLCX\\Deroy et al. - 2024 - Applicability of large language models and generat.pdf:application/pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://link.springer.com/10.1007/s10506-024-09411-z
+      \endverb
+      \verb{url}
+      \verb https://link.springer.com/10.1007/s10506-024-09411-z
+      \endverb
+      \keyw{OS,LLM - Judgment Summarization (Chunking)}
+    \endentry
+    \entry{liu2023gevalnlgevaluationusing}{misc}{}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=621013bf54d3546375ad71f17f020b5b}{%
            family={Liu},
@@ -127,10 +260,12 @@
       }
       \strng{namehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{fullhash}{726e740ec42570f6413a711091ba533b}
+      \strng{fullhashraw}{726e740ec42570f6413a711091ba533b}
       \strng{bibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authorbibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authornamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authorfullhash}{726e740ec42570f6413a711091ba533b}
+      \strng{authorfullhashraw}{726e740ec42570f6413a711091ba533b}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
       \field{extradatescope}{labelyear}
@@ -151,7 +286,7 @@
       \verb https://arxiv.org/abs/2303.16634
       \endverb
     \endentry
-    \entry{pereira_inacia_2024}{article}{}
+    \entry{pereira_inacia_2024}{article}{}{}
       \name{author}{10}{}{%
         {{un=0,uniquepart=base,hash=64fb6827b9dd5c8596e3c61903009a67}{%
            family={Pereira},
@@ -219,10 +354,12 @@
       }
       \strng{namehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{fullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
+      \strng{fullhashraw}{f074aa79a6e2c6905cfdbc6c16d9c599}
       \strng{bibnamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authorbibnamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authornamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authorfullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
+      \strng{authorfullhashraw}{f074aa79a6e2c6905cfdbc6c16d9c599}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
       \field{extradatescope}{labelyear}
@@ -257,7 +394,7 @@
       \endverb
       \keyw{LLM Evaluation,SW,Information Extraction}
     \endentry
-    \entry{qin_is_2023}{misc}{}
+    \entry{qin_is_2023}{misc}{}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=3c1f92939d19d163ffda0180d3b48d8b}{%
            family={Qin},
@@ -304,10 +441,12 @@
       }
       \strng{namehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{fullhash}{b153261abd101542d96f65990ca32ca3}
+      \strng{fullhashraw}{b153261abd101542d96f65990ca32ca3}
       \strng{bibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authorbibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authornamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authorfullhash}{b153261abd101542d96f65990ca32ca3}
+      \strng{authorfullhashraw}{b153261abd101542d96f65990ca32ca3}
       \field{sortinit}{Q}
       \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
       \field{extradatescope}{labelyear}
@@ -334,11 +473,8 @@
       \endverb
       \keyw{Computer Science - Computation and Language,Computer Science - Artificial Intelligence,LLM - GPT Ability of Zero Shot Learning,OS}
     \endentry
-    \entry{university_of_belgrade_faculty_of_law_serbia_artificial_2024}{article}{}
-      \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=e278466f7c01e740a7d41beec1ee37ae}{%
-           family={{University of Belgrade Faculty of Law, Serbia}},
-           familyi={U\bibinitperiod}}}%
+    \entry{spaic_2024_14222584}{article}{}{}
+      \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=8dcac33e8a53639998856a416ffe6b20}{%
            family={Spaić},
            familyi={S\bibinitperiod},
@@ -352,53 +488,36 @@
            giveni={M\bibinitperiod},
            givenun=0}}%
       }
-      \list{language}{1}{%
-        {en}%
-      }
-      \strng{namehash}{24b011017027da77a810e3b5feb9bcae}
-      \strng{fullhash}{24b011017027da77a810e3b5feb9bcae}
-      \strng{bibnamehash}{24b011017027da77a810e3b5feb9bcae}
-      \strng{authorbibnamehash}{24b011017027da77a810e3b5feb9bcae}
-      \strng{authornamehash}{24b011017027da77a810e3b5feb9bcae}
-      \strng{authorfullhash}{24b011017027da77a810e3b5feb9bcae}
-      \field{sortinit}{U}
-      \field{sortinithash}{6901a00e45705986ee5e7ca9fd39adca}
+      \strng{namehash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{fullhash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{fullhashraw}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{bibnamehash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{authorbibnamehash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{authornamehash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{authorfullhash}{8fddeae59dd79397eef5e271ddb8f33a}
+      \strng{authorfullhashraw}{8fddeae59dd79397eef5e271ddb8f33a}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{extradatescope}{labelyear}
       \field{labeldatesource}{}
       \field{labelnamesource}{author}
-      \field{labeltitlesource}{shorttitle}
-      \field{abstract}{Despite the widespread adoption of generative transformer large language models and the interest of the global legal community, discussions about the models in philosophy of law mainly have been focusing on what LLMs cannot do. In making the first steps towards a philosophical analysis of the capabilities of AI models in the field of law, we follow the basic idea of Turing’s „imitation game“. Proceeding from the frequently raised characterization of legal reasoning as „artificial“, the paper identifies the undisputed minimum core of the „artificiality“ thesis and asks to what extent it can be imitated by artificial intelligence. To answer this question, we test the legal reasoning capabilities of ChatGPT, the most advanced, up-to-date LLM version of artificial intelligence. The conclusion is that in all relevant types of activities usually associated with legal reasoning – fact-finding, interpretation, qualification, and decision-making – ChatGPT can generate outcomes as if it reasons legally.}
-      \field{issn}{00032565, 24062693}
-      \field{journaltitle}{Anali Pravnog fakulteta u Beogradu}
-      \field{month}{9}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Annals of the Faculty of Law in Belgrade}
       \field{number}{3}
-      \field{shorttitle}{Artificial {Reason} and {Artificial} {Intelligence}}
-      \field{title}{Artificial {Reason} and {Artificial} {Intelligence}: the {Legal} {Reasoning} {Capabilities} of {GPT}-4}
-      \field{urlday}{27}
-      \field{urlmonth}{12}
-      \field{urlyear}{2024}
+      \field{title}{Artificial Reason and Artificial Intelligence: the Legal Reasoning Capabilities of GPT-4}
       \field{volume}{72}
       \field{year}{2024}
-      \field{urldateera}{ce}
-      \field{pages}{383\bibrangedash 422}
-      \range{pages}{40}
       \verb{doi}
-      \verb 10.51204/Anali_PFBU_24302A
-      \endverb
-      \verb{file}
-      \verb University of Belgrade Faculty of Law, Serbia et al. - 2024 - Artificial Reason and Artificial Intelligence the.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\Z456C8YA\\University of Belgrade Faculty of Law, Serbia et al. - 2024 - Artificial Reason and Artificial Intelligence the.pdf:application/pdf
+      \verb 10.51204/Anali\_PFBU\_24302A
       \endverb
       \verb{urlraw}
-      \verb https://anali.rs/artificial-reason-and-artificial-intelligence-the-legal-reasoning-capabilities-of-gpt-4/?lang=en
+      \verb https://doi.org/10.51204/Anali\_PFBU\_24302A
       \endverb
       \verb{url}
-      \verb https://anali.rs/artificial-reason-and-artificial-intelligence-the-legal-reasoning-capabilities-of-gpt-4/?lang=en
+      \verb https://doi.org/10.51204/Anali%5C_PFBU%5C_24302A
       \endverb
-      \keyw{OS}
     \endentry
   \enddatalist
-  \missing{anon_2025 [ask AB}
-  \missing{which categories were particularly good/bad]}
 \endrefsection
 \endinput
 
