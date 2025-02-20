@@ -1,5 +1,5 @@
 % $ biblatex auxiliary file $
-% $ biblatex bbl format version 3.3 $
+% $ biblatex bbl format version 3.2 $
 % Do not modify the above lines!
 %
 % This is an auxiliary file used by the 'biblatex' package.
@@ -18,8 +18,8 @@
 
 
 \refsection{0}
-  \datalist[entry]{nyt/global//global/global/global}
-    \entry{alammar_hands_large_2024}{book}{}{}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{alammar_hands_large_2024}{book}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=071e8b59bcc6de28244fea3bf962a165}{%
            family={Alammar},
@@ -45,12 +45,10 @@
       }
       \strng{namehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{fullhash}{0650457fefbcc1b47ed66572b476e1c2}
-      \strng{fullhashraw}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{bibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authorbibnamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authornamehash}{0650457fefbcc1b47ed66572b476e1c2}
       \strng{authorfullhash}{0650457fefbcc1b47ed66572b476e1c2}
-      \strng{authorfullhashraw}{0650457fefbcc1b47ed66572b476e1c2}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
       \field{extradatescope}{labelyear}
@@ -67,7 +65,7 @@
       \verb Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:C\:\\Users\\WeigoldS\\Zotero\\storage\\DR5W2J4U\\Alammar und Grootendorst - 2024 - Hands-on large language models language understan.pdf:application/pdf
       \endverb
     \endentry
-    \entry{anon_2025}{misc}{}{}
+    \entry{anon_2025}{misc}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=7079c72c21415131774625ba1d64f4b0}{%
            family={Anonymous},
@@ -75,12 +73,10 @@
       }
       \strng{namehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{fullhash}{7079c72c21415131774625ba1d64f4b0}
-      \strng{fullhashraw}{7079c72c21415131774625ba1d64f4b0}
       \strng{bibnamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authorbibnamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authornamehash}{7079c72c21415131774625ba1d64f4b0}
       \strng{authorfullhash}{7079c72c21415131774625ba1d64f4b0}
-      \strng{authorfullhashraw}{7079c72c21415131774625ba1d64f4b0}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
       \field{extradatescope}{labelyear}
@@ -90,7 +86,7 @@
       \field{title}{Conference presentation of the same research project with a focus on legal subjects}
       \field{year}{2025}
     \endentry
-    \entry{atil2024llmstabilitydetailedanalysis}{misc}{}{}
+    \entry{atil2024llmstabilitydetailedanalysis}{misc}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=b676878b548b3d328968b23a651efed4}{%
            family={Atil},
@@ -131,12 +127,10 @@
       }
       \strng{namehash}{42e67ed1284f7fa4b6aceb462afe6d89}
       \strng{fullhash}{138c5e5ae6b2c3f90a91111ed388cc93}
-      \strng{fullhashraw}{138c5e5ae6b2c3f90a91111ed388cc93}
       \strng{bibnamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
       \strng{authorbibnamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
       \strng{authornamehash}{42e67ed1284f7fa4b6aceb462afe6d89}
       \strng{authorfullhash}{138c5e5ae6b2c3f90a91111ed388cc93}
-      \strng{authorfullhashraw}{138c5e5ae6b2c3f90a91111ed388cc93}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
       \field{extradatescope}{labelyear}
@@ -157,7 +151,7 @@
       \verb https://arxiv.org/abs/2408.04667
       \endverb
     \endentry
-    \entry{deroy_applicability_2024}{article}{}{}
+    \entry{deroy_applicability_2024}{article}{}
       \name{author}{3}{}{%
         {{un=0,uniquepart=base,hash=961adaef5480efcdb13b30e8ac31d5f8}{%
            family={Deroy},
@@ -183,12 +177,10 @@
       }
       \strng{namehash}{3208582540c3eed92199cbd0e5c36ece}
       \strng{fullhash}{3208582540c3eed92199cbd0e5c36ece}
-      \strng{fullhashraw}{3208582540c3eed92199cbd0e5c36ece}
       \strng{bibnamehash}{3208582540c3eed92199cbd0e5c36ece}
       \strng{authorbibnamehash}{3208582540c3eed92199cbd0e5c36ece}
       \strng{authornamehash}{3208582540c3eed92199cbd0e5c36ece}
       \strng{authorfullhash}{3208582540c3eed92199cbd0e5c36ece}
-      \strng{authorfullhashraw}{3208582540c3eed92199cbd0e5c36ece}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
       \field{extradatescope}{labelyear}
@@ -219,7 +211,7 @@
       \endverb
       \keyw{OS,LLM - Judgment Summarization (Chunking)}
     \endentry
-    \entry{liu2023gevalnlgevaluationusing}{misc}{}{}
+    \entry{liu2023gevalnlgevaluationusing}{misc}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=621013bf54d3546375ad71f17f020b5b}{%
            family={Liu},
@@ -260,12 +252,10 @@
       }
       \strng{namehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{fullhash}{726e740ec42570f6413a711091ba533b}
-      \strng{fullhashraw}{726e740ec42570f6413a711091ba533b}
       \strng{bibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authorbibnamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authornamehash}{df83681b9acfd53a0c867d0eb509f8f3}
       \strng{authorfullhash}{726e740ec42570f6413a711091ba533b}
-      \strng{authorfullhashraw}{726e740ec42570f6413a711091ba533b}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
       \field{extradatescope}{labelyear}
@@ -286,7 +276,7 @@
       \verb https://arxiv.org/abs/2303.16634
       \endverb
     \endentry
-    \entry{pereira_inacia_2024}{article}{}{}
+    \entry{pereira_inacia_2024}{article}{}
       \name{author}{10}{}{%
         {{un=0,uniquepart=base,hash=64fb6827b9dd5c8596e3c61903009a67}{%
            family={Pereira},
@@ -354,12 +344,10 @@
       }
       \strng{namehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{fullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
-      \strng{fullhashraw}{f074aa79a6e2c6905cfdbc6c16d9c599}
       \strng{bibnamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authorbibnamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authornamehash}{8ea06e604d45973c4b08b1c886df688d}
       \strng{authorfullhash}{f074aa79a6e2c6905cfdbc6c16d9c599}
-      \strng{authorfullhashraw}{f074aa79a6e2c6905cfdbc6c16d9c599}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
       \field{extradatescope}{labelyear}
@@ -394,7 +382,7 @@
       \endverb
       \keyw{LLM Evaluation,SW,Information Extraction}
     \endentry
-    \entry{qin_is_2023}{misc}{}{}
+    \entry{qin_is_2023}{misc}{}
       \name{author}{6}{}{%
         {{un=0,uniquepart=base,hash=3c1f92939d19d163ffda0180d3b48d8b}{%
            family={Qin},
@@ -441,12 +429,10 @@
       }
       \strng{namehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{fullhash}{b153261abd101542d96f65990ca32ca3}
-      \strng{fullhashraw}{b153261abd101542d96f65990ca32ca3}
       \strng{bibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authorbibnamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authornamehash}{00540bd8b667d0a90b75d446ee63d95a}
       \strng{authorfullhash}{b153261abd101542d96f65990ca32ca3}
-      \strng{authorfullhashraw}{b153261abd101542d96f65990ca32ca3}
       \field{sortinit}{Q}
       \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
       \field{extradatescope}{labelyear}
@@ -473,7 +459,7 @@
       \endverb
       \keyw{Computer Science - Computation and Language,Computer Science - Artificial Intelligence,LLM - GPT Ability of Zero Shot Learning,OS}
     \endentry
-    \entry{spaic_2024_14222584}{article}{}{}
+    \entry{spaic_2024_14222584}{article}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=8dcac33e8a53639998856a416ffe6b20}{%
            family={Spaić},
@@ -490,12 +476,10 @@
       }
       \strng{namehash}{8fddeae59dd79397eef5e271ddb8f33a}
       \strng{fullhash}{8fddeae59dd79397eef5e271ddb8f33a}
-      \strng{fullhashraw}{8fddeae59dd79397eef5e271ddb8f33a}
       \strng{bibnamehash}{8fddeae59dd79397eef5e271ddb8f33a}
       \strng{authorbibnamehash}{8fddeae59dd79397eef5e271ddb8f33a}
       \strng{authornamehash}{8fddeae59dd79397eef5e271ddb8f33a}
       \strng{authorfullhash}{8fddeae59dd79397eef5e271ddb8f33a}
-      \strng{authorfullhashraw}{8fddeae59dd79397eef5e271ddb8f33a}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{extradatescope}{labelyear}
