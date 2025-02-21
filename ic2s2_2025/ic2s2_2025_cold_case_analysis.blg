@@ -1,18 +1,18 @@
 [0] Config.pm:307> INFO - This is Biber 2.19
 [0] Config.pm:310> INFO - Logfile is 'ic2s2_2025_cold_case_analysis.blg'
-[41] biber:340> INFO - === Thu Feb 20, 2025, 20:27:52
-[49] Biber.pm:419> INFO - Reading 'ic2s2_2025_cold_case_analysis.bcf'
-[78] Biber.pm:979> INFO - Found 8 citekeys in bib section 0
-[84] Biber.pm:4419> INFO - Processing section 0
-[90] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
-[106] bibtex.pm:1713> INFO - LaTeX decoding ...
-[245] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[307] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[307] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[307] Biber.pm:4239> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
-[307] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
-[314] bbl.pm:660> INFO - Writing 'ic2s2_2025_cold_case_analysis.bbl' with encoding 'UTF-8'
-[317] bbl.pm:763> INFO - Output to ic2s2_2025_cold_case_analysis.bbl
-[317] Biber.pm:131> WARN - Duplicate entry key: 'deroy_applicability_2024' in file 'references.bib', skipping ...
-[317] Biber.pm:131> WARN - ISBN '978-1-09-815096-9 978-1-09-815093-8' in entry 'alammar_hands_large_2024' is invalid - run biber with '--validate_datamodel' for details.
-[317] Biber.pm:133> INFO - WARNINGS: 2
+[39] biber:340> INFO - === Fri Feb 21, 2025, 10:26:27
+[47] Biber.pm:419> INFO - Reading 'ic2s2_2025_cold_case_analysis.bcf'
+[75] Biber.pm:979> INFO - Found 8 citekeys in bib section 0
+[81] Biber.pm:4419> INFO - Processing section 0
+[86] Biber.pm:4610> INFO - Looking for bibtex file 'references.bib' for section 0
+[102] bibtex.pm:1713> INFO - LaTeX decoding ...
+[235] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[296] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[296] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[296] Biber.pm:4239> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[296] Biber.pm:4245> INFO - No sort tailoring available for locale 'en-US'
+[303] bbl.pm:660> INFO - Writing 'ic2s2_2025_cold_case_analysis.bbl' with encoding 'UTF-8'
+[306] bbl.pm:763> INFO - Output to ic2s2_2025_cold_case_analysis.bbl
+[306] Biber.pm:131> WARN - Duplicate entry key: 'deroy_applicability_2024' in file 'references.bib', skipping ...
+[306] Biber.pm:131> WARN - ISBN '978-1-09-815096-9 978-1-09-815093-8' in entry 'alammar_hands_large_2024' is invalid - run biber with '--validate_datamodel' for details.
+[306] Biber.pm:133> INFO - WARNINGS: 2
