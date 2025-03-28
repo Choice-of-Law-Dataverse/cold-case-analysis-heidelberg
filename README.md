@@ -101,7 +101,7 @@ Your task is to identify the main private international law issue from a court d
 The issue in this case is related to this theme: {classification}, which can be defined as: {definition}
 
 **Court's Position**
-> Summarize the court's position on the choice-of-law issue within the decision. Your response is phrased in a general way, generalizing the issue so that it could be applied to other private international law cases. If there are any legal provisions mentioned, use their English abbreviation.
+> Summarize the court's position on the choice-of-law issue within the decision. Your response is phrased in a general way, generalizing the issue so that it could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation.
 
 
 ## Results
