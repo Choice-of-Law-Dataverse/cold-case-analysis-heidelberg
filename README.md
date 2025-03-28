@@ -77,7 +77,8 @@ The initial iteration of the Case Analyzer was developed using a dataset of 33 S
 
 ### Ground Truth
 
-See the ground truth for all 33 cases [here](/cold_case_analyzer/data/ground_truth.csv).
+See the ground truth for all 33 cases [here](/cold_case_analyzer/data/ground_truth.csv).  
+An example explaining what is behind a ground truth is available [here](/cold_case_analyzer/data/Ground%20truth%20explained.pdf).
 
 ## Prompts
 
