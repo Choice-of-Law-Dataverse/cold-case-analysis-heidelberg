@@ -14,15 +14,16 @@
 - [What is the Choice of Law Dataverse (CoLD)?](#what-is-the-choice-of-law-dataverse-cold)
 
 ## What is the Case Analyzer?
-An automated analysis of court decisions related to choice of law in international commercial contracts. From each court decision, we analyze the following categories:
+The Case Analyzer is an automated tool for analyzing court decisions concerning choice of law in international commercial contracts. For each decision, the analysis focuses on the following categories:
 
 | Category | Description | Task |
 | :-- | :-- | :-- |
-| Abstract | Official abstract of the decision, otherwise AI-generated | Extraction |
-| Relevant Facts | A short summary of the facts of the case (who the parties are, what happened, what the dispute is about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law. | Extraction/Summarization |
-| Relevant Rules of Law | The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment. | Extraction |
-| Choice of Law Issue | Questions arising from the choice of law issue(s)/agreement/clause/interpretation(s) | Classification → Interpretation |
-| Court’s Position | The opinion of the court in regard to the statements made in the "Choice of law issue" column. | Extraction/Interpretation |
+| Abstract | Official abstract of the decision | Extraction |
+| Relevant Facts | Concise summary of case facts emphasizing PIL aspects | Extraction/Summarization |
+| PIL Provisions | Relevant legal provisions related to the choice-of-law issue | Extraction |
+| Classification | Subtopic related to party autonomy | Extraction |
+| Choice-of-law Issue | Description of the PIL problem of the case | Classification → Interpretation |
+| Court’s Position | Brief overview of the ruling regarding the PIL issue | Extraction/Interpretation |
 
 ## How to run the Case Analyzer on your machine
 1. Create a file for API secrets under ".env". Use the blueprint.env file for reference
@@ -36,7 +37,7 @@ An automated analysis of court decisions related to choice of law in internation
 ## Data
 
 ### Court Cases
-To develop the Case Analyzer, we used Swiss Court Decisions in the first iteration. Here is an overview of the cases used:
+The initial iteration of the Case Analyzer was developed using a dataset of 33 Swiss court decisions. Below is an overview of the cases included:
 
 | **Nr.** | **Title** | **Year** | **Language** |
 | :-- | :-- | :-- | :-- |
@@ -81,26 +82,27 @@ See the ground truth for all 33 cases [here](/cold_case_analyzer/data/ground_tru
 ## Prompts
 
 **Abstract**
-> Your task is to extract the abstract from a court decision. Your response consists of the abstract only, no explanations or other additional information. The official abstract stated in the case is usually right at the beginning, sometimes called "Regeste". If the abstract is not in english, translate it to english. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less.
-If there are any legal provisions mentioned, use their English name/abbreviation.
+> Your task is to extract the abstract from a court decision. Your response only consists of the abstract, with no explanations or additional information. The official abstract in the case is usually right at the beginning, sometimes called "Regeste". If the abstract is not in English, translate it into English. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less. If any legal provisions are mentioned, use their English abbreviation.
 
 **Facts**
-> Your task is to extract and summarise the relevant facts from a court decision. Your response consists of the relevant facts only, no explanations or other additional information. You return a structured paragraph meaningful for private international law practitioners. The relevant facts summed up from the case must provide a concise account of the factual background that is essential to understanding the legal dispute, avoiding extraneous details. Relevant information includes who are the parties, what happened, what is the dispute about and what are the different stages of court proceedings. Your response prioritizes information on choice of law and can only contain accurate information. Under no circumstance can you add assumptions that are not stated in the case. If there are any legal provisions mentioned, use their English name/abbreviation.
+> Your task is to extract and summarise the relevant facts from a court decision. Your response consists of the relevant facts only, no explanations or other additional information. You return a structured paragraph meaningful for private international law practitioners. The relevant facts summed up from the case must provide a concise account of the factual background that is essential to understanding the legal dispute, avoiding extraneous details. Relevant information includes who the parties are, what happened, what the dispute is about, and what the different stages of court proceedings are. Your response prioritizes information on choice of law and can only contain accurate information. Under no circumstance can you add assumptions that are not stated in the case. If any legal provisions are mentioned, use their English abbreviation.
 
+**PIL Provisions**
+> Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or you are not sure, return [\"NA\"]. If any language other than English is used to cite a provision, use their English abbreviation.
 
-**Choice of Law Issue**
-> Your task is to identify the main Private International Law issue from a court decision. Your response will be a concise yes or no question. The issue you extract will have to do with Choice of Law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case, but rather the overall choice of law issue behind the case. If there are any legal provisions mentioned, use their English name/abbreviation.
+**Classification and Choice-of-law Issue Prompt**
+> 1. Classification 
+Your task is to classify a court decision into one specific theme. Your response is one of the values from the "Keywords" column in the format \"keyword\". You assign the theme by finding the choice of law issue from the court decision and determining which definition fits better. THE OUTPUT HAS TO BE ONE OF THE VALUES FROM THE TABLE.
+Here is the table with all the keywords and their definitions:
+{concepts} 
+ 
+2. Inference  
+Your task is to identify the main private international law issue from a court decision. Your response will be a concise yes-no question. The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.
+The issue in this case is related to this theme: {classification}, which can be defined as: {definition}
 
-**Themes**
-> Your task is to classify a court decision into one specific theme. Your response is one of the values from the "Keywords" column in the format \"keyword\". You assign the theme by finding the choice of law issue from the court decision and figuring out which Definition fits most. THE OUTPUT HAS TO BE ONE OF THE VALUES FROM THE TABLE.
-Here is the table with all keywords and their definitions:
+**Court's Position**
+> Summarize the court's position on the choice-of-law issue within the decision. Your response is phrased in a general way, generalizing the issue so that it could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation.
 
-**Position**
-> Summarize the court's position on the choice of law issue within a court decision. Your response is phrased in a general way, generalizing the issue so that it could be applied to other private international law cases. If there are any legal provisions mentioned, use their English name/abbreviation.
-Your output is a direct answer to the issue laid out here:
-
-**Rules**
-> Your task is to extract rules of law from a court decision that is related to choice of law. Your response is a list object of the rules of law sorted by the impact of the rules for the choice of law issue present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant rule of law usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If there is no provision from such a prominent legislation found, double-check whether there is any other legal provision or another court decision, cited as a precedent, used in regards to the choice of law context in this court decision. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find rules of law in the court decision or you are not sure, return [\"NA\"]. If any language other than English is used to describe a provision, use their English name/abbreviation.
 
 ## Results
 
