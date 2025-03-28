@@ -91,12 +91,12 @@ See the ground truth for all 33 cases [here](/cold_case_analyzer/data/ground_tru
 > Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or you are not sure, return [\"NA\"]. If any language other than English is used to cite a provision, use their English abbreviation.
 
 **Classification and Choice-of-law Issue Prompt**
-> 1. Classification 
+> 1. Classification  
 Your task is to classify a court decision into one specific theme. Your response is one of the values from the "Keywords" column in the format \"keyword\". You assign the theme by finding the choice of law issue from the court decision and determining which definition fits better. THE OUTPUT HAS TO BE ONE OF THE VALUES FROM THE TABLE.
 Here is the table with all the keywords and their definitions:
-{concepts} 
- 
-2. Inference  
+{concepts}
+
+> 2. Inference  
 Your task is to identify the main private international law issue from a court decision. Your response will be a concise yes-no question. The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.
 The issue in this case is related to this theme: {classification}, which can be defined as: {definition}
 
