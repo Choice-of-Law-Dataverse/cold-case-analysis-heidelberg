@@ -110,5 +110,18 @@ The issue in this case is related to this theme: {classification}, which can be 
 See the results for the 3 example cases [here](/5_IPR_Nachwuchstagung/top-3.csv).  
 See the results for all 33 Swiss cases analysed [here](https://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis/case_analysis_results.xlsx).
 
+### Selected Cases
+**BGE 130 III 620**
+| **Category** | **LLM Task** | **Prompt** | **Ground Truth** | **Case Analyzer Output** |
+| :-- | :-- | :-- | :-- | :-- |
+| Abstract | Information Extraction | Your task is to extract the actract from a court decision. … | Consideration of third-country overriding mandatory provisions under Art. 19 PILA; … | Consideration of third-country intervention norms under Art. 19 of the Swiss Private International Law Act (PILA); … |
+| Relevant Facts | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | A U.S. citizen domiciled in California, opened an account with a Swiss bank. … | A.B., residing in California, USA, filed a lawsuit against D. SA, a company based in Geneva with a branch in Zurich, … |
+| PIL Provision | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 19 PILA | Art. 19 PILA, Art. 166 ff. PILA |
+| Classification | Classification | Your task is to classify a court decision into one specific theme. … | Overriding mandatory rules | Mandatory rules |
+| Choice-of-law Issue | Inference | Your task is to identify the main private international law issue from a court decision. … | Can national law of another jurisdiction be taken into account, as an overriding mandatory provision … | Should the court apply the overriding mandatory rules of a third country under Article 19 of the Swiss Private International Law Act … |
+| Court's Position | Inference | Summarize the court's position on the choice-of-law issue within the decision. … | Art. 19 PILA could, in exceptional circumstances, allow the application of overriding mandatory provisions from third countries … | In addressing the choice of law issue under Article 19 of the Swiss Private International Law Act (IPRG), the court's position is that the application … |
+
+
+
 ## What is the Choice of Law Dataverse (CoLD)?
 CoLD is a research project at the University of Lucerne, aiming to make Private International Law more accessible by developing and leveraging digital tools. See more on [www.cold.global](https://www.cold.global/).
