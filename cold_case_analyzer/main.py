@@ -52,12 +52,12 @@ def main_own_data(model_name):
 def main_airtable(model_name):
     # Fetch data from Airtable
     df = fetch_data(AIRTABLE_CD_TABLE)
-    df.to_csv('cold_case_analyzer/data/raw/input.csv', index=False)
-    concepts = fetch_and_prepare_concepts()
-    concepts.to_csv('cold_case_analyzer/data/raw/concepts.csv', index=False)
+    #df.to_csv('cold_case_analyzer/data/raw/input.csv', index=False)
+    #concepts = fetch_and_prepare_concepts()
+    #concepts.to_csv('cold_case_analyzer/data/raw/concepts.csv', index=False)
 
     # Filter out cases missing key information
-    columns_to_check = ["Original text"]
+    columns_to_check = ["Original Text"]
     df = df.dropna(subset=columns_to_check)
     # keep only the first three rows of df
     #df = df.iloc[0:3]
@@ -67,8 +67,19 @@ def main_airtable(model_name):
     gt_output_folder = os.path.join(os.path.dirname(__file__), "data", "raw")
     os.makedirs(gt_output_folder, exist_ok=True)
     gt_output_file = os.path.join(gt_output_folder, "ground_truths.csv")
+    # keep only the columns "Case Citation", "Jurisdictions", "Abstract", "Relevant Facts", "PIL Provisions", "Themes", "Choice of Law Issue", "Court's Position"
+    df = df[[
+        "Case Citation",
+        "Jurisdictions",
+        "Abstract",
+        "Relevant Facts",
+        "PIL Provisions",
+        "Themes",
+        "Choice of Law Issue",
+        "Court's Position"
+    ]]
     df.to_csv(gt_output_file, index=False)
-
+    """
     print("Now starting the analysis...")
     results = []
 
@@ -96,7 +107,8 @@ def main_airtable(model_name):
     
     should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
     if should_evaluate == "Yes":
-        evaluate_results(df, output_file)
+        evaluate_results(df, output_file)"
+    """
 
 
 def main():
