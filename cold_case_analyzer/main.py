@@ -107,7 +107,7 @@ def main_airtable(model_name):
     
     should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
     if should_evaluate == "Yes":
-        evaluate_results(df, output_file)"
+        evaluate_results(df, output_file)
     """
 
 
