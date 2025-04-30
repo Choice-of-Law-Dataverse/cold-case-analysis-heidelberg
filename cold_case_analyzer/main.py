@@ -1,20 +1,19 @@
 import os
-import pandas as pd
 from datetime import datetime
+import pandas as pd
+import questionary
 from data_handler.airtable_retrieval import fetch_data
 from data_handler.airtable_concepts import fetch_and_prepare_concepts
 from data_handler.local_file_retrieval import fetch_local_data, fetch_local_concepts
 from case_analyzer import CaseAnalyzer
+from evaluator import evaluate_results
 from config import AIRTABLE_CD_TABLE
-import questionary
 
 
 def main_own_data(model_name):
+    
     df = fetch_local_data()
-    print("df: ", df)
-    print("type: ", type(df["Original text"]))
     concepts = fetch_local_concepts()
-    print("concepts: ", concepts)
 
     print("Now starting the analysis...")
     results = []
@@ -42,34 +41,57 @@ def main_own_data(model_name):
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
 
+    #print("Skipped all generation and using data from a previous iteration.")
+    #output_file = "cold_case_analyzer/data/case_analysis_results_20250206_121810_gpt-4o.csv"
+    #output_file = "cold_case_analyzer/data/case_analysis_results_20250204_172632_gpt-4o.csv"
+    should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
+    if should_evaluate == "Yes":
+        evaluate_results(df, output_file)
+
 
 def main_airtable(model_name):
     # Fetch data from Airtable
     df = fetch_data(AIRTABLE_CD_TABLE)
-    concepts = fetch_and_prepare_data()
+    #df.to_csv('cold_case_analyzer/data/raw/input.csv', index=False)
+    #concepts = fetch_and_prepare_concepts()
+    #concepts.to_csv('cold_case_analyzer/data/raw/concepts.csv', index=False)
 
     # Filter out cases missing key information
-    columns_to_check = ["Original text"]
+    columns_to_check = ["Original Text"]
     df = df.dropna(subset=columns_to_check)
+    # keep only the first three rows of df
+    #df = df.iloc[0:3]
     print("Length of df: ", len(df))
 
     print("Writing df as ground truths to storage")
-    gt_output_folder = os.path.join(os.path.dirname(__file__), "data")
+    gt_output_folder = os.path.join(os.path.dirname(__file__), "data", "raw")
     os.makedirs(gt_output_folder, exist_ok=True)
     gt_output_file = os.path.join(gt_output_folder, "ground_truths.csv")
+    # keep only the columns "Case Citation", "Jurisdictions", "Abstract", "Relevant Facts", "PIL Provisions", "Themes", "Choice of Law Issue", "Court's Position"
+    df = df[[
+        "Case Citation",
+        "Jurisdictions",
+        "Abstract",
+        "Relevant Facts",
+        "PIL Provisions",
+        "Themes",
+        "Choice of Law Issue",
+        "Court's Position"
+    ]]
     df.to_csv(gt_output_file, index=False)
-
+    """
     print("Now starting the analysis...")
     results = []
 
     # Analyze each case
-    for i, (idx, text) in enumerate(df["Original text"].iteritems(), start=1):
-        quote = df["Quote"].iloc[i - 1]
-        print(f"Now analyzing case {i}\n")
+    for idx, row in df.iterrows():
+        text = row['Original text']
+        quote = row['Quote']
+        print(f"Now analyzing case {idx}\n")
         analyzer = CaseAnalyzer(text, quote, model_name, concepts)
         analysis_results = analyzer.analyze()
 
-        results.append({"ID": df["ID"].iloc[idx], **analysis_results})
+        results.append({"ID": row['ID'], **analysis_results})
 
     results_df = pd.DataFrame(results)
 
@@ -82,6 +104,11 @@ def main_airtable(model_name):
 
     results_df.to_csv(output_file, index=False)
     print(f"Results saved to {output_file}")
+    
+    should_evaluate = questionary.select("Would you like to evaluate the results now?", choices=["Yes", "No"]).ask()
+    if should_evaluate == "Yes":
+        evaluate_results(df, output_file)
+    """
 
 
 def main():
@@ -91,7 +118,7 @@ def main():
     ).ask()
 
     model_choice = questionary.select(
-        "Select the model:", choices=["gpt-4o", "llama3.1"]
+        "Select the model:", choices=["gpt-4o", "gpt-4o-mini", "llama3.1"]
     ).ask()
 
     if data_source == "Own data":

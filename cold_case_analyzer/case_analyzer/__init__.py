@@ -1,5 +1,6 @@
 import os
 import time
+from. col_section import extract_col_section
 from .abstracts import extract_abstract
 from .relevant_facts import extract_relevant_facts
 from .rules_of_law import extract_rules_of_law
@@ -22,24 +23,28 @@ class CaseAnalyzer:
         self.model = model
         self.concepts = concepts
 
-    def get_abstract(self):
+    def get_col_section(self):
+        prompt = load_prompt("col_section.txt")
+        return extract_col_section(self.text, prompt, self.model)
+
+    def get_abstract(self, col_section):
         prompt = load_prompt("abstract.txt")
-        return extract_abstract(self.text, self.quote, prompt, self.model)
+        return extract_abstract(self.text, col_section, prompt, self.model)
 
-    def get_relevant_facts(self):
+    def get_relevant_facts(self, col_section):
         prompt = load_prompt("facts.txt")
-        return extract_relevant_facts(self.text, self.quote, prompt, self.model)
+        return extract_relevant_facts(self.text, col_section, prompt, self.model)
 
-    def get_rules_of_law(self):
+    def get_rules_of_law(self, col_section):
         prompt = load_prompt("rules.txt")
-        return extract_rules_of_law(self.text, self.quote, prompt, self.model)
+        return extract_rules_of_law(self.text, col_section, prompt, self.model)
 
-    def get_choice_of_law_issue(self):
+    def get_choice_of_law_issue(self, col_section):
         classification_prompt = load_prompt("issue_classification.txt")
         prompt = load_prompt("issue.txt")
         classification, choice_of_law_issue = extract_choice_of_law_issue(
             self.text,
-            self.quote,
+            col_section,
             classification_prompt,
             prompt,
             self.model,
@@ -47,21 +52,23 @@ class CaseAnalyzer:
         )
         return classification, choice_of_law_issue
 
-    def get_courts_position(self, coli):
+    def get_courts_position(self, coli, col_section):
         prompt = load_prompt("position.txt")
-        return extract_courts_position(self.text, self.quote, prompt, coli, self.model)
+        return extract_courts_position(self.text, col_section, prompt, coli, self.model)
 
     def analyze(self):
         """Runs all analysis methods and returns results in a dictionary."""
         start_time = time.time()
-        classification, coli = self.get_choice_of_law_issue()
+        col_section = self.get_col_section()
+        classification, coli = self.get_choice_of_law_issue(col_section)
         results = {
-            "Abstract": self.get_abstract(),
-            "Relevant Facts": self.get_relevant_facts(),
-            "Rules of Law": self.get_rules_of_law(),
-            "Choice of Law Issue Classification": classification,
-            "Choice of Law Issue": coli,
-            "Court's Position": self.get_courts_position(coli),
+            "Quote": col_section,
+            "Abstract": self.get_abstract(col_section),
+            "Relevant facts / Summary of the case": self.get_relevant_facts(col_section),
+            "PIL provisions": self.get_rules_of_law(col_section),
+            "Themes": classification,
+            "Choice of law issue": coli,
+            "Court's position": self.get_courts_position(coli, col_section),
         }
 
         end_time = time.time()
