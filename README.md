@@ -21,7 +21,7 @@ The Case Analyzer is an automated tool for analyzing court decisions concerning 
 | Abstract | Official abstract of the decision | Extraction |
 | Relevant Facts | Concise summary of case facts emphasizing PIL aspects | Extraction/Summarization |
 | PIL Provisions | Relevant legal provisions related to the choice-of-law issue | Extraction |
-| Classification | Subtopic related to party autonomy | Extraction |
+| PIL Theme | Subtopic related to party autonomy | Extraction |
 | Choice-of-law Issue | Description of the PIL problem of the case | Classification → Interpretation |
 | Court’s Position | Brief overview of the ruling regarding the PIL issue | Extraction/Interpretation |
 
@@ -91,7 +91,7 @@ An example explaining what is behind a ground truth is available [here](/cold_ca
 **PIL Provisions**
 > Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or if you are not sure, return [\"NA\"]. If any language other than English is used to cite a provision, use their English abbreviation.
 
-**Classification and Choice-of-law Issue Prompt**
+**PIL Theme and Choice-of-law Issue Prompt**
 > 1. Classification  
 Your task is to classify a court decision into one specific theme. Your response is one of the values from the "Keywords" column in the format \"keyword\". You assign the theme by finding the choice of law issue from the court decision and determining which definition fits better. THE OUTPUT HAS TO BE ONE OF THE VALUES FROM THE TABLE.
 Here is the table with all the keywords and their definitions:
@@ -111,6 +111,7 @@ Your output is a direct answer to the issue laid out here:
 
 See the results for the 3 example cases [here](/5_IPR_Nachwuchstagung/top-3.csv).  
 See the results for all 33 Swiss cases analysed [here](https://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis/case_analysis_results.xlsx).
+See the comparison between ground truths and case analyzer outputs [here](/5_IPR_Nachwuchstagung/ground_truths_output_comparison.xlsx).  
 
 ### Selected Cases
 **BGE 130 III 620**
@@ -119,7 +120,7 @@ See the results for all 33 Swiss cases analysed [here](https://choiceoflawdatave
 | **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Consideration of third-country overriding mandatory provisions under Art. 19 PILA; … | Consideration of third-country intervention norms under Art. 19 of the Swiss Private International Law Act (PILA); … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | A U.S. citizen domiciled in California, opened an account with a Swiss bank. … | A.B., residing in California, USA, filed a lawsuit against D. SA, a company based in Geneva with a branch in Zurich, … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 19 PILA | Art. 19 PILA, Art. 166 ff. PILA |
-| **Classification** | Classification | Your task is to classify a court decision into one specific theme. … | Overriding mandatory rules | Mandatory rules |
+| **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Overriding mandatory rules | Mandatory rules |
 | **Choice-of-law Issue** | Inference | Your task is to identify the main private international law issue from a court decision. … | Can national law of another jurisdiction be taken into account, as an overriding mandatory provision … | Should the court apply the overriding mandatory rules of a third country under Article 19 of the Swiss Private International Law Act … |
 | **Court's Position** | Inference | Summarize the court's position on the choice-of-law issue within the decision. … | Art. 19 PILA could, in exceptional circumstances, allow the application of overriding mandatory provisions from third countries … | In addressing the choice of law issue under Article 19 of the Swiss Private International Law Act (IPRG), the court's position is that the application … |
 
@@ -129,7 +130,7 @@ See the results for all 33 Swiss cases analysed [here](https://choiceoflawdatave
 | **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Validity of choice of law clauses (Art. 116 PILA). … | Article 116 of the Swiss Private International Law Act (PILA); admissibility of choice of law. … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | X. AG (plaintiff), represented by a FIFA agent, concluded a contract with Y. (defendant), a Greek public limited company, … | The case involves X. AG, a company based in St. Gallen, Switzerland (plaintiff), and Y., a Greek corporation (defendant). … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 116 PILA | Art. 116 PILA, Art. 129 CO |
-| **Classification** | Classification | Your task is to classify a court decision into one specific theme. … | Party autonomy, Rules of law | Non-State law (rules of law) |
+| **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Party autonomy, Rules of law | Non-State law (rules of law) |
 | **Choice-of-law Issue** | Inference | Your task is to identify the main private international law issue from a court decision. … | Can parties choose the rules of a private association (non-State law) as the governing law of their agreement? | Can parties choose non-state rules, such as those established by private organizations, as the governing law … |
 | **Court's Position** | Inference | Summarize the court's position on the choice-of-law issue within the decision. … | No, the rules of a private association (FIFA, non-State law) cannot be chosen as governing law in an international contract … | The court's position on the choice of law issue under Article 116 of the Swiss Private International Law Act (IPRG) … |
 
@@ -139,7 +140,7 @@ See the results for all 33 Swiss cases analysed [here](https://choiceoflawdatave
 | **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Change in the circumstances of attachment in continuing obligations; applicable law; change of status (Art. 117 PILA). … | Change of connecting factors in long-term contractual relationships; applicable law; change of statute (Art. 117 PILA). … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | In the present case, the question arises whether a subsequent change in the connecting factors can affect the determination of the applicable law. … | A.B. and B.B., residents of Greece, filed a lawsuit on December 19, 2003, in the District Court of Zurich against X., … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 117 PILA | Art. 117 PILA |
-| **Classification** | Classification | Your task is to classify a court decision into one specific theme. … | Absence of choice | Connecting factors |
+| **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Absence of choice | Connecting factors |
 | **Choice-of-law Issue** | Inference | Your task is to identify the main private international law issue from a court decision. … | In the absence of a choice of law agreement, should a subsequent change in the domicile of the party … | Does a change in the residence of the party providing the characteristic performance in a long-term contractual relationship … |
 | **Court's Position** | Inference | Summarize the court's position on the choice-of-law issue within the decision. … | Although this cannot be excluded in general, it is not justified in the present case because the resulting law has no connection … | In addressing the choice of law issue under Article 117 of the Swiss Private International Law Act (PILA), the court held that a change in the residence … |
 
