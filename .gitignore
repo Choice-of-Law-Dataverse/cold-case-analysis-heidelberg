@@ -164,8 +164,17 @@ cython_debug/
 # Data
 cold_case_analyzer/data/*.csv
 cold_case_analyzer/data/*.xlsx
-!cold_case_analyzer/data/raw/*
+cold_case_analyzer/data/evaluations/*
+cold_case_analyzer/data/raw/*
 !cold_case_analyzer/data/processed/*
 !cold_case_analyzer/data/concepts.xlsx
 !cold_case_analyzer/data/cases.xlsx
 !cold_case_analyzer/data/ground_truth.csv
+cold_case_analyzer/data/metric_anova_comparison.png
+
+# dvc
+.dvc/
+.dvcignore
+
+# ic2s2
+ic2s2_2025/
