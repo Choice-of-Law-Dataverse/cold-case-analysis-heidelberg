@@ -12,6 +12,7 @@ A script to build and test a Court Decision Analyzer agent that:
 import os
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.prompts import PromptTemplate
 from langchain.chat_models import init_chat_model
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
@@ -28,6 +29,7 @@ from case_analyzer import (
     extract_courts_position,
     load_prompt,
 )
+from tools.demo_tool import echo_tool
 
 # 1. Load environment
 load_dotenv()
@@ -175,9 +177,9 @@ When receiving feedback:
 memory = MemorySaver()
 agent_executor = create_react_agent(
     model,
-    tools=tools, # Pass the tools here
-    checkpointer=memory
-    #messages_modifier=system_instructions # Use messages_modifier for system prompt with ReAct agent
+    tools=[echo_tool],#tools, # Pass the tools here
+    checkpointer=memory,
+    prompt = PromptTemplate.from_template(system_instructions)
 )
 
 # 8. Define analysis and improvement functions (remain largely the same)
@@ -193,7 +195,7 @@ def analyse_court_decision(decision_text, thread_id="court-analysis-001"):
         dict: Response containing the analysis from the agent's final message
     """
     # Ensure the thread starts clean or retrieve existing state if needed
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 3}
     response = agent_executor.invoke(
         {"messages": [HumanMessage(content=decision_text)]},
         config=config
@@ -212,7 +214,7 @@ def improve_summary(feedback, thread_id="court-analysis-001"):
     Returns:
         dict: Response containing the improved analysis from the agent's final message
     """
-    config = {"configurable": {"thread_id": thread_id}}
+    config = {"configurable": {"thread_id": thread_id}, "recursion_limit": 3}
     # The agent receives the feedback as a new HumanMessage in the existing thread
     response = agent_executor.invoke(
         {"messages": [HumanMessage(content=feedback)]},
@@ -304,6 +306,10 @@ if __name__ == "__main__":
         Il s'ensuit que la cour cantonale n'avait pas à prendre en considération la loi panaméenne n° 8 et à accorder à l'intimé l'indemnité qu'il réclamait sur cette base.
         """
 
+    # Debug print to show the sample decision before sending it to analyse_court_decision
+    print("Using the following court decision text for analysis:")
+    print(sample_decision)
+
     thread_id = "court-analysis-test-002"
 
     # Initial analysis
@@ -328,12 +334,13 @@ if __name__ == "__main__":
 
     print("\n--- Improving Summary ---")
     # Example feedback
-    feedback = input(
-        "Please provide your feedback on the initial analysis (e.g., 'Add more details about the court's position'):\n"
-    )
+    demo_feedback="Add more details about the court's position."
+    #feedback = input(
+    #    "Please provide your feedback on the initial analysis (e.g., 'Add more details about the court's position'):\n"
+    #)
 
     try:
-        improved_response = improve_summary(feedback, thread_id=thread_id)
+        improved_response = improve_summary(demo_feedback, thread_id=thread_id)
         # Extract the actual content from the last AI message
         if improved_response and "messages" in improved_response and improved_response["messages"]:
              last_message = improved_response["messages"][-1]
