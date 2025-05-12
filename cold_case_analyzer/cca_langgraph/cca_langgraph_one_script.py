@@ -134,6 +134,7 @@ def col_section_feedback_node(state: AppState):
         {
             "col_section": state["quote"],
             "message": "Provde feedback or type 'continue' to proceed with the analysis.",
+            "workflow": "col_section_feedback"
         }
     )
     
@@ -167,6 +168,7 @@ def theme_feedback_node(state: AppState):
         {
             "classification": state["classification"],
             "message": "Provide feedback or type 'continue' to proceed with the analysis.",
+            "workflow": "theme_feedback"
         }
     )
     if theme_feedback.lower() == "continue":
@@ -248,19 +250,25 @@ initial_state = {
     "analysis": ""
 }
 
-"""
-if __name__ == "__main__":
-    app.invoke(initial_state, config=thread_config)
-"""
-
-
 for chunk in app.stream(initial_state, config=thread_config):
+    print(chunk.items())
     for node_id, value in chunk.items():
-        if node_id == "__interrupt__":
+        if node_id == "__interrupt__" and value[0].value['workflow'] == "col_section_feedback":
+            print("col_section_feedback detected, now waiting for user feedback...")
             while True:
-                user_feedback = input("Provide feedback or type 'continue' to proceed: ")
+                user_feedback = input(value[0].value['message'])
 
                 app.invoke(Command(resume=user_feedback), config=thread_config)
 
                 if user_feedback.lower() == "continue":
                     break
+        if node_id == "__interrupt__" and value[0].value['workflow'] == "theme_feedback":
+            print("theme_feedback detected, now waiting for user feedback...")
+            while True:
+                user_feedback = input(value[0].value['message'])
+
+                app.invoke(Command(resume=user_feedback), config=thread_config)
+
+                if user_feedback.lower() == "continue":
+                    break
+    
