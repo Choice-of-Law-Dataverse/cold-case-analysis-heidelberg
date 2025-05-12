@@ -230,7 +230,7 @@ graph.add_edge("analysis_node", "final_feedback_node")
 checkpointer = MemorySaver()
 app = graph.compile(checkpointer=checkpointer)
 
-print(app.get_graph().draw_ascii())
+#print(app.get_graph().draw_ascii())
 
 thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
 
@@ -243,6 +243,47 @@ initial_state = {
     "user_approved_theme": False,
     "analysis": ""
 }
+"""
+for chunk in app.stream(initial_state, config=thread_config):
+    for node_id, value in chunk.items():
+        if not value or not isinstance(value, list):
+            print(f"Unexptected interrupt format for value: {value}")
+            continue
+
+        interrupt_payload = value[0].value
+        workflow = interrupt_payload.get("workflow")
+        message = interrupt_payload.get("message", "Missing message in interrupt.")
+
+        if workflow == "col_section_feedback":
+            print("col_section_feedback detected, now waiting for user feedback...")
+            while True:
+                user_col_feedback = input(value[0].value['message'])
+
+                app.invoke(Command(resume=user_col_feedback), config=thread_config)
+
+                if user_col_feedback.lower() == "continue":
+                    break
+
+        elif workflow == "theme_feedback":
+            print("theme_feedback detected, now waiting for user feedback...")
+            while True:
+                user_theme_feedback = input(value[0].value['message'])
+
+                app.invoke(Command(resume=user_theme_feedback), config=thread_config)
+
+                if user_theme_feedback.lower() == "continue":
+                    pass
+
+        elif workflow == "final_feedback":
+            print("final_feedback detected, now waiting for user feedback...")
+            while True:
+                user_final_feedback = input(value[0].value['message'])
+
+                app.invoke(Command(resume=user_final_feedback), config=thread_config)
+
+                if user_final_feedback.lower() == "done":
+                    break
+"""
 
 for chunk in app.stream(initial_state, config=thread_config):
     print(chunk.items())
