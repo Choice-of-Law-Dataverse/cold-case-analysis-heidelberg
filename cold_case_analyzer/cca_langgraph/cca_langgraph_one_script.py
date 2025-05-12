@@ -100,7 +100,9 @@ class AppState(TypedDict):
     quote: str
     classification: List[str]
     user_approved_col: bool
+    col_section_feedback: str
     user_approved_theme: bool
+    theme_feedback: str
     analysis: str
 
 # --- LLM SETUP ---
@@ -137,7 +139,7 @@ def col_section_feedback_node(state: AppState):
     if col_section_feedback.lower() == "continue":
         return Command(update={col_section_feedback: state["col_section_feedback"] +["Finalised"]}, goto="theme_classification_node")
     
-    return Command(update={col_section_feedback: state["col_section_feedback"] +["Not finalised"]}, goto="col_section_node")
+    return Command(update={col_section_feedback: state["col_section_feedback"] + ["Not finalised"]}, goto="col_section_node")
 
 def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
@@ -202,29 +204,38 @@ graph.add_node("analysis_node", analysis_node)
 graph.add_node("final_feedback_node", final_feedback_node)
 
 graph.set_entry_point("input_node")
+
 graph.add_edge("input_node", "col_section_node")
 graph.add_edge("col_section_node", "col_section_feedback_node")
-
-def col_section_feedback_cond(state: AppState) -> str:
-    return "theme_classification_node" if state.get("user_approved_col") else "col_section_node"
-graph.add_conditional_edges(
-    "col_section_feedback_node",
-    col_section_feedback_cond,
-    {"theme_classification_node": "theme_classification_node", "col_section_node": "col_section_node"}
-)
 graph.add_edge("theme_classification_node", "theme_feedback_node")
-def theme_feedback_cond(state: AppState) -> str:
-    return "analysis_node" if state.get("user_approved_theme") else "theme_classification_node"
-graph.add_conditional_edges(
-    "theme_feedback_node",
-    theme_feedback_cond,
-    {"analysis_node": "analysis_node", "theme_classification_node": "theme_classification_node"}
-)
 graph.add_edge("analysis_node", "final_feedback_node")
 graph.add_edge("final_feedback_node", END)
 
-app = graph.compile()
+graph.set_finish_point("final_feedback_node")
 
-if __name__ == "__main__":
-    print("\n--- Cold Case Analyzer: Minimal LangGraph Demo ---\n")
-    app.invoke({})
+checkpointer = MemorySaver()
+app = graph.compile(checkpointer=checkpointer)
+
+print(app.get_graph().draw_ascii())
+
+thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+
+initial_state = {
+    "full_text": SAMPLE_COURT_DECISION,
+    "quote": "",
+    "classification": [],
+    "user_approved_col": False,
+    "user_approved_theme": False,
+    "analysis": ""
+}
+
+for chunk in app.stream(initial_state, config=thread_config):
+    for node_id, value in chunk.items():
+        if node_id == "__interrupt__":
+            while True:
+                user_feedback = input("Provide feedback or type 'continue' to proceed: ")
+
+                app.invoke(Command(resume=user_feedback), config=thread_config)
+
+                if user_feedback.lower() == "continue":
+                    break
