@@ -248,11 +248,12 @@ initial_state = {
     "analysis": ""
 }
 
+"""
 if __name__ == "__main__":
     app.invoke(initial_state, config=thread_config)
-
-
 """
+
+
 for chunk in app.stream(initial_state, config=thread_config):
     for node_id, value in chunk.items():
         if node_id == "__interrupt__":
@@ -263,4 +264,3 @@ for chunk in app.stream(initial_state, config=thread_config):
 
                 if user_feedback.lower() == "continue":
                     break
-"""
