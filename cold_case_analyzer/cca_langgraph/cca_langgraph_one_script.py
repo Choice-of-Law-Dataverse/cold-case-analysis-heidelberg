@@ -113,6 +113,7 @@ llm = ChatOpenAI(model="gpt-4.1-nano")
 # --- GRAPH NODES ---
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
+    print("State \n", state)
     text = state["full_text"]
     col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
     prompt = COL_SECTION_PROMPT.format(text=text)
@@ -132,6 +133,7 @@ def col_section_node(state: AppState):
 
 def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
+    print("State \n", state)
     col_section_feedback = interrupt(
         {
             "col_section": state["quote"],
@@ -141,12 +143,13 @@ def col_section_feedback_node(state: AppState):
     )
     
     if col_section_feedback.lower() == "continue":
-        return Command(update={"user_approved_col": True, col_section_feedback: state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
+        return Command(update={"user_approved_col": True, "col_section_feedback": state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
     
-    return Command(update={col_section_feedback: state["col_section_feedback"] + [col_section_feedback]}, goto="col_section_node")
+    return Command(update={"col_section_feedback": state["col_section_feedback"] + [col_section_feedback]}, goto="col_section_node")
 
 def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
+    print("State \n", state)
     text = state["full_text"]
     quote = state["quote"]
     theme_feedback = state["theme_feedback"] if "theme_feedback" in state else ["No feedback yet"]
@@ -166,6 +169,7 @@ def theme_classification_node(state: AppState):
 
 def theme_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: THEME ---")
+    print("State \n", state)
     theme_feedback = interrupt(
         {
             "classification": state["classification"],
@@ -180,6 +184,7 @@ def theme_feedback_node(state: AppState):
 
 def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
+    print("State \n", state)
     text = state["full_text"]
     quote = state["quote"]
     classification = state["classification"]
@@ -197,6 +202,7 @@ def analysis_node(state: AppState):
 
 def final_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
+    print("State \n", state)
     final_feedback = interrupt(
         {
             "analysis": state["analysis"],
@@ -286,7 +292,6 @@ for chunk in app.stream(initial_state, config=thread_config):
 """
 
 for chunk in app.stream(initial_state, config=thread_config):
-    print(chunk.items())
     for node_id, value in chunk.items():
         if node_id == "__interrupt__" and value[0].value['workflow'] == "col_section_feedback":
             print("col_section_feedback detected, now waiting for user feedback...")
