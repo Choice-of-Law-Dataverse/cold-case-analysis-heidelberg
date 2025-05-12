@@ -1,4 +1,3 @@
-import os
 import json
 from dotenv import load_dotenv
 import uuid
@@ -7,7 +6,7 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END, add_messages
 from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
-from typing import TypedDict, Optional, List, Dict
+from typing import TypedDict, Annotated, List
 
 # --- PROMPTS (minimal, inlined for this script) ---
 COL_SECTION_PROMPT = """
@@ -100,35 +99,37 @@ class AppState(TypedDict):
     quote: str
     classification: List[str]
     user_approved_col: bool
-    col_section_feedback: str
+    col_section_feedback: Annotated[List[str], add_messages]
     user_approved_theme: bool
-    theme_feedback: str
+    theme_feedback: Annotated[List[str], add_messages]
     analysis: str
 
 # --- LLM SETUP ---
 load_dotenv()
-llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
+llm = ChatOpenAI(model="gpt-4.1-nano")
 
 # --- GRAPH NODES ---
-def input_node(state):
-    print("\n--- INPUT NODE ---")
-    #text = input("Paste the full text of the court decision and press Enter (or type a short sample):\n")
-    text = SAMPLE_COURT_DECISION
-    return {"full_text": text}
-
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
     col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
     prompt = COL_SECTION_PROMPT.format(text=text)
-    response = llm.invoke([HumanMessage(content=prompt)])
-    quote = response.content.strip()
+    if col_section_feedback:
+        prompt += f"\n\nPrevious feedback: {col_section_feedback[-1]}\n"
+    #print(f"\nPrompt for CoL section extraction:\n{prompt}\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    quote = response.content
     print(f"\nExtracted Choice of Law section:\n{quote}\n")
-    return {"quote": [AIMessage(content=quote)], "col_section_feedback": col_section_feedback}
+    return {
+        "quote": [AIMessage(content=quote)],
+        "col_section_feedback": col_section_feedback
+    }
 
 def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
-    print(f"Extracted CoL Section:\n{state['quote']}\n")
     col_section_feedback = interrupt(
         {
             "col_section": state["quote"],
@@ -137,9 +138,9 @@ def col_section_feedback_node(state: AppState):
     )
     
     if col_section_feedback.lower() == "continue":
-        return Command(update={col_section_feedback: state["col_section_feedback"] +["Finalised"]}, goto="theme_classification_node")
+        return Command(update={col_section_feedback: state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
     
-    return Command(update={col_section_feedback: state["col_section_feedback"] + ["Not finalised"]}, goto="col_section_node")
+    return Command(update={col_section_feedback: state["col_section_feedback"] + [col_section_feedback]}, goto="col_section_node")
 
 def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
@@ -195,7 +196,6 @@ def final_feedback_node(state: AppState):
 
 # --- GRAPH DEFINITION ---
 graph = StateGraph(AppState)
-graph.add_node("input_node", input_node)
 graph.add_node("col_section_node", col_section_node)
 graph.add_node("col_section_feedback_node", col_section_feedback_node)
 graph.add_node("theme_classification_node", theme_classification_node)
@@ -203,9 +203,9 @@ graph.add_node("theme_feedback_node", theme_feedback_node)
 graph.add_node("analysis_node", analysis_node)
 graph.add_node("final_feedback_node", final_feedback_node)
 
-graph.set_entry_point("input_node")
+graph.set_entry_point("col_section_node")
 
-graph.add_edge("input_node", "col_section_node")
+graph.add_edge(START, "col_section_node")
 graph.add_edge("col_section_node", "col_section_feedback_node")
 graph.add_edge("theme_classification_node", "theme_feedback_node")
 graph.add_edge("analysis_node", "final_feedback_node")
@@ -220,6 +220,7 @@ print(app.get_graph().draw_ascii())
 
 thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
 
+full_text = SAMPLE_COURT_DECISION
 initial_state = {
     "full_text": SAMPLE_COURT_DECISION,
     "quote": "",
