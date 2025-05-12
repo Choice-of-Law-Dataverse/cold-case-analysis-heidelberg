@@ -138,7 +138,7 @@ def col_section_feedback_node(state: AppState):
     )
     
     if col_section_feedback.lower() == "continue":
-        return Command(update={col_section_feedback: state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
+        return Command(update={"user_approved_col": True, col_section_feedback: state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
     
     return Command(update={col_section_feedback: state["col_section_feedback"] + [col_section_feedback]}, goto="col_section_node")
 
@@ -148,7 +148,12 @@ def theme_classification_node(state: AppState):
     quote = state["quote"]
     theme_feedback = state["theme_feedback"] if "theme_feedback" in state else ["No feedback yet"]
     prompt = PIL_THEME_PROMPT.format(text=text, quote=quote, themes_table=THEMES_TABLE_STR)
-    response = llm.invoke(prompt)
+    if theme_feedback:
+        prompt += f"\n\nPrevious feedback: {theme_feedback[-1]}\n"
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
     try:
         classification = json.loads(response.content)
     except Exception:
@@ -158,7 +163,6 @@ def theme_classification_node(state: AppState):
 
 def theme_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: THEME ---")
-    print(f"Classified theme(s): {state['classification']}\n")
     theme_feedback = interrupt(
         {
             "classification": state["classification"],
@@ -168,7 +172,7 @@ def theme_feedback_node(state: AppState):
     if theme_feedback.lower() == "continue":
         return Command(update={"user_approved_theme": True}, goto="analysis_node")
     
-    return Command(update={"user_approved_theme": False}, goto="theme_classification_node")
+    return Command(update={"user_approved_theme": False, "theme_feedback": state["theme_feedback"] + [theme_feedback]}, goto="theme_classification_node")
 
 def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
@@ -207,7 +211,21 @@ graph.set_entry_point("col_section_node")
 
 graph.add_edge(START, "col_section_node")
 graph.add_edge("col_section_node", "col_section_feedback_node")
+def col_section_feedback_cond(state: AppState) -> str:
+    return "theme_classification_node" if state.get("user_approved_col") else "col_section_node"
+graph.add_conditional_edges(
+    "col_section_feedback_node",
+    col_section_feedback_cond,
+    {"theme_classification_node": "theme_classification_node", "col_section_node": "col_section_node"}
+)
 graph.add_edge("theme_classification_node", "theme_feedback_node")
+def theme_feedback_cond(state: AppState) -> str:
+    return "analysis_node" if state.get("user_approved_theme") else "theme_classification_node"
+graph.add_conditional_edges(
+    "theme_feedback_node",
+    theme_feedback_cond,
+    {"analysis_node": "analysis_node", "theme_classification_node": "theme_classification_node"}
+)
 graph.add_edge("analysis_node", "final_feedback_node")
 graph.add_edge("final_feedback_node", END)
 
@@ -230,6 +248,11 @@ initial_state = {
     "analysis": ""
 }
 
+if __name__ == "__main__":
+    app.invoke(initial_state, config=thread_config)
+
+
+"""
 for chunk in app.stream(initial_state, config=thread_config):
     for node_id, value in chunk.items():
         if node_id == "__interrupt__":
@@ -240,3 +263,4 @@ for chunk in app.stream(initial_state, config=thread_config):
 
                 if user_feedback.lower() == "continue":
                     break
+"""
