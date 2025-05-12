@@ -1,8 +1,12 @@
 import os
 import json
 from dotenv import load_dotenv
+import uuid
 from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, END
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from langgraph.graph import StateGraph, START, END, add_messages
+from langgraph.types import Command, interrupt
+from langgraph.checkpoint.memory import MemorySaver
 from typing import TypedDict, Optional, List, Dict
 
 # --- PROMPTS (minimal, inlined for this script) ---
@@ -20,15 +24,36 @@ You are a jurist and a private international law expert. Analyze the following c
 
 # --- THEMES TABLE (minimal, inlined) ---
 THEMES_TABLE_STR = """
-| Keyword                 | Definition                                                                                                |
-|-------------------------|-----------------------------------------------------------------------------------------------------------|
-| Contractual Obligations | Issues related to the choice of law for contracts, including validity, interpretation, and performance.   |
-| Non-Contractual         | Concerns torts, unjust enrichment, and other obligations not arising from a contract.                     |
-| Property Rights         | Deals with jurisdiction and applicable law for disputes over movable and immovable property.              |
-| Family Law              | Covers marriage, divorce, child custody, and other familial relationships across borders.                 |
-| Corporate Law           | Involves the law applicable to companies, including incorporation, governance, and insolvency.            |
-| Intellectual Property   | Addresses cross-border protection and enforcement of IP rights like patents, trademarks, and copyrights.  |
-| Procedure & Enforcement | Relates to international jurisdiction, recognition of foreign judgments, and procedural aspects of CoL.   |
+| Keyword                 | 
+| Refer to an instrument                 |
+| Principles (soft law)                 |
+| Conventions (hard law)                 |
+| International (commercial) contracts                 |
+| Comparative method                 |
+| Partial choice                 |
+| Dépeçage                 |
+| Modification of a  choice of law clause                 |
+| Public policy                 |
+| Mandatory rules                 |
+| Arbitral awards vs. court decisions                 |
+| Arbitrators vs. State judges                 |
+| Weaker (vulnerable) parties                 |
+| Absence of choice                 |
+| Connecting factors                 |
+| Connection                 |
+| Neutral law ("law of a 3rd country")                 |
+| Observance of a choice of law clause                 |
+| Party autonomy                 |
+| Tacit choice                 |
+| Express choice                 |
+| Incorporate rules by way of reference                 |
+| Non-State law (rules of law)                 |
+| Persuasive authority                 |
+| PIL codification                 |
+| Institutional (arbitral) rules                 |
+| Revision, legal reform                 |
+| Arbitration                 |
+| Legislation                 |
 """
 
 # SAMPLE COURT DECISION
@@ -89,26 +114,36 @@ def input_node(state):
     text = SAMPLE_COURT_DECISION
     return {"full_text": text}
 
-def col_section_node(state):
+def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
+    col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
     prompt = COL_SECTION_PROMPT.format(text=text)
-    response = llm.invoke(prompt)
+    response = llm.invoke([HumanMessage(content=prompt)])
     quote = response.content.strip()
     print(f"\nExtracted Choice of Law section:\n{quote}\n")
-    return {"quote": quote}
+    return {"quote": [AIMessage(content=quote)], "col_section_feedback": col_section_feedback}
 
-def col_section_feedback_node(state):
+def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
     print(f"Extracted CoL Section:\n{state['quote']}\n")
-    resp = input("Is this the correct Choice of Law section? (yes/no): ").strip().lower()
-    approved = resp.startswith("y")
-    return {"user_approved_col": approved}
+    col_section_feedback = interrupt(
+        {
+            "col_section": state["quote"],
+            "message": "Provde feedback or type 'continue' to proceed with the analysis.",
+        }
+    )
+    
+    if col_section_feedback.lower() == "continue":
+        return Command(update={col_section_feedback: state["col_section_feedback"] +["Finalised"]}, goto="theme_classification_node")
+    
+    return Command(update={col_section_feedback: state["col_section_feedback"] +["Not finalised"]}, goto="col_section_node")
 
-def theme_classification_node(state):
+def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
     text = state["full_text"]
     quote = state["quote"]
+    theme_feedback = state["theme_feedback"] if "theme_feedback" in state else ["No feedback yet"]
     prompt = PIL_THEME_PROMPT.format(text=text, quote=quote, themes_table=THEMES_TABLE_STR)
     response = llm.invoke(prompt)
     try:
@@ -116,16 +151,23 @@ def theme_classification_node(state):
     except Exception:
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
-    return {"classification": classification}
+    return {"classification": [AIMessage(content=classification)], "theme_feedback": theme_feedback}
 
-def theme_feedback_node(state):
+def theme_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: THEME ---")
     print(f"Classified theme(s): {state['classification']}\n")
-    resp = input("Is this/are these the correct theme(s)? (yes/no): ").strip().lower()
-    approved = resp.startswith("y")
-    return {"user_approved_theme": approved}
+    theme_feedback = interrupt(
+        {
+            "classification": state["classification"],
+            "message": "Provide feedback or type 'continue' to proceed with the analysis.",
+        }
+    )
+    if theme_feedback.lower() == "continue":
+        return Command(update={"user_approved_theme": True}, goto="analysis_node")
+    
+    return Command(update={"user_approved_theme": False}, goto="theme_classification_node")
 
-def analysis_node(state):
+def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
     text = state["full_text"]
     quote = state["quote"]
@@ -136,15 +178,18 @@ def analysis_node(state):
     print(f"\nAnalysis:\n{analysis}\n")
     return {"analysis": analysis}
 
-def final_feedback_node(state):
+def final_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
     print(f"\nFull analysis:\n{state['analysis']}\n")
-    resp = input("Are you satisfied with the analysis? (yes/no): ").strip().lower()
-    if resp.startswith("y"):
-        print("\nThank you! Analysis complete.")
-    else:
-        print("\nYou can rerun the script to refine the analysis.")
-    return {}
+    final_feedback = interrupt(
+        {
+            "analysis": state["analysis"],
+            "message": "Provide feedback or type 'done' to finish.",
+        }
+    )
+    if final_feedback.lower() == "done":
+        return Command(update={"user_approved_col": True}, goto=END)
+    return Command(update={"user_approved_col": False}, goto="analysis_node")
 
 # --- GRAPH DEFINITION ---
 graph = StateGraph(AppState)
