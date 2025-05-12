@@ -103,6 +103,8 @@ class AppState(TypedDict):
     user_approved_theme: bool
     theme_feedback: Annotated[List[str], add_messages]
     analysis: str
+    user_approved_analysis: bool
+    final_feedback: Annotated[List[str], add_messages]
 
 # --- LLM SETUP ---
 load_dotenv()
@@ -133,7 +135,7 @@ def col_section_feedback_node(state: AppState):
     col_section_feedback = interrupt(
         {
             "col_section": state["quote"],
-            "message": "Provde feedback or type 'continue' to proceed with the analysis.",
+            "message": "Provide feedback for the Choice of Law section or type 'continue' to proceed with the analysis: ",
             "workflow": "col_section_feedback"
         }
     )
@@ -167,7 +169,7 @@ def theme_feedback_node(state: AppState):
     theme_feedback = interrupt(
         {
             "classification": state["classification"],
-            "message": "Provide feedback or type 'continue' to proceed with the analysis.",
+            "message": "Provide feedback for the Private International Law classification or type 'continue' to proceed with the analysis: ",
             "workflow": "theme_feedback"
         }
     )
@@ -182,23 +184,29 @@ def analysis_node(state: AppState):
     quote = state["quote"]
     classification = state["classification"]
     prompt = ANALYSIS_PROMPT.format(text=text, quote=quote, classification=classification)
-    response = llm.invoke(prompt)
-    analysis = response.content.strip()
+    analysis_feedback = state["analysis"] if "analysis" in state else ["No feedback yet"]
+    if analysis_feedback:
+        prompt += f"\n\nPrevious feedback: {analysis_feedback[-1]}\n"
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    analysis = response.content
     print(f"\nAnalysis:\n{analysis}\n")
-    return {"analysis": analysis}
+    return {"analysis": [AIMessage(content=analysis)], "analysis_feedback": analysis_feedback}
 
 def final_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
-    print(f"\nFull analysis:\n{state['analysis']}\n")
     final_feedback = interrupt(
         {
             "analysis": state["analysis"],
-            "message": "Provide feedback or type 'done' to finish.",
+            "message": "Provide feedback for the analysis or type 'done' to finish.",
+            "workflow": "final_feedback"
         }
     )
     if final_feedback.lower() == "done":
-        return Command(update={"user_approved_col": True}, goto=END)
-    return Command(update={"user_approved_col": False}, goto="analysis_node")
+        return Command(update={"user_approved_analysis": True}, goto=END)
+    return Command(update={"user_approved_analysis": False, "final_feedback": state["final_feedback"] + [final_feedback]}, goto="analysis_node")
 
 # --- GRAPH DEFINITION ---
 graph = StateGraph(AppState)
@@ -213,25 +221,11 @@ graph.set_entry_point("col_section_node")
 
 graph.add_edge(START, "col_section_node")
 graph.add_edge("col_section_node", "col_section_feedback_node")
-def col_section_feedback_cond(state: AppState) -> str:
-    return "theme_classification_node" if state.get("user_approved_col") else "col_section_node"
-graph.add_conditional_edges(
-    "col_section_feedback_node",
-    col_section_feedback_cond,
-    {"theme_classification_node": "theme_classification_node", "col_section_node": "col_section_node"}
-)
 graph.add_edge("theme_classification_node", "theme_feedback_node")
-def theme_feedback_cond(state: AppState) -> str:
-    return "analysis_node" if state.get("user_approved_theme") else "theme_classification_node"
-graph.add_conditional_edges(
-    "theme_feedback_node",
-    theme_feedback_cond,
-    {"analysis_node": "analysis_node", "theme_classification_node": "theme_classification_node"}
-)
 graph.add_edge("analysis_node", "final_feedback_node")
-graph.add_edge("final_feedback_node", END)
+#graph.add_edge("final_feedback_node", END)
 
-graph.set_finish_point("final_feedback_node")
+#graph.set_finish_point("final_feedback_node")
 
 checkpointer = MemorySaver()
 app = graph.compile(checkpointer=checkpointer)
@@ -256,19 +250,27 @@ for chunk in app.stream(initial_state, config=thread_config):
         if node_id == "__interrupt__" and value[0].value['workflow'] == "col_section_feedback":
             print("col_section_feedback detected, now waiting for user feedback...")
             while True:
-                user_feedback = input(value[0].value['message'])
+                user_col_feedback = input(value[0].value['message'])
 
-                app.invoke(Command(resume=user_feedback), config=thread_config)
+                app.invoke(Command(resume=user_col_feedback), config=thread_config)
 
-                if user_feedback.lower() == "continue":
-                    break
+                if user_col_feedback.lower() == "continue":
+                    pass
         if node_id == "__interrupt__" and value[0].value['workflow'] == "theme_feedback":
             print("theme_feedback detected, now waiting for user feedback...")
             while True:
-                user_feedback = input(value[0].value['message'])
+                user_theme_feedback = input(value[0].value['message'])
 
-                app.invoke(Command(resume=user_feedback), config=thread_config)
+                app.invoke(Command(resume=user_theme_feedback), config=thread_config)
 
-                if user_feedback.lower() == "continue":
+                if user_theme_feedback.lower() == "continue":
+                    pass
+        if node_id == "__interrupt__" and value[0].value['workflow'] == "final_feedback":
+            print("final_feedback detected, now waiting for user feedback...")
+            while True:
+                user_final_feedback = input(value[0].value['message'])
+
+                app.invoke(Command(resume=user_final_feedback), config=thread_config)
+
+                if user_final_feedback.lower() == "done":
                     break
-    
