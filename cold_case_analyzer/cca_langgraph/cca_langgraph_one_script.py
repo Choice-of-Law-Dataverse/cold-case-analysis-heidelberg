@@ -113,7 +113,7 @@ llm = ChatOpenAI(model="gpt-4.1-nano")
 # --- GRAPH NODES ---
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
-    print("State \n", state)
+    #print("State \n", state)
     text = state["full_text"]
     col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
     prompt = COL_SECTION_PROMPT.format(text=text)
@@ -133,7 +133,7 @@ def col_section_node(state: AppState):
 
 def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
-    print("State \n", state)
+    #print("State \n", state)
     col_section_feedback = interrupt(
         {
             "col_section": state["quote"],
@@ -149,7 +149,7 @@ def col_section_feedback_node(state: AppState):
 
 def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
-    print("State \n", state)
+    #print("State \n", state)
     text = state["full_text"]
     quote = state["quote"]
     theme_feedback = state["theme_feedback"] if "theme_feedback" in state else ["No feedback yet"]
@@ -169,7 +169,7 @@ def theme_classification_node(state: AppState):
 
 def theme_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: THEME ---")
-    print("State \n", state)
+    #print("State \n", state)
     theme_feedback = interrupt(
         {
             "classification": state["classification"],
@@ -184,7 +184,7 @@ def theme_feedback_node(state: AppState):
 
 def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
-    print("State \n", state)
+    #print("State \n", state)
     text = state["full_text"]
     quote = state["quote"]
     classification = state["classification"]
@@ -202,7 +202,7 @@ def analysis_node(state: AppState):
 
 def final_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
-    print("State \n", state)
+    #print("State \n", state)
     final_feedback = interrupt(
         {
             "analysis": state["analysis"],
@@ -249,48 +249,17 @@ initial_state = {
     "user_approved_theme": False,
     "analysis": ""
 }
+
+events = app.stream(initial_state, config=thread_config, stream_mode="values")
+
+i = 1
+for event in events:
+    print(f"Event {i}\n\n")
+    i += 1
+    print(event)
+
+
 """
-for chunk in app.stream(initial_state, config=thread_config):
-    for node_id, value in chunk.items():
-        if not value or not isinstance(value, list):
-            print(f"Unexptected interrupt format for value: {value}")
-            continue
-
-        interrupt_payload = value[0].value
-        workflow = interrupt_payload.get("workflow")
-        message = interrupt_payload.get("message", "Missing message in interrupt.")
-
-        if workflow == "col_section_feedback":
-            print("col_section_feedback detected, now waiting for user feedback...")
-            while True:
-                user_col_feedback = input(value[0].value['message'])
-
-                app.invoke(Command(resume=user_col_feedback), config=thread_config)
-
-                if user_col_feedback.lower() == "continue":
-                    break
-
-        elif workflow == "theme_feedback":
-            print("theme_feedback detected, now waiting for user feedback...")
-            while True:
-                user_theme_feedback = input(value[0].value['message'])
-
-                app.invoke(Command(resume=user_theme_feedback), config=thread_config)
-
-                if user_theme_feedback.lower() == "continue":
-                    pass
-
-        elif workflow == "final_feedback":
-            print("final_feedback detected, now waiting for user feedback...")
-            while True:
-                user_final_feedback = input(value[0].value['message'])
-
-                app.invoke(Command(resume=user_final_feedback), config=thread_config)
-
-                if user_final_feedback.lower() == "done":
-                    break
-"""
-
 for chunk in app.stream(initial_state, config=thread_config):
     for node_id, value in chunk.items():
         if node_id == "__interrupt__" and value[0].value['workflow'] == "col_section_feedback":
@@ -320,3 +289,4 @@ for chunk in app.stream(initial_state, config=thread_config):
 
                 if user_final_feedback.lower() == "done":
                     break
+"""
