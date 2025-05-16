@@ -7,6 +7,7 @@ from langgraph.graph import StateGraph, START, END, add_messages
 from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
 from typing import TypedDict, Annotated, List
+from services.themes_extractor import fetch_themes_dataframe
 
 # --- PROMPTS (minimal, inlined for this script) ---
 COL_SECTION_PROMPT = """
@@ -21,39 +22,20 @@ ANALYSIS_PROMPT = """
 You are a jurist and a private international law expert. Analyze the following court decision.\nSummarize the key points in a concise paragraph, focusing on the Choice of Law section and the classified theme.\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{quote}\n\nClassified Theme(s): {classification}\n\nYour analysis:\n
 """
 
-# --- THEMES TABLE (minimal, inlined) ---
-THEMES_TABLE_STR = """
-| Keyword                 | 
-| Refer to an instrument                 |
-| Principles (soft law)                 |
-| Conventions (hard law)                 |
-| International (commercial) contracts                 |
-| Comparative method                 |
-| Partial choice                 |
-| Dépeçage                 |
-| Modification of a  choice of law clause                 |
-| Public policy                 |
-| Mandatory rules                 |
-| Arbitral awards vs. court decisions                 |
-| Arbitrators vs. State judges                 |
-| Weaker (vulnerable) parties                 |
-| Absence of choice                 |
-| Connecting factors                 |
-| Connection                 |
-| Neutral law ("law of a 3rd country")                 |
-| Observance of a choice of law clause                 |
-| Party autonomy                 |
-| Tacit choice                 |
-| Express choice                 |
-| Incorporate rules by way of reference                 |
-| Non-State law (rules of law)                 |
-| Persuasive authority                 |
-| PIL codification                 |
-| Institutional (arbitral) rules                 |
-| Revision, legal reform                 |
-| Arbitration                 |
-| Legislation                 |
-"""
+# --- THEMES TABLE (dynamic, from extractor) ---
+def format_themes_table(df):
+    if df.empty:
+        return "No themes available."
+    table_str = "| Theme | Definition |\n"
+    table_str += "|-------|------------|\n"
+    for _, row in df.iterrows():
+        theme = str(row['Theme']).replace("|", "\\|")
+        definition = str(row['Definition']).replace("|", "\\|")
+        table_str += f"| {theme} | {definition} |\n"
+    return table_str
+
+THEMES_TABLE_DF = fetch_themes_dataframe()
+THEMES_TABLE_STR = format_themes_table(THEMES_TABLE_DF)
 
 # SAMPLE COURT DECISION
 SAMPLE_COURT_DECISION = """
