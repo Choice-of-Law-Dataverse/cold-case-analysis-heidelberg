@@ -1,5 +1,5 @@
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from langgraph.graph import StateGraph, START
+from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
 
@@ -12,39 +12,40 @@ from schemas.appstate import AppState
 
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
-    #print("State \n", state)
     text = state["full_text"]
     col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
     prompt = COL_SECTION_PROMPT.format(text=text)
     if col_section_feedback:
         prompt += f"\n\nPrevious feedback: {col_section_feedback[-1]}\n"
-    #print(f"\nPrompt for CoL section extraction:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
-    quote = response.content
-    print(f"\nExtracted Choice of Law section:\n{quote}\n")
-    return {
-        "quote": [AIMessage(content=quote)],
-        "col_section_feedback": col_section_feedback
-    }
+    col_section = response.content
+    print(f"\nExtracted Choice of Law section:\n{col_section}\n")
+    # Append new col_section to col_section_feedback
+    updated_col_section_feedback = col_section_feedback + [col_section]
+    updated_state = state.copy()
+    updated_state["col_section"] = col_section
+    updated_state["col_section_feedback"] = updated_col_section_feedback
+    return updated_state
 
 def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
-    #print("State \n", state)
     col_section_feedback = interrupt(
         {
-            "col_section": state["quote"],
+            "col_section": state["col_section"],
             "message": "Provide feedback for the Choice of Law section or type 'continue' to proceed with the analysis: ",
             "workflow": "col_section_feedback"
         }
     )
-    
+    updated_state = state.copy()
     if col_section_feedback.lower() == "continue":
-        return Command(update={"user_approved_col": True, "col_section_feedback": state["col_section_feedback"] + ["Finalised"]}, goto="theme_classification_node")
-    
-    return Command(update={"col_section_feedback": state["col_section_feedback"] + [col_section_feedback]}, goto="col_section_node")
+        updated_state["user_approved_col"] = True
+        updated_state["col_section_feedback"] = updated_state.get("col_section_feedback", []) + ["Finalised"]
+        return Command(update={"user_approved_col": True, "col_section_feedback": state["col_section_feedback"] + ["Finalised"]}, goto=END)
+
+    return Command(update={"col_section_feedback": state["col_section_feedback"] + [col_section_feedback], "user_approved_col": False}, goto="col_section_node")
 
 
 # ========== GRAPH ==========
@@ -64,15 +65,18 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 # ========== RUNNER ==========
 
 def run_col_section_extraction(state: AppState):
-    for chunk in app.stream(state, config=thread_config):
+    current_state = state.copy()
+    for chunk in app.stream(current_state, config=thread_config):
         for node_id, value in chunk.items():
-            if node_id == "__interrupt__":# and value[0].value['workflow'] == "col_section_feedback":
+            if node_id == "__interrupt__":
                 print("col_section_feedback detected, now waiting for user feedback...")
                 while True:
                     user_col_feedback = input(value[0].value['message'])
-
                     if user_col_feedback.lower() == "continue":
-                        return state
-
+                        current_state["user_approved_col"] = True
+                        return current_state
                     else:
+                        current_state["col_section_feedback"] = current_state.get("col_section_feedback", []) + [user_col_feedback]
+                        current_state["user_approved_col"] = False
                         app.invoke(Command(resume=user_col_feedback), config=thread_config)
+    return current_state

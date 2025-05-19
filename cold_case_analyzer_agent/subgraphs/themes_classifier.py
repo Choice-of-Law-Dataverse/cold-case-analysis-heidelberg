@@ -15,11 +15,10 @@ from utils.themes_extractor import THEMES_TABLE_STR
 
 def theme_classification_node(state: AppState):
     print("\n--- THEME CLASSIFICATION ---")
-    #print("State \n", state)
     text = state["full_text"]
-    quote = state["quote"]
+    col_section = state["col_section"]
     theme_feedback = state["theme_feedback"] if "theme_feedback" in state else ["No feedback yet"]
-    prompt = PIL_THEME_PROMPT.format(text=text, quote=quote, themes_table=THEMES_TABLE_STR)
+    prompt = PIL_THEME_PROMPT.format(text=text, col_section=col_section, themes_table=THEMES_TABLE_STR)
     if theme_feedback:
         prompt += f"\n\nPrevious feedback: {theme_feedback[-1]}\n"
     response = llm.invoke([
@@ -31,11 +30,14 @@ def theme_classification_node(state: AppState):
     except Exception:
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
-    return {"classification": [AIMessage(content=classification)], "theme_feedback": theme_feedback}
+    updated_theme_feedback = theme_feedback + [classification]
+    updated_state = state.copy()
+    updated_state["classification"] = classification
+    updated_state["theme_feedback"] = updated_theme_feedback
+    return updated_state
 
 def theme_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: THEME ---")
-    #print("State \n", state)
     theme_feedback = interrupt(
         {
             "classification": state["classification"],
@@ -43,10 +45,13 @@ def theme_feedback_node(state: AppState):
             "workflow": "theme_feedback"
         }
     )
+    updated_state = state.copy()
     if theme_feedback.lower() == "continue":
-        return Command(update={"user_approved_theme": True}, goto="analysis_node")
-    
-    return Command(update={"user_approved_theme": False, "theme_feedback": state["theme_feedback"] + [theme_feedback]}, goto="theme_classification_node")
+        updated_state["user_approved_theme"] = True
+        return updated_state
+    updated_state["user_approved_theme"] = False
+    updated_state["theme_feedback"] = updated_state.get("theme_feedback", []) + [theme_feedback]
+    return updated_state
 
 
 # ========== GRAPH ==========
@@ -66,15 +71,18 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 # ========== RUNNER ==========
 
 def run_theme_classification(state: AppState):
-    for chunk in app.stream(state, config=thread_config):
+    current_state = state.copy()
+    for chunk in app.stream(current_state, config=thread_config):
         for node_id, value in chunk.items():
-            if node_id == "__interrupt__":# and value[0].value['workflow'] == "theme_feedback":
+            if node_id == "__interrupt__":
                 print("theme_feedback detected, now waiting for user feedback...")
                 while True:
                     user_theme_feedback = input(value[0].value['message'])
-
                     if user_theme_feedback.lower() == "continue":
-                        return state
-                    
+                        current_state["user_approved_theme"] = True
+                        return current_state
                     else:
+                        current_state["theme_feedback"] = current_state.get("theme_feedback", []) + [user_theme_feedback]
+                        current_state["user_approved_theme"] = False
                         app.invoke(Command(resume=user_theme_feedback), config=thread_config)
+    return current_state

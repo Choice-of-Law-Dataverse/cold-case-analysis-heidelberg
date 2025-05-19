@@ -12,12 +12,11 @@ from schemas.appstate import AppState
 
 def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
-    #print("State \n", state)
     text = state["full_text"]
-    quote = state["quote"]
+    col_section = state["col_section"]
     classification = state["classification"]
-    prompt = ANALYSIS_PROMPT.format(text=text, quote=quote, classification=classification)
-    analysis_feedback = state["analysis"] if "analysis" in state else ["No feedback yet"]
+    prompt = ANALYSIS_PROMPT.format(text=text, col_section=col_section, classification=classification)
+    analysis_feedback = state["analysis_feedback"] if "analysis_feedback" in state else ["No feedback yet"]
     if analysis_feedback:
         prompt += f"\n\nPrevious feedback: {analysis_feedback[-1]}\n"
     response = llm.invoke([
@@ -26,11 +25,16 @@ def analysis_node(state: AppState):
     ])
     analysis = response.content
     print(f"\nAnalysis:\n{analysis}\n")
-    return {"analysis": [AIMessage(content=analysis)], "analysis_feedback": analysis_feedback}
+    # Append new analysis to analysis_feedback
+    updated_analysis_feedback = analysis_feedback + [analysis]
+    # Update state with new analysis and feedback
+    updated_state = state.copy()
+    updated_state["analysis"] = analysis
+    updated_state["analysis_feedback"] = updated_analysis_feedback
+    return updated_state
 
 def final_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
-    #print("State \n", state)
     final_feedback = interrupt(
         {
             "analysis": state["analysis"],
@@ -38,9 +42,17 @@ def final_feedback_node(state: AppState):
             "workflow": "final_feedback"
         }
     )
+    updated_state = state.copy()
     if final_feedback.lower() == "done":
-        return Command(update={"user_approved_analysis": True}, goto=END)
-    return Command(update={"user_approved_analysis": False, "final_feedback": state["final_feedback"] + [final_feedback]}, goto="analysis_node")
+        updated_state["user_approved_analysis"] = True
+        return updated_state
+    # Append feedback to final_feedback list
+    if "final_feedback" in updated_state:
+        updated_state["final_feedback"] = updated_state["final_feedback"] + [final_feedback]
+    else:
+        updated_state["final_feedback"] = [final_feedback]
+    updated_state["user_approved_analysis"] = False
+    return updated_state
 
 
 # ========== GRAPH ==========
@@ -60,15 +72,22 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 # ========== RUNNER ==========
 
 def run_analysis(state: AppState):
-    for chunk in app.stream(state, config=thread_config):
+    current_state = state.copy()
+    for chunk in app.stream(current_state, config=thread_config):
         for node_id, value in chunk.items():
             if node_id == "__interrupt__" and value[0].value['workflow'] == "final_feedback":
                 print("final_feedback detected, now waiting for user feedback...")
                 while True:
                     final_feedback = input(value[0].value['message'])
-
-                    if final_feedback.lower() == "continue":
-                        return state
-                    
+                    if final_feedback.lower() == "done":
+                        current_state["user_approved_analysis"] = True
+                        return current_state
                     else:
+                        # Update state with new feedback
+                        if "final_feedback" in current_state:
+                            current_state["final_feedback"] = current_state["final_feedback"] + [final_feedback]
+                        else:
+                            current_state["final_feedback"] = [final_feedback]
+                        current_state["user_approved_analysis"] = False
                         app.invoke(Command(resume=final_feedback), config=thread_config)
+    return current_state

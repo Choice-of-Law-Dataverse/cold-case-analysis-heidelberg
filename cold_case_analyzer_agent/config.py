@@ -11,3 +11,4 @@ AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID")
 AIRTABLE_CONCEPTS_TABLE = os.getenv("AIRTABLE_CONCEPTS_TABLE")
 
 thread_id = str(uuid.uuid4())
+print(f"Thread ID: {thread_id}")
