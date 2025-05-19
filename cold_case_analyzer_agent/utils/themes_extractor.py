@@ -35,8 +35,16 @@ def fetch_themes_list():
     df = fetch_themes_dataframe()
     return df["Theme"].tolist()
 
-if __name__ == "__main__":
-    print("Themes DataFrame:")
-    print(fetch_themes_dataframe())
-    print("\nThemes List:")
-    print(fetch_themes_list())
+def format_themes_table(df):
+    if df.empty:
+        return "No themes available."
+    table_str = "| Theme | Definition |\n"
+    table_str += "|-------|------------|\n"
+    for _, row in df.iterrows():
+        theme = str(row['Theme']).replace("|", "\\|")
+        definition = str(row['Definition']).replace("|", "\\|")
+        table_str += f"| {theme} | {definition} |\n"
+    return table_str
+
+THEMES_TABLE_DF = fetch_themes_dataframe()
+THEMES_TABLE_STR = format_themes_table(THEMES_TABLE_DF)
