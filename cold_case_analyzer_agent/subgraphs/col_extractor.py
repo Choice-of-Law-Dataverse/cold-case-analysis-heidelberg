@@ -76,6 +76,7 @@ def run_col_section_extraction(state: AppState):
                         current_state["user_approved_col"] = True
                         return current_state
                     else:
+                        current_state["col_section"] = value[0].value['col_section']
                         current_state["col_section_feedback"] = current_state.get("col_section_feedback", []) + [user_col_feedback]
                         current_state["user_approved_col"] = False
                         app.invoke(Command(resume=user_col_feedback), config=thread_config)
