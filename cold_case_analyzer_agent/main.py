@@ -32,10 +32,10 @@ def run_cold_case_analysis(state: AppState):
     
     print("\n--- FINAL CLASSIFICATION ---")
     print(state_theme_classification.values["classification"][-1].content)
-    
-    #state_final = run_analysis(state_theme_classification)
-    # Return the final state
-    #return state_final
+
+    state_final = run_analysis(state_theme_classification.values)
+
+    return state_final
 
 initial_state = {
     "full_text": SAMPLE_COURT_DECISION,
