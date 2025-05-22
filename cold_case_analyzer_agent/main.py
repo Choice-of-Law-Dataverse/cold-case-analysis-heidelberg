@@ -17,13 +17,19 @@ def run_cold_case_analysis(state: AppState):
     """
     # Run the subgraphs in order
     state_col_section = run_col_section_extraction(state)
-    #print("\n--- STATE AFTER COL SECTION EXTRACTION ---")
-    #print(state_col_section)
+    print("\n--- STATE AFTER COL SECTION EXTRACTION ---")
+    print(json.dumps(state_col_section.values, indent=4, default=str))
+    
     print("\n--- FINAL COL SECTION ---")
     print(state_col_section.values["col_section"][-1].content)
+    
     state_theme_classification = run_theme_classification(state_col_section.values)
     print("\n--- STATE AFTER THEME CLASSIFICATION ---")
-    print(state_theme_classification)
+    if hasattr(state_theme_classification, 'values'):
+        print(json.dumps(state_theme_classification.values, indent=4, default=str))
+    else: # If it's already a dict (e.g., if run_theme_classification returns a dict directly)
+        print(json.dumps(state_theme_classification, indent=4, default=str))
+    
     #state_final = run_analysis(state_theme_classification)
     # Return the final state
     #return state_final
@@ -43,6 +49,12 @@ initial_state = {
 
 if __name__ == "__main__":
     # Run the cold case analysis workflow
-    final_state = run_cold_case_analysis(initial_state)
-    print("\n--- FINAL STATE ---")
-    print(final_state)
+    final_state_result = run_cold_case_analysis(initial_state)
+    print("\n--- FINAL STATE (PRETTY) ---")
+    if final_state_result:
+        if hasattr(final_state_result, 'values'):
+            print(json.dumps(final_state_result.values, indent=4, default=str))
+        else:
+            print(json.dumps(final_state_result, indent=4, default=str))
+    else:
+        print("Workflow did not return a final state.")
