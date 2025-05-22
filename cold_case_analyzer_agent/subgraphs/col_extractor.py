@@ -13,39 +13,46 @@ from schemas.appstate import AppState
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
-    col_section_feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
+    # rename suggestion history
+    feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
+
     prompt = COL_SECTION_PROMPT.format(text=text)
-    if col_section_feedback:
-        prompt += f"\n\nPrevious feedback: {col_section_feedback[-1]}\n"
+    if feedback:
+        prompt += f"\n\nPrevious suggestion: {feedback[-1]}\n"
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     col_section = response.content
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
-    # Append new col_section to col_section_feedback
-    updated_col_section_feedback = col_section_feedback + [col_section]
-    updated_state = state.copy()
-    updated_state["col_section"] = col_section
-    updated_state["col_section_feedback"] = updated_col_section_feedback
-    return updated_state
+
+    return {
+        "col_section": [AIMessage(content=col_section)],
+        "col_section_feedback": feedback
+    }
 
 def col_section_feedback_node(state: AppState):
     print("\n--- USER FEEDBACK: COL SECTION ---")
-    col_section_feedback = interrupt(
-        {
-            "col_section": state["col_section"],
-            "message": "Provide feedback for the Choice of Law section or type 'continue' to proceed with the analysis: ",
-            "workflow": "col_section_feedback"
-        }
-    )
-    updated_state = state.copy()
-    if col_section_feedback.lower() == "continue":
-        updated_state["user_approved_col"] = True
-        updated_state["col_section_feedback"] = updated_state.get("col_section_feedback", []) + ["Finalised"]
-        return Command(update={"user_approved_col": True, "col_section_feedback": state["col_section_feedback"] + ["Finalised"]}, goto=END)
+    user_feedback = interrupt({
+        "col_section": state["col_section"],
+        "message": "Provide feedback for the col section or type 'continue': "
+    })
+    if user_feedback.lower() == "continue":
+        return Command(
+            update={
+                "user_approved_col": True,
+                "col_section_feedback": state["col_section_feedback"] + ["Finalised"]
+            },
+            goto=END
+        )
 
-    return Command(update={"col_section_feedback": state["col_section_feedback"] + [col_section_feedback], "user_approved_col": False}, goto="col_section_node")
+    return Command(
+        update={
+            "user_approved_col": False,
+            "col_section_feedback": state["col_section_feedback"] + [user_feedback]
+        },
+        goto="col_section_node"
+    )
 
 
 # ========== GRAPH ==========
@@ -68,30 +75,38 @@ def run_col_section_extraction(state: AppState):
     current_state = state.copy()
 
     for chunk in app.stream(current_state, config=thread_config):
-        # 1) merge normal‐node outputs into state
+        # merge output from col_section_node
         if "col_section_node" in chunk:
-            output = chunk["col_section_node"]
-            if isinstance(output, dict):
-                current_state.update(output)
+            out = chunk["col_section_node"]
+            if isinstance(out, dict):
+                current_state.update(out)
 
-        # 2) handle any interrupt (user feedback)
+        # merge output from feedback node (Command or dict)
+        if "col_section_feedback_node" in chunk:
+            cmd_or_dict = chunk["col_section_feedback_node"]
+            if isinstance(cmd_or_dict, Command):
+                current_state.update(cmd_or_dict.update)
+                if cmd_or_dict.goto == END:
+                    return current_state
+                # user wants another extraction pass → recurse
+                return run_col_section_extraction(current_state)
+
+            # (if you ever return a dict here instead of a Command…)
+            elif isinstance(cmd_or_dict, dict):
+                current_state.update(cmd_or_dict)
+
+        # legacy __interrupt__ handler (optional if you still need it)
         if "__interrupt__" in chunk:
             payload = chunk["__interrupt__"][0].value
-            print("col_section_feedback detected, now waiting for user feedback...")
+            print("waiting for user feedback…")
             while True:
                 user_input = input(payload["message"])
-
-                # record feedback
-                current_state.setdefault("col_section_feedback", [])
                 if user_input.lower() == "continue":
-                    current_state["col_section_feedback"].append("Finalised")
-                    current_state["user_approved_col"] = True
-                    return current_state
-                else:
-                    current_state["col_section_feedback"].append(user_input)
-                    current_state["user_approved_col"] = False
-                    # resume the graph with this feedback
                     app.invoke(Command(resume=user_input), config=thread_config)
-                    continue
-
+                    final_updated_state = app.get_state(config=thread_config)
+                    return final_updated_state
+                else:
+                    current_state.setdefault("col_section_feedback", []).append(user_input)
+                    current_state["user_approved_col"] = False
+                    app.invoke(Command(resume=user_input), config=thread_config)
     return current_state
