@@ -30,6 +30,9 @@ def run_cold_case_analysis(state: AppState):
     else: # If it's already a dict (e.g., if run_theme_classification returns a dict directly)
         print(json.dumps(state_theme_classification, indent=4, default=str))
     
+    print("\n--- FINAL CLASSIFICATION ---")
+    print(state_theme_classification.values["classification"][-1].content)
+    
     #state_final = run_analysis(state_theme_classification)
     # Return the final state
     #return state_final
