@@ -17,12 +17,12 @@ def run_cold_case_analysis(state: AppState):
     state_col_section = run_col_section_extraction(state)
     print("\n--- STATE AFTER COL SECTION EXTRACTION ---")
     print(state_col_section)
-    state_theme_classification = run_theme_classification(state_col_section)
-    print("\n--- STATE AFTER THEME CLASSIFICATION ---")
-    print(state_theme_classification)
-    state_final = run_analysis(state_theme_classification)
+    #state_theme_classification = run_theme_classification(state_col_section)
+    #print("\n--- STATE AFTER THEME CLASSIFICATION ---")
+    #print(state_theme_classification)
+    #state_final = run_analysis(state_theme_classification)
     # Return the final state
-    return state_final
+    #return state_final
 
 initial_state = {
     "full_text": SAMPLE_COURT_DECISION,
