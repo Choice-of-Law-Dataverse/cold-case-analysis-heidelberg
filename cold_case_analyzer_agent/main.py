@@ -1,3 +1,5 @@
+import json
+
 from subgraphs.col_extractor import run_col_section_extraction
 from subgraphs.themes_classifier import run_theme_classification
 from subgraphs.case_analyzer import run_analysis
@@ -19,7 +21,7 @@ def run_cold_case_analysis(state: AppState):
     #print(state_col_section)
     print("\n--- FINAL COL SECTION ---")
     print(state_col_section.values["col_section"][-1].content)
-    state_theme_classification = run_theme_classification(state_col_section)
+    state_theme_classification = run_theme_classification(state_col_section.values)
     print("\n--- STATE AFTER THEME CLASSIFICATION ---")
     print(state_theme_classification)
     #state_final = run_analysis(state_theme_classification)
