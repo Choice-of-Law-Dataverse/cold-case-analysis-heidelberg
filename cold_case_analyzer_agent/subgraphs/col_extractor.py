@@ -66,56 +66,32 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 
 def run_col_section_extraction(state: AppState):
     current_state = state.copy()
-    for chunk in app.stream(current_state, config=thread_config):
-        for node_id, value in chunk.items():
-            if node_id == "__interrupt__":
-                print("col_section_feedback detected, now waiting for user feedback...")
-                while True:
-                    user_col_feedback = input(value[0].value['message'])
-                    if user_col_feedback.lower() == "continue":
-                        current_state["user_approved_col"] = True
-                        return current_state
-                    else:
-                        current_state["col_section"] = value[0].value['col_section']
-                        current_state["col_section_feedback"] = current_state.get("col_section_feedback", []) + [user_col_feedback]
-                        current_state["user_approved_col"] = False
-                        app.invoke(Command(resume=user_col_feedback), config=thread_config)
-    return current_state
-
-"""
-def run_col_section_extraction(state: AppState):
-    current_state = state.copy()
 
     for chunk in app.stream(current_state, config=thread_config):
-        # 1) handle user-feedback interrupts
-        if "__interrupt__" in chunk:
-            interrupt_payload = chunk["__interrupt__"][0].value
-            print("col_section_feedback detected, now waiting for user feedback...")
-            user_input = input(interrupt_payload["message"])
-
-            # record feedback
-            current_state.setdefault("col_section_feedback", [])
-            if user_input.lower() == "continue":
-                current_state["col_section_feedback"].append("Finalised")
-                current_state["user_approved_col"] = True
-            else:
-                current_state["col_section_feedback"].append(user_input)
-                current_state["user_approved_col"] = False
-
-            # resume the graph with that input
-            app.invoke(Command(resume=user_input), config=thread_config)
-            continue
-
-        # 2) handle normal node output
+        # 1) merge normal‐node outputs into state
         if "col_section_node" in chunk:
             output = chunk["col_section_node"]
-            # the compiled graph now returns a dict here
             if isinstance(output, dict):
                 current_state.update(output)
-            # (if you ever get a list of MessageOutputs, you’d do:)
-            # elif isinstance(output, list):
-            #     current_state.update(output[0].value)
-            continue
+
+        # 2) handle any interrupt (user feedback)
+        if "__interrupt__" in chunk:
+            payload = chunk["__interrupt__"][0].value
+            print("col_section_feedback detected, now waiting for user feedback...")
+            while True:
+                user_input = input(payload["message"])
+
+                # record feedback
+                current_state.setdefault("col_section_feedback", [])
+                if user_input.lower() == "continue":
+                    current_state["col_section_feedback"].append("Finalised")
+                    current_state["user_approved_col"] = True
+                    return current_state
+                else:
+                    current_state["col_section_feedback"].append(user_input)
+                    current_state["user_approved_col"] = False
+                    # resume the graph with this feedback
+                    app.invoke(Command(resume=user_input), config=thread_config)
+                    continue
 
     return current_state
-"""
