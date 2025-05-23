@@ -47,13 +47,21 @@ def col_section_node(state: AppState):
     col_section = response.content
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
-    # ===== ADD LAST STATMENT TO PROMPT =====
-    #statement = "Here is the section of the Court Decision containing Choice of Law related information:"
-    #prompt += f"\n\n{statement}\n"
+    # Prompt user for evaluation on first extraction
+    existing_score = state.get("col_section_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the extracted Choice of Law section (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
 
     return {
         "col_section": [AIMessage(content=col_section)],
-        "col_section_feedback": feedback
+        "col_section_feedback": feedback,
+        "col_section_evaluation": score
     }
 
 def col_section_feedback_node(state: AppState):

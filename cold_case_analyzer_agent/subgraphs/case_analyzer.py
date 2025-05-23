@@ -41,16 +41,26 @@ def abstract_node(state: AppState):
     text = state["full_text"]
     # ABSTRACT_PROMPT only needs {text}
     prompt = ABSTRACT_PROMPT.format(text=text)
-    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     abstract = response.content
     print(f"\nAbstract:\n{abstract}\n")
-    
+    # Prompt user for evaluation on first abstract
+    existing_score = state.get("abstract_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the abstract (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+     
     return {
-        "abstract": [AIMessage(content=abstract)]
+        "abstract": [AIMessage(content=abstract)],
+        "abstract_evaluation": score
     }
 
 # ===== RELEVANT FACTS =====
@@ -58,18 +68,27 @@ def facts_node(state: AppState):
     print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
-    
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
-    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     facts = response.content
     print(f"\nRelevant Facts:\n{facts}\n")
-    
+    # Prompt user for evaluation on first relevant facts
+    existing_score = state.get("relevant_facts_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the relevant facts summary (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+     
     return {
-        "relevant_facts": [AIMessage(content=facts)]
+        "relevant_facts": [AIMessage(content=facts)],
+        "relevant_facts_evaluation": score
     }
 
 # ===== PIL PROVISIONS =====
@@ -79,7 +98,6 @@ def pil_provisions_node(state: AppState):
     col_section_content = _get_last_message_content(state.get("col_section"))
 
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
-    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
@@ -88,12 +106,22 @@ def pil_provisions_node(state: AppState):
         pil_provisions = json.loads(response.content)
     except json.JSONDecodeError:
         print(f"Warning: Could not parse PIL provisions as JSON. Content: {response.content}")
-        pil_provisions = [response.content.strip()] # Fallback to list with raw content
-        
+        pil_provisions = [response.content.strip()]
     print(f"\nPIL Provisions:\n{pil_provisions}\n")
-    
+    # Prompt user for evaluation on first PIL provisions
+    existing_score = state.get("pil_provisions_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the PIL provisions list (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+     
     return {
-        "pil_provisions": [AIMessage(content=pil_provisions)]
+        "pil_provisions": [AIMessage(content=pil_provisions)],
+        "pil_provisions_evaluation": score
     }
 
 # ===== CHOICE OF LAW ISSUE =====
@@ -101,7 +129,6 @@ def col_issue_node(state: AppState):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
-    # Extract the list of theme strings from the last classification AIMessage
     classification_messages = state.get("classification", [])
     themes_list: list[str] = []
     if classification_messages:
@@ -112,7 +139,6 @@ def col_issue_node(state: AppState):
                 themes_list = content_value
             elif isinstance(content_value, str) and content_value:
                 themes_list = [content_value]
-    # Filter definitions by the extracted theme names
     classification_definitions = filter_themes_by_list(themes_list)
 
     prompt = COL_ISSUE_PROMPT.format(
@@ -120,16 +146,26 @@ def col_issue_node(state: AppState):
         col_section=col_section_content, 
         classification_definitions=classification_definitions
     )
-    print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     col_issue = response.content
     print(f"\nChoice of Law Issue:\n{col_issue}\n")
-    
+    # Prompt user for evaluation on first choice of law issue extraction
+    existing_score = state.get("col_issue_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the choice of law issue question (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+     
     return {
-        "col_issue": [AIMessage(content=col_issue)]
+        "col_issue": [AIMessage(content=col_issue)],
+        "col_issue_evaluation": score
     }
 
 # ===== COURT'S POSITION =====
@@ -144,16 +180,26 @@ def courts_position_node(state: AppState):
         col_section=col_section_content, 
         classification=classification_content
     )
-    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     courts_position = response.content
     print(f"\nCourt's Position:\n{courts_position}\n")
-    
+    # Prompt user for evaluation on first court's position summary
+    existing_score = state.get("courts_position_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the court's position summary (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+
     return {
-        "courts_position": [AIMessage(content=courts_position)]
+        "courts_position": [AIMessage(content=courts_position)],
+        "courts_position_evaluation": score
     }
 
 

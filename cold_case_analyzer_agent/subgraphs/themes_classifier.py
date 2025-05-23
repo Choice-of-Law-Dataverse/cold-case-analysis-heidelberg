@@ -73,9 +73,21 @@ def theme_classification_node(state: AppState):
     except Exception:
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
+    # Prompt user for evaluation on first classification
+    existing_score = state.get("theme_evaluation", 101)
+    if existing_score > 100:
+        try:
+            score = int(input("Please evaluate the theme classification (0-100): "))
+        except ValueError:
+            score = 0
+        score = max(0, min(100, score))
+    else:
+        score = existing_score
+    #print(f"Theme classification score: {score}")
     return {
         "classification": [AIMessage(content=classification)],
-        "theme_feedback": theme_feedback
+        "theme_feedback": theme_feedback,
+        "theme_evaluation": score
     }
 
 def theme_feedback_node(state: AppState):
