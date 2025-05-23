@@ -110,14 +110,14 @@ Your output is a direct answer to the issue laid out here:
 ## Results
 
 See the results for the 3 example cases [here](/5_IPR_Nachwuchstagung/top-3.csv).  
-See the results for all 33 Swiss cases analysed [here](https://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis/case_analysis_results.xlsx).  
+See the results for all 33 Swiss cases analyzed [here](https://choiceoflawdataverse.blob.core.windows.net/cold-case-analysis/case_analysis_results.xlsx).  
 See the full comparison between ground truths and case analyzer outputs [here](/5_IPR_Nachwuchstagung/ground_truths_output_comparison.xlsx).  
 
 ### Selected Cases
 **BGE 130 III 620**
 | **Category** | **LLM Task** | **Prompt** | **Ground Truth** | **Case Analyzer Output** |
 | :-- | :-- | :-- | :-- | :-- |
-| **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Consideration of third-country overriding mandatory provisions under Art. 19 PILA; … | Consideration of third-country intervention norms under Art. 19 of the Swiss Private International Law Act (PILA); … |
+| **Abstract** | Information Extraction | Your task is to extract the abstract from a court decision. … | Consideration of third-country overriding mandatory provisions under Art. 19 PILA; … | Consideration of third-country intervention norms under Art. 19 of the Swiss Private International Law Act (PILA); … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | A U.S. citizen domiciled in California, opened an account with a Swiss bank. … | A.B., residing in California, USA, filed a lawsuit against D. SA, a company based in Geneva with a branch in Zurich, … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 19 PILA | Art. 19 PILA, Art. 166 ff. PILA |
 | **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Overriding mandatory rules | Mandatory rules |
@@ -127,7 +127,7 @@ See the full comparison between ground truths and case analyzer outputs [here](/
 **BGE 132 III 285**
 | **Category** | **LLM Task** | **Prompt** | **Ground Truth** | **Case Analyzer Output** |
 | :-- | :-- | :-- | :-- | :-- |
-| **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Validity of choice of law clauses (Art. 116 PILA). … | Article 116 of the Swiss Private International Law Act (PILA); admissibility of choice of law. … |
+| **Abstract** | Information Extraction | Your task is to extract the abstract from a court decision. … | Validity of choice of law clauses (Art. 116 PILA). … | Article 116 of the Swiss Private International Law Act (PILA); admissibility of choice of law. … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | X. AG (plaintiff), represented by a FIFA agent, concluded a contract with Y. (defendant), a Greek public limited company, … | The case involves X. AG, a company based in St. Gallen, Switzerland (plaintiff), and Y., a Greek corporation (defendant). … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 116 PILA | Art. 116 PILA, Art. 129 CO |
 | **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Party autonomy, Rules of law | Non-State law (rules of law) |
@@ -137,7 +137,7 @@ See the full comparison between ground truths and case analyzer outputs [here](/
 **BGE 133 III 90**
 | **Category** | **LLM Task** | **Prompt** | **Ground Truth** | **Case Analyzer Output** |
 | :-- | :-- | :-- | :-- | :-- |
-| **Abstract** | Information Extraction | Your task is to extract the actract from a court decision. … | Change in the circumstances of attachment in continuing obligations; applicable law; change of status (Art. 117 PILA). … | Change of connecting factors in long-term contractual relationships; applicable law; change of statute (Art. 117 PILA). … |
+| **Abstract** | Information Extraction | Your task is to extract the abstract from a court decision. … | Change in the circumstances of attachment in continuing obligations; applicable law; change of status (Art. 117 PILA). … | Change of connecting factors in long-term contractual relationships; applicable law; change of statute (Art. 117 PILA). … |
 | **Relevant Facts** | Summarization | Your task is to extract and summarise the relevant facts from a court decision. … | In the present case, the question arises whether a subsequent change in the connecting factors can affect the determination of the applicable law. … | A.B. and B.B., residents of Greece, filed a lawsuit on December 19, 2003, in the District Court of Zurich against X., … |
 | **PIL Provision** | Information Extraction | Your task is to extract rules related to choice of law cited in a court decision. … | Art. 117 PILA | Art. 117 PILA |
 | **PIL Theme** | Classification | Your task is to classify a court decision into one specific theme. … | Absence of choice | Connecting factors |
