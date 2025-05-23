@@ -4,14 +4,15 @@ from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
 
 from config import llm, thread_id
-from prompts.analysis_prompt import ANALYSIS_PROMPT
+from prompts.analysis_prompts import ABSTRACT_PROMPT, FACTS_PROMPT, PIL_PROVISIONS_PROMPT, COL_ISSUE_PROMPT, COURTS_POSITION_PROMPT
 from schemas.appstate import AppState
 
 
 # ========== NODES ==========
 
-def analysis_node(state: AppState):
-    print("\n--- ANALYSIS ---")
+# ===== ABSTRACT =====
+def abstract_node(state: AppState):
+    print("\n--- ABSTRACT ---")
     text = state["full_text"]
     col_section_messages = state.get("col_section", [])
     col_section = ""  # Default if not found or empty
@@ -25,47 +26,27 @@ def analysis_node(state: AppState):
         last_message = classification_messages[-1]
         if hasattr(last_message, 'content'):
             classification = last_message.content
-    analysis_feedback = state["analysis_feedback"] if "analysis_feedback" in state else ["No feedback yet"]
     prompt = ANALYSIS_PROMPT.format(text=text, col_section=col_section, classification=classification)
-    if analysis_feedback:
-        prompt += f"\n\nPrevious feedback: {analysis_feedback[-1].value}\n"
     print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
-    analysis = response.content
-    print(f"\nAnalysis:\n{analysis}\n")
+    abstract = response.content
+    print(f"\nAbstract:\n{abstract}\n")
     
     return {
-        "analysis": [AIMessage(content=analysis)],
-        "analysis_feedback": analysis_feedback
+        "abstract": [AIMessage(content=abstract)]
     }
 
-def analysis_feedback_node(state: AppState):
-    print("\n--- USER FEEDBACK: FINAL ANALYSIS ---")
-    analysis_feedback = interrupt(
-        {
-            "analysis": state["analysis"],
-            "message": "Provide feedback for the analysis or type 'done' to finish: "
-        }
-    )
-    if analysis_feedback.lower() == "done":
-        return Command(
-            update={
-                "user_approved_analysis": True,
-                "analysis_feedback": state["analysis_feedback"] + ["Finalised"]
-            },
-            goto=END
-        )
-    
-    return Command(
-        update={
-            "user_approved_analysis": False,
-            "analysis_feedback": state["analysis_feedback"] + [analysis_feedback]
-        },
-        goto="analysis_node"
-    )
+# ===== RELEVANT FACTS =====
+
+# ===== PIL PROVISIONS =====
+
+# ===== CHOICE OF LAW ISSUE =====
+
+# ===== COURT'S POSITION =====
+
 
 # ========== GRAPH ==========
 
