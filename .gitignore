@@ -165,6 +165,7 @@ cython_debug/
 cold_case_analyzer/data/*.csv
 cold_case_analyzer/data/*.xlsx
 cold_case_analyzer/data/evaluations/*
+cold_case_analyzer/data/ic2s2/*
 cold_case_analyzer/data/raw/*
 !cold_case_analyzer/data/processed/*
 !cold_case_analyzer/data/concepts.xlsx
@@ -178,3 +179,8 @@ cold_case_analyzer/data/metric_anova_comparison.png
 
 # ic2s2
 ic2s2_2025/
+
+# langgraph dependencies
+agent_langgraph_basics-Dateien/
+agent_langgraph_basics.htm
+
