@@ -55,9 +55,6 @@ if __name__ == "__main__":
     final_state_result = run_cold_case_analysis(initial_state)
     print("\n--- FINAL STATE (PRETTY) ---")
     if final_state_result:
-        if hasattr(final_state_result, 'values'):
-            print(json.dumps(final_state_result.values, indent=4, default=str))
-        else:
-            print(json.dumps(final_state_result, indent=4, default=str))
+        print(json.dumps(final_state_result, indent=4, default=str))
     else:
         print("Workflow did not return a final state.")
