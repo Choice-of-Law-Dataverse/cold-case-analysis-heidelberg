@@ -41,13 +41,22 @@ initial_state = {
     "full_text": SAMPLE_COURT_DECISION,
     "col_section": "",
     "col_section_feedback": [],
+    "col_section_evaluation": 101,
     "user_approved_col": False,
     "classification": [],
     "theme_feedback": [],
+    "theme_evaluation": 101,
     "user_approved_theme": False,
-    "analysis": "",
-    "analysis_feedback": [],
-    "user_approved_analysis": False,
+    "abstract": "",
+    "abstract_evaluation": 101,
+    "relevant_facts": "",
+    "relevant_facts_evaluation": 101,
+    "pil_provisions": "",
+    "pil_provisions_evaluation": 101,
+    "col_issue": "",
+    "col_issue_evaluation": 101,
+    "courts_position": "",
+    "courts_position_evaluation": 101
 }
 
 if __name__ == "__main__":
