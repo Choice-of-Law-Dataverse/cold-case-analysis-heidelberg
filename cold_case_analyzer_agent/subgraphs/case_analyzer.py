@@ -101,16 +101,19 @@ def col_issue_node(state: AppState):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
-    # Assuming classification is a string in AppState
-    classification = state["classification"] if "classification" in state else []
-    if classification and isinstance(classification, list) and len(classification) > 0:
-        classification_str = str(classification)
-        match = re.search(r"content='([^']*)'", classification_str)
-        if match:
-            classification_list = match.group(1)
-            classification = json.loads(classification_list)
-    print(f"Classification: {classification}") # Debugging line
-    classification_definitions = filter_themes_by_list(classification)
+    # Extract the list of theme strings from the last classification AIMessage
+    classification_messages = state.get("classification", [])
+    themes_list: list[str] = []
+    if classification_messages:
+        last_msg = classification_messages[-1]
+        if hasattr(last_msg, 'content'):
+            content_value = last_msg.content
+            if isinstance(content_value, list):
+                themes_list = content_value
+            elif isinstance(content_value, str) and content_value:
+                themes_list = [content_value]
+    # Filter definitions by the extracted theme names
+    classification_definitions = filter_themes_by_list(themes_list)
 
     prompt = COL_ISSUE_PROMPT.format(
         text=text, 
