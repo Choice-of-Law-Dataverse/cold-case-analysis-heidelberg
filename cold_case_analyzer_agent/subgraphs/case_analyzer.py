@@ -100,7 +100,7 @@ def run_analysis(state: AppState):
                 current_state.update(cmd_or_dict.update)
                 if cmd_or_dict.goto == END:
                     return current_state
-                return run_col_section_extraction(current_state)
+                return run_analysis(current_state)
             
             elif isinstance(cmd_or_dict, dict):
                 current_state.update(cmd_or_dict)
