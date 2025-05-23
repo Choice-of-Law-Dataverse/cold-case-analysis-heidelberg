@@ -17,21 +17,21 @@ def run_cold_case_analysis(state: AppState):
     """
     # Run the subgraphs in order
     state_col_section = run_col_section_extraction(state)
-    print("\n--- STATE AFTER COL SECTION EXTRACTION ---")
-    print(json.dumps(state_col_section.values, indent=4, default=str))
+    #print("\n--- STATE AFTER COL SECTION EXTRACTION ---")
+    #print(json.dumps(state_col_section.values, indent=4, default=str))
     
-    print("\n--- FINAL COL SECTION ---")
-    print(state_col_section.values["col_section"][-1].content)
+    #print("\n--- FINAL COL SECTION ---")
+    #print(state_col_section.values["col_section"][-1].content)
     
     state_theme_classification = run_theme_classification(state_col_section.values)
-    print("\n--- STATE AFTER THEME CLASSIFICATION ---")
-    if hasattr(state_theme_classification, 'values'):
-        print(json.dumps(state_theme_classification.values, indent=4, default=str))
-    else: # If it's already a dict (e.g., if run_theme_classification returns a dict directly)
-        print(json.dumps(state_theme_classification, indent=4, default=str))
+    #print("\n--- STATE AFTER THEME CLASSIFICATION ---")
+    #if hasattr(state_theme_classification, 'values'):
+        #print(json.dumps(state_theme_classification.values, indent=4, default=str))
+    #else: # If it's already a dict (e.g., if run_theme_classification returns a dict directly)
+        #print(json.dumps(state_theme_classification, indent=4, default=str))
     
-    print("\n--- FINAL CLASSIFICATION ---")
-    print(state_theme_classification.values["classification"][-1].content)
+    #print("\n--- FINAL CLASSIFICATION ---")
+    #print(state_theme_classification.values["classification"][-1].content)
 
     state_final = run_analysis(state_theme_classification.values)
 

@@ -29,7 +29,7 @@ def theme_classification_node(state: AppState):
     # ===== ADD EXISTING CLASSIFICATION TO PROMPT =====
     previous_classification_text = ""
     existing_classification_messages = state.get("classification")
-    print(f"Existing classification messages: {existing_classification_messages}") # Kept for debugging as in original
+    #print(f"Existing classification messages: {existing_classification_messages}") # Kept for debugging as in original
     
     if existing_classification_messages and isinstance(existing_classification_messages, list) and len(existing_classification_messages) > 0:
         last_classification_message = existing_classification_messages[-1]
@@ -63,7 +63,7 @@ def theme_classification_node(state: AppState):
         elif feedback_text_to_add == "No feedback yet" and not (existing_classification_messages and previous_classification_text):
             prompt += f"\n\nFeedback: {feedback_text_to_add}\n"
 
-    print(f"\nPrompting LLM with:\n{prompt}\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)

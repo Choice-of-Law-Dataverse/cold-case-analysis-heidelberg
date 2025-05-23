@@ -39,7 +39,7 @@ def col_section_node(state: AppState):
         else:
             previous_suggestion_text = last_feedback_item_str
         prompt += f"\n\nFeedback: {previous_suggestion_text}\n"
-    print(f"\nPrompting LLM with:\n{prompt}\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)

@@ -1,4 +1,6 @@
-import json # Added for PIL provisions node
+import json
+import re
+
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
@@ -35,17 +37,17 @@ def _get_classification_content_str(messages: list | None) -> str:
 
 # ===== ABSTRACT =====
 def abstract_node(state: AppState):
-    print("\\n--- ABSTRACT ---")
+    print("\n--- ABSTRACT ---")
     text = state["full_text"]
     # ABSTRACT_PROMPT only needs {text}
     prompt = ABSTRACT_PROMPT.format(text=text)
-    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     abstract = response.content
-    print(f"\\nAbstract:\\n{abstract}\\n")
+    print(f"\nAbstract:\n{abstract}\n")
     
     return {
         "abstract": [AIMessage(content=abstract)]
@@ -53,18 +55,18 @@ def abstract_node(state: AppState):
 
 # ===== RELEVANT FACTS =====
 def facts_node(state: AppState):
-    print("\\n--- RELEVANT FACTS ---")
+    print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
     
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
-    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     facts = response.content
-    print(f"\\nRelevant Facts:\\n{facts}\\n")
+    print(f"\nRelevant Facts:\n{facts}\n")
     
     return {
         "relevant_facts": [AIMessage(content=facts)]
@@ -72,12 +74,12 @@ def facts_node(state: AppState):
 
 # ===== PIL PROVISIONS =====
 def pil_provisions_node(state: AppState):
-    print("\\n--- PIL PROVISIONS ---")
+    print("\n--- PIL PROVISIONS ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
 
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
-    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
@@ -88,7 +90,7 @@ def pil_provisions_node(state: AppState):
         print(f"Warning: Could not parse PIL provisions as JSON. Content: {response.content}")
         pil_provisions = [response.content.strip()] # Fallback to list with raw content
         
-    print(f"\\nPIL Provisions:\\n{pil_provisions}\\n")
+    print(f"\nPIL Provisions:\n{pil_provisions}\n")
     
     return {
         "pil_provisions": [AIMessage(content=pil_provisions)]
@@ -96,13 +98,18 @@ def pil_provisions_node(state: AppState):
 
 # ===== CHOICE OF LAW ISSUE =====
 def col_issue_node(state: AppState):
-    print("\\n--- CHOICE OF LAW ISSUE ---")
+    print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
     # Assuming classification is a string in AppState
-    classification = state.get("classification_definitions", "")
-    if not isinstance(classification, str): # Ensure it's a string for formatting
-        classification = str(classification)
+    classification = state["classification"] if "classification" in state else []
+    if classification and isinstance(classification, list) and len(classification) > 0:
+        classification_str = str(classification)
+        match = re.search(r"content='([^']*)'", classification_str)
+        if match:
+            classification_list = match.group(1)
+            classification = json.loads(classification_list)
+    print(f"Classification: {classification}") # Debugging line
     classification_definitions = filter_themes_by_list(classification)
 
     prompt = COL_ISSUE_PROMPT.format(
@@ -110,13 +117,13 @@ def col_issue_node(state: AppState):
         col_section=col_section_content, 
         classification_definitions=classification_definitions
     )
-    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     col_issue = response.content
-    print(f"\\nChoice of Law Issue:\\n{col_issue}\\n")
+    print(f"\nChoice of Law Issue:\n{col_issue}\n")
     
     return {
         "col_issue": [AIMessage(content=col_issue)]
@@ -124,7 +131,7 @@ def col_issue_node(state: AppState):
 
 # ===== COURT'S POSITION =====
 def courts_position_node(state: AppState):
-    print("\\n--- COURT'S POSITION ---")
+    print("\n--- COURT'S POSITION ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
     classification_content = _get_classification_content_str(state.get("classification"))
@@ -134,13 +141,13 @@ def courts_position_node(state: AppState):
         col_section=col_section_content, 
         classification=classification_content
     )
-    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     courts_position = response.content
-    print(f"\\nCourt's Position:\\n{courts_position}\\n")
+    print(f"\nCourt's Position:\n{courts_position}\n")
     
     return {
         "courts_position": [AIMessage(content=courts_position)]

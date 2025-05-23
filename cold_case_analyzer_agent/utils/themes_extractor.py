@@ -42,6 +42,8 @@ def filter_themes_by_list(themes_list: list[str]) -> pd.DataFrame:
         A pandas DataFrame containing only the rows where the 'Theme'
         matches the themes in the input list.
     """
+    print("\n\n--- FILTERING THEMES ---")
+    print(f"Input themes list: {themes_list}\n")
     df = fetch_themes_dataframe()
     if df.empty or not themes_list:
         return pd.DataFrame(columns=df.columns) # Return empty DataFrame with same columns
@@ -56,6 +58,7 @@ def filter_themes_by_list(themes_list: list[str]) -> pd.DataFrame:
     # For now, assuming direct match is sufficient based on current df structure.
     filtered_df = df[df['Theme'].isin(themes_list)]
     themes_table_filtered_str = format_themes_table(filtered_df)
+    print(f"Filtered themes table:\n{themes_table_filtered_str}\n")
     return themes_table_filtered_str
 
 def fetch_themes_list():
