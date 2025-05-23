@@ -48,8 +48,8 @@ def col_section_node(state: AppState):
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
     # ===== ADD LAST STATMENT TO PROMPT =====
-    statement = "Here is the section of the Court Decision containing Choice of Law related information:"
-    prompt += f"\n\n{statement}\n"
+    #statement = "Here is the section of the Court Decision containing Choice of Law related information:"
+    #prompt += f"\n\n{statement}\n"
 
     return {
         "col_section": [AIMessage(content=col_section)],
