@@ -1,3 +1,4 @@
+import json # Added for PIL provisions node
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
@@ -6,56 +7,162 @@ from langgraph.checkpoint.memory import MemorySaver
 from config import llm, thread_id
 from prompts.analysis_prompts import ABSTRACT_PROMPT, FACTS_PROMPT, PIL_PROVISIONS_PROMPT, COL_ISSUE_PROMPT, COURTS_POSITION_PROMPT
 from schemas.appstate import AppState
+from utils.themes_extractor import filter_themes_by_list
 
 
 # ========== NODES ==========
 
+# Helper function to extract content from the last message in a list of messages
+def _get_last_message_content(messages: list | None) -> str:
+    if messages and isinstance(messages, list) and messages:
+        last_message = messages[-1]
+        if hasattr(last_message, 'content') and last_message.content is not None:
+            return str(last_message.content)
+    return ""
+
+# Helper function to extract and format classification content
+def _get_classification_content_str(messages: list | None) -> str:
+    content_str = ""
+    if messages and isinstance(messages, list) and messages:
+        last_message = messages[-1]
+        if hasattr(last_message, 'content') and last_message.content is not None:
+            raw_content = last_message.content
+            if isinstance(raw_content, list):
+                content_str = ", ".join(str(item) for item in raw_content if item) if any(raw_content) else ""
+            elif isinstance(raw_content, str):
+                content_str = raw_content
+    return content_str
+
 # ===== ABSTRACT =====
 def abstract_node(state: AppState):
-    print("\n--- ABSTRACT ---")
+    print("\\n--- ABSTRACT ---")
     text = state["full_text"]
-    col_section_messages = state.get("col_section", [])
-    col_section = ""  # Default if not found or empty
-    if col_section_messages:
-        last_message = col_section_messages[-1]
-        if hasattr(last_message, 'content'):
-            col_section = last_message.content
-    classification_messages = state.get("classification", [])
-    classification = ""  # Default if not found or empty
-    if classification_messages:
-        last_message = classification_messages[-1]
-        if hasattr(last_message, 'content'):
-            classification = last_message.content
-    prompt = ANALYSIS_PROMPT.format(text=text, col_section=col_section, classification=classification)
-    print(f"\nPrompting LLM with:\n{prompt}\n")
+    # ABSTRACT_PROMPT only needs {text}
+    prompt = ABSTRACT_PROMPT.format(text=text)
+    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
     abstract = response.content
-    print(f"\nAbstract:\n{abstract}\n")
+    print(f"\\nAbstract:\\n{abstract}\\n")
     
     return {
         "abstract": [AIMessage(content=abstract)]
     }
 
 # ===== RELEVANT FACTS =====
+def facts_node(state: AppState):
+    print("\\n--- RELEVANT FACTS ---")
+    text = state["full_text"]
+    col_section_content = _get_last_message_content(state.get("col_section"))
+    
+    prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
+    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    facts = response.content
+    print(f"\\nRelevant Facts:\\n{facts}\\n")
+    
+    return {
+        "relevant_facts": [AIMessage(content=facts)]
+    }
 
 # ===== PIL PROVISIONS =====
+def pil_provisions_node(state: AppState):
+    print("\\n--- PIL PROVISIONS ---")
+    text = state["full_text"]
+    col_section_content = _get_last_message_content(state.get("col_section"))
+
+    prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
+    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    try:
+        pil_provisions = json.loads(response.content)
+    except json.JSONDecodeError:
+        print(f"Warning: Could not parse PIL provisions as JSON. Content: {response.content}")
+        pil_provisions = [response.content.strip()] # Fallback to list with raw content
+        
+    print(f"\\nPIL Provisions:\\n{pil_provisions}\\n")
+    
+    return {
+        "pil_provisions": [AIMessage(content=pil_provisions)]
+    }
 
 # ===== CHOICE OF LAW ISSUE =====
+def col_issue_node(state: AppState):
+    print("\\n--- CHOICE OF LAW ISSUE ---")
+    text = state["full_text"]
+    col_section_content = _get_last_message_content(state.get("col_section"))
+    # Assuming classification is a string in AppState
+    classification = state.get("classification_definitions", "")
+    if not isinstance(classification, str): # Ensure it's a string for formatting
+        classification = str(classification)
+    classification_definitions = filter_themes_by_list(classification)
+
+    prompt = COL_ISSUE_PROMPT.format(
+        text=text, 
+        col_section=col_section_content, 
+        classification_definitions=classification_definitions
+    )
+    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    col_issue = response.content
+    print(f"\\nChoice of Law Issue:\\n{col_issue}\\n")
+    
+    return {
+        "col_issue": [AIMessage(content=col_issue)]
+    }
 
 # ===== COURT'S POSITION =====
+def courts_position_node(state: AppState):
+    print("\\n--- COURT'S POSITION ---")
+    text = state["full_text"]
+    col_section_content = _get_last_message_content(state.get("col_section"))
+    classification_content = _get_classification_content_str(state.get("classification"))
+
+    prompt = COURTS_POSITION_PROMPT.format(
+        text=text, 
+        col_section=col_section_content, 
+        classification=classification_content
+    )
+    print(f"\\nPrompting LLM with:\\n{prompt}\\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    courts_position = response.content
+    print(f"\\nCourt's Position:\\n{courts_position}\\n")
+    
+    return {
+        "courts_position": [AIMessage(content=courts_position)]
+    }
 
 
 # ========== GRAPH ==========
 
 graph = StateGraph(AppState)
-graph.set_entry_point("analysis_node")
-graph.add_node("analysis_node", analysis_node)
-graph.add_node("final_feedback_node", analysis_feedback_node)
-graph.add_edge(START, "analysis_node")
-graph.add_edge("analysis_node", "final_feedback_node")
+
+graph.add_node("abstract_node", abstract_node)
+graph.add_node("facts_node", facts_node)
+graph.add_node("pil_provisions_node", pil_provisions_node)
+graph.add_node("col_issue_node", col_issue_node)
+graph.add_node("courts_position_node", courts_position_node)
+
+graph.set_entry_point("abstract_node")
+graph.add_edge("abstract_node", "facts_node")
+graph.add_edge("facts_node", "pil_provisions_node")
+graph.add_edge("pil_provisions_node", "col_issue_node")
+graph.add_edge("col_issue_node", "courts_position_node")
+graph.add_edge("courts_position_node", END)
 
 checkpointer = MemorySaver()
 app = graph.compile(checkpointer=checkpointer)
@@ -66,36 +173,15 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 
 def run_analysis(state: AppState):
     current_state = state.copy()
-
     for chunk in app.stream(current_state, config=thread_config):
-        # merge output from analysis_node
-        if "analysis_node" in chunk:
-            out = chunk["analysis_node"]
-            if isinstance(out, dict):
-                current_state.update(out)
-
-        # merge output from final_feedback_node
-        if "analysis_feedback_node" in chunk:
-            cmd_or_dict = chunk["analysis_feedback_node"]
-            if isinstance(cmd_or_dict, Command):
-                current_state.update(cmd_or_dict.update)
-                if cmd_or_dict.goto == END:
-                    return current_state
-                return run_analysis(current_state)
-            
-            elif isinstance(cmd_or_dict, dict):
-                current_state.update(cmd_or_dict)
-
-        if "__interrupt__" in chunk:
-            payload = chunk["__interrupt__"][0].value
-            print("waiting for user feedback...")
-            while True:
-                user_input = input(payload["message"])
-                if user_input.lower() == "done":
-                    final_updated_state = app.get_state(config=thread_config)
-                    return final_updated_state
+        # chunk will be like {"node_name": {"output_key": value}}
+        # We update current_state with the output of the node that just ran
+        for key, value in chunk.items():
+            if key != "__end__": # LangGraph sometimes includes an "__end__" key
+                if isinstance(value, dict): # Should be the output from our nodes
+                    current_state.update(value)
                 else:
-                    current_state.setdefault("analysis_feedback", []).append(user_input)
-                    current_state["user_approved_analysis"] = False
-                    app.invoke(Command(resume=user_input), config=thread_config)
+                    # This case might occur if a node returns something other than a dict
+                    print(f"Warning: Node {key} returned non-dict value: {value}")
+    # After the stream is exhausted, all nodes have run in sequence.
     return current_state
