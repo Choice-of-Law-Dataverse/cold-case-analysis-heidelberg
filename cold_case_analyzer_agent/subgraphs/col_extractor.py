@@ -1,3 +1,5 @@
+import re
+
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
@@ -13,12 +15,31 @@ from schemas.appstate import AppState
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
-    # rename suggestion history
     feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
-
     prompt = COL_SECTION_PROMPT.format(text=text)
+
+    # ===== ADD EXISTING COL SECTION TO PROMPT =====
+    existing_col_section_messages = state.get("col_section")
+    if existing_col_section_messages and isinstance(existing_col_section_messages, list) and len(existing_col_section_messages) > 0:
+        last_col_section_message = existing_col_section_messages[-1]
+        # The str() conversion and regex will handle AIMessage or HumanMessage objects
+        match = re.search(r"content='([^']*)'", str(last_col_section_message))
+        if match:
+            previous_col_section_text = match.group(1)
+            # Only add to prompt if the extracted text is not empty
+            if previous_col_section_text: 
+                prompt += f"\n\nFirst answer suggestion: {previous_col_section_text}\n"
+
+    # ===== ADD FEEDBACK TO PROMPT =====
     if feedback:
-        prompt += f"\n\nPrevious suggestion: {feedback[-1]}\n"
+        last_feedback_item_str = str(feedback[-1])
+        match = re.search(r"content='([^']*)'", last_feedback_item_str)
+        if match:
+            previous_suggestion_text = match.group(1)
+        else:
+            previous_suggestion_text = last_feedback_item_str
+        prompt += f"\n\nFeedback: {previous_suggestion_text}\n"
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)

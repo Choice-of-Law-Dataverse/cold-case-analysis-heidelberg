@@ -13,12 +13,23 @@ from schemas.appstate import AppState
 def analysis_node(state: AppState):
     print("\n--- ANALYSIS ---")
     text = state["full_text"]
-    col_section = state["col_section"]
-    classification = state["classification"]
+    col_section_messages = state.get("col_section", [])
+    col_section = ""  # Default if not found or empty
+    if col_section_messages:
+        last_message = col_section_messages[-1]
+        if hasattr(last_message, 'content'):
+            col_section = last_message.content
+    classification_messages = state.get("classification", [])
+    classification = ""  # Default if not found or empty
+    if classification_messages:
+        last_message = classification_messages[-1]
+        if hasattr(last_message, 'content'):
+            classification = last_message.content
     analysis_feedback = state["analysis_feedback"] if "analysis_feedback" in state else ["No feedback yet"]
     prompt = ANALYSIS_PROMPT.format(text=text, col_section=col_section, classification=classification)
     if analysis_feedback:
-        prompt += f"\n\nPrevious feedback: {analysis_feedback[-1]}\n"
+        prompt += f"\n\nPrevious feedback: {analysis_feedback[-1].value}\n"
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
