@@ -9,6 +9,8 @@ class AppState(TypedDict):
     classification: List[str]
     theme_feedback: Annotated[List[str], add_messages]
     user_approved_theme: bool
-    analysis: str
-    analysis_feedback: Annotated[List[str], add_messages]
-    user_approved_analysis: bool
+    abstract: str
+    relevant_facts: str
+    pil_provisions: str
+    col_issue: str
+    courts_position: str
