@@ -10,6 +10,7 @@ from config import llm, thread_id
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from schemas.appstate import AppState
 from utils.evaluator import prompt_evaluation
+from utils.input_handler import INPUT_FUNC
 
 
 # ========== NODES ==========
@@ -130,7 +131,7 @@ def run_col_section_extraction(state: AppState):
             payload = chunk["__interrupt__"][0].value
             print("waiting for user feedback…")
             while True:
-                user_input = input(payload["message"])
+                user_input = INPUT_FUNC(payload["message"])
                 if user_input.lower() == "continue":
                     app.invoke(Command(resume=user_input), config=thread_config)
                     final_updated_state = app.get_state(config=thread_config)

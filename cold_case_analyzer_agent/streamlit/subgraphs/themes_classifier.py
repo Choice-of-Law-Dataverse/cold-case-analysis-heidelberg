@@ -12,6 +12,7 @@ from prompts.pil_theme_prompt import PIL_THEME_PROMPT
 from schemas.appstate import AppState
 from utils.themes_extractor import THEMES_TABLE_STR
 from utils.evaluator import prompt_evaluation
+from utils.input_handler import INPUT_FUNC
 
 
 # ========== NODES ==========
@@ -154,7 +155,7 @@ def run_theme_classification(state: AppState):
             payloud = chunk["__interrupt__"][0].value
             print("waiting for user feedback...")
             while True:
-                user_feedback = input(payloud["message"])
+                user_feedback = INPUT_FUNC(payloud["message"])
                 if user_feedback.lower() == "continue":
                     app.invoke(Command(resume=user_feedback), config=thread_config)
                     final_updated_state = app.get_state(config=thread_config)

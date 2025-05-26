@@ -2,6 +2,7 @@
 Utility for prompting the user to evaluate generated output and return a score.
 """
 from typing import Any, Dict
+from utils.input_handler import INPUT_FUNC
 
 def prompt_evaluation(state: Dict[str, Any], key: str, question: str) -> int:
     """
@@ -23,7 +24,7 @@ def prompt_evaluation(state: Dict[str, Any], key: str, question: str) -> int:
 
     # Prompt user for new score until valid integer 0-100
     while True:
-        user_input = input(f"{question} (0-100): ")
+        user_input = INPUT_FUNC(f"{question} (0-100): ")
         try:
             score = int(user_input)
         except (ValueError, TypeError):
