@@ -173,6 +173,26 @@ def process_feedback(
 
     raise HTTPException(status_code=400, detail="Invalid step or action")
 
+@app.get("/api/v1/status")
+def get_status():
+    """Health check endpoint."""
+    return {"status": "ok"}
+
+@app.get("/api/v1/cases/{session_id}")
+def get_case(session_id: str, credentials: HTTPBasicCredentials = Depends(security)):
+    """Retrieve current state of a session."""
+    authenticate(credentials)
+    session = sessions.get(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {
+        "session_id": session_id,
+        "current_step": session.get("current_step"),
+        "step_index": session.get("step_index"),
+        "state": session.get("state"),
+        "final": session.get("final")
+    }
+
 # --- Serve Nuxt.js SPA ---
 static_dir = os.getenv('STATIC_FRONTEND_DIR', '/app/static_frontend')
 if os.path.isdir(static_dir):
