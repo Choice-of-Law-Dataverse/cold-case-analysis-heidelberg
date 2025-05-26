@@ -8,6 +8,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from config import llm, thread_id
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from schemas.appstate import AppState
+from utils.evaluator import prompt_evaluation
 
 
 # ========== NODES ==========
@@ -15,7 +16,7 @@ from schemas.appstate import AppState
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
-    feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
+    feedback = state.get("col_section_feedback", ["No feedback yet"])
     prompt = COL_SECTION_PROMPT.format(text=text)
 
     # ===== ADD EXISTING COL SECTION TO PROMPT =====
@@ -47,16 +48,8 @@ def col_section_node(state: AppState):
     col_section = response.content
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
-    # Prompt user for evaluation on first extraction
-    existing_score = state.get("col_section_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the extracted Choice of Law section (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section")
 
     return {
         "col_section": [AIMessage(content=col_section)],

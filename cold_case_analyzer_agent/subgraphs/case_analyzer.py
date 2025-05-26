@@ -10,6 +10,7 @@ from config import llm, thread_id
 from prompts.analysis_prompts import ABSTRACT_PROMPT, FACTS_PROMPT, PIL_PROVISIONS_PROMPT, COL_ISSUE_PROMPT, COURTS_POSITION_PROMPT
 from schemas.appstate import AppState
 from utils.themes_extractor import filter_themes_by_list
+from utils.evaluator import prompt_evaluation
 
 
 # ========== NODES ==========
@@ -47,21 +48,9 @@ def abstract_node(state: AppState):
     ])
     abstract = response.content
     print(f"\nAbstract:\n{abstract}\n")
-    # Prompt user for evaluation on first abstract
-    existing_score = state.get("abstract_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the abstract (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-     
-    return {
-        "abstract": [AIMessage(content=abstract)],
-        "abstract_evaluation": score
-    }
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "abstract_evaluation", "Please evaluate the abstract")
+    return {"abstract": [AIMessage(content=abstract)], "abstract_evaluation": score}
 
 # ===== RELEVANT FACTS =====
 def facts_node(state: AppState):
@@ -75,21 +64,9 @@ def facts_node(state: AppState):
     ])
     facts = response.content
     print(f"\nRelevant Facts:\n{facts}\n")
-    # Prompt user for evaluation on first relevant facts
-    existing_score = state.get("relevant_facts_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the relevant facts summary (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-     
-    return {
-        "relevant_facts": [AIMessage(content=facts)],
-        "relevant_facts_evaluation": score
-    }
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "relevant_facts_evaluation", "Please evaluate the relevant facts summary")
+    return {"relevant_facts": [AIMessage(content=facts)], "relevant_facts_evaluation": score}
 
 # ===== PIL PROVISIONS =====
 def pil_provisions_node(state: AppState):
@@ -108,21 +85,9 @@ def pil_provisions_node(state: AppState):
         print(f"Warning: Could not parse PIL provisions as JSON. Content: {response.content}")
         pil_provisions = [response.content.strip()]
     print(f"\nPIL Provisions:\n{pil_provisions}\n")
-    # Prompt user for evaluation on first PIL provisions
-    existing_score = state.get("pil_provisions_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the PIL provisions list (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-     
-    return {
-        "pil_provisions": [AIMessage(content=pil_provisions)],
-        "pil_provisions_evaluation": score
-    }
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "pil_provisions_evaluation", "Please evaluate the PIL provisions list")
+    return {"pil_provisions": [AIMessage(content=pil_provisions)], "pil_provisions_evaluation": score}
 
 # ===== CHOICE OF LAW ISSUE =====
 def col_issue_node(state: AppState):
@@ -152,21 +117,9 @@ def col_issue_node(state: AppState):
     ])
     col_issue = response.content
     print(f"\nChoice of Law Issue:\n{col_issue}\n")
-    # Prompt user for evaluation on first choice of law issue extraction
-    existing_score = state.get("col_issue_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the choice of law issue question (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-     
-    return {
-        "col_issue": [AIMessage(content=col_issue)],
-        "col_issue_evaluation": score
-    }
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "col_issue_evaluation", "Please evaluate the choice of law issue question")
+    return {"col_issue": [AIMessage(content=col_issue)], "col_issue_evaluation": score}
 
 # ===== COURT'S POSITION =====
 def courts_position_node(state: AppState):
@@ -186,21 +139,9 @@ def courts_position_node(state: AppState):
     ])
     courts_position = response.content
     print(f"\nCourt's Position:\n{courts_position}\n")
-    # Prompt user for evaluation on first court's position summary
-    existing_score = state.get("courts_position_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the court's position summary (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-
-    return {
-        "courts_position": [AIMessage(content=courts_position)],
-        "courts_position_evaluation": score
-    }
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "courts_position_evaluation", "Please evaluate the court's position summary")
+    return {"courts_position": [AIMessage(content=courts_position)], "courts_position_evaluation": score}
 
 
 # ========== GRAPH ==========

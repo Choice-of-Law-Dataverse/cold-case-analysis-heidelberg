@@ -10,6 +10,7 @@ from config import llm, thread_id
 from prompts.pil_theme_prompt import PIL_THEME_PROMPT
 from schemas.appstate import AppState
 from utils.themes_extractor import THEMES_TABLE_STR
+from utils.evaluator import prompt_evaluation
 
 
 # ========== NODES ==========
@@ -73,17 +74,8 @@ def theme_classification_node(state: AppState):
     except Exception:
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
-    # Prompt user for evaluation on first classification
-    existing_score = state.get("theme_evaluation", 101)
-    if existing_score > 100:
-        try:
-            score = int(input("Please evaluate the theme classification (0-100): "))
-        except ValueError:
-            score = 0
-        score = max(0, min(100, score))
-    else:
-        score = existing_score
-    #print(f"Theme classification score: {score}")
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "theme_evaluation", "Please evaluate the theme classification")
     return {
         "classification": [AIMessage(content=classification)],
         "theme_feedback": theme_feedback,
