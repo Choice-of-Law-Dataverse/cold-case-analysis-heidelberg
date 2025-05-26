@@ -45,23 +45,26 @@ def main():
             value=SAMPLE_COURT_DECISION
         )
         if st.button("Start Analysis"):
+            # Save full text and run initial COL section extraction
             st.session_state.state["full_text"] = full_text
+            result = run_col_section_extraction(st.session_state.state)
+            st.session_state.state = getattr(result, 'values', result)
             st.session_state.stage = 'col_section'
-            st.experimental_rerun()
+            return
 
     # Stage: COL section extraction with feedback loop
     elif st.session_state.stage == 'col_section':
         st.subheader("2. Choice of Law Section Extraction")
-        # Run extraction if first time or after feedback
-        if not st.session_state.state["col_section"]:
-            result = run_col_section_extraction(st.session_state.state)
-            st.session_state.state = getattr(result, 'values', result)
+        # Always run extraction to incorporate any new feedback
+        result = run_col_section_extraction(st.session_state.state)
+        st.session_state.state = getattr(result, 'values', result)
 
         # Display latest COL section
         latest = st.session_state.state["col_section"][-1].content
         st.write(latest)
         feedback = st.text_area(
-            "Provide feedback or type 'continue' to approve section:", height=150
+            "Provide feedback or type 'continue' to approve section:", height=150,
+            key='col_feedback'
         )
         if st.button("Submit COL Feedback"):
             if feedback.strip().lower() == 'continue':
@@ -71,7 +74,7 @@ def main():
                 st.session_state.state["col_section_feedback"].append(feedback)
                 result = run_col_section_extraction(st.session_state.state)
                 st.session_state.state = getattr(result, 'values', result)
-            st.experimental_rerun()
+            return
 
     # Stage: Theme classification with feedback loop
     elif st.session_state.stage == 'theme_classification':
@@ -96,7 +99,7 @@ def main():
                 st.session_state.state["theme_feedback"].append(feedback)
                 result = run_theme_classification(st.session_state.state)
                 st.session_state.state = getattr(result, 'values', result)
-            st.experimental_rerun()
+            return
 
     # Stage: Final analysis and display results
     elif st.session_state.stage == 'final_analysis':
@@ -118,7 +121,7 @@ def main():
         if st.button("Restart Analysis"):
             for key in ['stage', 'state']:
                 del st.session_state[key]
-            st.experimental_rerun()
+            return
 
 
 if __name__ == "__main__":
