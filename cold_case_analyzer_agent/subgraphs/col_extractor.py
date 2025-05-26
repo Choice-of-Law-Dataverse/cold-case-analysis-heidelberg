@@ -1,4 +1,5 @@
 import re
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
@@ -41,20 +42,23 @@ def col_section_node(state: AppState):
             previous_suggestion_text = last_feedback_item_str
         prompt += f"\n\nFeedback: {previous_suggestion_text}\n"
     #print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    col_time = time.time() - start_time
     col_section = response.content
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
-    # Ask user for evaluation using the shared utility
+    # Ask user for evaluation and record time
     score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section")
 
     return {
         "col_section": [AIMessage(content=col_section)],
         "col_section_feedback": feedback,
-        "col_section_evaluation": score
+        "col_section_evaluation": score,
+        "col_section_time": col_time
     }
 
 def col_section_feedback_node(state: AppState):

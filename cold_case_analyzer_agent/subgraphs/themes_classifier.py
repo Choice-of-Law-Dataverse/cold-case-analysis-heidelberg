@@ -1,5 +1,6 @@
 import json
 import re
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
@@ -65,10 +66,12 @@ def theme_classification_node(state: AppState):
             prompt += f"\n\nFeedback: {feedback_text_to_add}\n"
 
     #print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    theme_time = time.time() - start_time
     try:
         classification = json.loads(response.content)
     except Exception:
@@ -79,7 +82,8 @@ def theme_classification_node(state: AppState):
     return {
         "classification": [AIMessage(content=classification)],
         "theme_feedback": theme_feedback,
-        "theme_evaluation": score
+        "theme_evaluation": score,
+        "theme_classification_time": theme_time
     }
 
 def theme_feedback_node(state: AppState):

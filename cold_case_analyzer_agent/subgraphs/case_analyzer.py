@@ -1,5 +1,6 @@
 import json
 import re
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
@@ -42,15 +43,17 @@ def abstract_node(state: AppState):
     text = state["full_text"]
     # ABSTRACT_PROMPT only needs {text}
     prompt = ABSTRACT_PROMPT.format(text=text)
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    abstract_time = time.time() - start_time
     abstract = response.content
     print(f"\nAbstract:\n{abstract}\n")
     # Ask user for evaluation using the shared utility
     score = prompt_evaluation(state, "abstract_evaluation", "Please evaluate the abstract")
-    return {"abstract": [AIMessage(content=abstract)], "abstract_evaluation": score}
+    return {"abstract": [AIMessage(content=abstract)], "abstract_evaluation": score, "abstract_time": abstract_time}
 
 # ===== RELEVANT FACTS =====
 def facts_node(state: AppState):
@@ -58,15 +61,17 @@ def facts_node(state: AppState):
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    facts_time = time.time() - start_time
     facts = response.content
     print(f"\nRelevant Facts:\n{facts}\n")
     # Ask user for evaluation using the shared utility
     score = prompt_evaluation(state, "relevant_facts_evaluation", "Please evaluate the relevant facts summary")
-    return {"relevant_facts": [AIMessage(content=facts)], "relevant_facts_evaluation": score}
+    return {"relevant_facts": [AIMessage(content=facts)], "relevant_facts_evaluation": score, "relevant_facts_time": facts_time}
 
 # ===== PIL PROVISIONS =====
 def pil_provisions_node(state: AppState):
@@ -75,10 +80,12 @@ def pil_provisions_node(state: AppState):
     col_section_content = _get_last_message_content(state.get("col_section"))
 
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    provisions_time = time.time() - start_time
     try:
         pil_provisions = json.loads(response.content)
     except json.JSONDecodeError:
@@ -87,7 +94,7 @@ def pil_provisions_node(state: AppState):
     print(f"\nPIL Provisions:\n{pil_provisions}\n")
     # Ask user for evaluation using the shared utility
     score = prompt_evaluation(state, "pil_provisions_evaluation", "Please evaluate the PIL provisions list")
-    return {"pil_provisions": [AIMessage(content=pil_provisions)], "pil_provisions_evaluation": score}
+    return {"pil_provisions": [AIMessage(content=pil_provisions)], "pil_provisions_evaluation": score, "pil_provisions_time": provisions_time}
 
 # ===== CHOICE OF LAW ISSUE =====
 def col_issue_node(state: AppState):
@@ -111,15 +118,17 @@ def col_issue_node(state: AppState):
         col_section=col_section_content, 
         classification_definitions=classification_definitions
     )
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    issue_time = time.time() - start_time
     col_issue = response.content
     print(f"\nChoice of Law Issue:\n{col_issue}\n")
     # Ask user for evaluation using the shared utility
     score = prompt_evaluation(state, "col_issue_evaluation", "Please evaluate the choice of law issue question")
-    return {"col_issue": [AIMessage(content=col_issue)], "col_issue_evaluation": score}
+    return {"col_issue": [AIMessage(content=col_issue)], "col_issue_evaluation": score, "col_issue_time": issue_time}
 
 # ===== COURT'S POSITION =====
 def courts_position_node(state: AppState):
@@ -133,15 +142,17 @@ def courts_position_node(state: AppState):
         col_section=col_section_content, 
         classification=classification_content
     )
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    position_time = time.time() - start_time
     courts_position = response.content
     print(f"\nCourt's Position:\n{courts_position}\n")
     # Ask user for evaluation using the shared utility
     score = prompt_evaluation(state, "courts_position_evaluation", "Please evaluate the court's position summary")
-    return {"courts_position": [AIMessage(content=courts_position)], "courts_position_evaluation": score}
+    return {"courts_position": [AIMessage(content=courts_position)], "courts_position_evaluation": score, "courts_position_time": position_time}
 
 
 # ========== GRAPH ==========

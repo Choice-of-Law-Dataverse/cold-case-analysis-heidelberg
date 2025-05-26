@@ -21,3 +21,10 @@ class AppState(TypedDict):
     col_issue_evaluation: int
     courts_position: str
     courts_position_evaluation: int
+    col_section_time: float
+    theme_classification_time: float
+    abstract_time: float
+    relevant_facts_time: float
+    pil_provisions_time: float
+    col_issue_time: float
+    courts_position_time: float
