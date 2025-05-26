@@ -21,11 +21,15 @@ def prompt_evaluation(state: Dict[str, Any], key: str, question: str) -> int:
     if isinstance(existing_score, int) and 0 <= existing_score <= 100:
         return existing_score
 
-    # Prompt user for new score
-    try:
+    # Prompt user for new score until valid integer 0-100
+    while True:
         user_input = input(f"{question} (0-100): ")
-        score = int(user_input)
-    except (ValueError, TypeError):
-        score = 0
-    # Clamp between 0 and 100
-    return max(0, min(100, score))
+        try:
+            score = int(user_input)
+        except (ValueError, TypeError):
+            print("Invalid input. Please enter an integer between 0 and 100.")
+            continue
+        if score < 0 or score > 100:
+            print("Score must be between 0 and 100.")
+            continue
+        return score
