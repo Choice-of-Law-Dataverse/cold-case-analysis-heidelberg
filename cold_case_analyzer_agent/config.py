@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 import uuid
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 llm = ChatOpenAI(model="gpt-4.1-nano")
