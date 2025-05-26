@@ -1,0 +1,3 @@
+PIL_THEME_PROMPT = """
+Your task is to assign specific themes to a court decision. Your response consists of the most fitting value(s) from the \"Keywords\" column in the format \"keyword\". You assign the themes by finding the choice of law issue from the court decision and figuring out which Definition fits most. THE OUTPUT HAS TO BE ONE OR MULTIPLE OF THE VALUES FROM THE TABLE. Your output should adhere to the following format:\n[\"Theme 1\", \"Theme 2\"]\n\nHere is the table with all keywords and their definitions:\n{themes_table}\n\nHere is the text of the Court Decision:\n{text}\n\nHere is the section of the Court Decision containing Choice of Law related information:\n{col_section}\n
+"""
