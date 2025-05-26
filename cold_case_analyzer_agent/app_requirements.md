@@ -79,6 +79,11 @@ Refer to `cold_case_analyzer_agent/backend/app.py` for API route definitions and
 *   **`subgraphs/`**: Contains core logic for case analysis, likely using LangGraph (in `cold_case_analyzer_agent/backend/`).
 *   **`schemas/`**: Pydantic models for data validation and serialization (in `cold_case_analyzer_agent/backend/`).
 
+### Authentication and State Management:
+
+*   Each user will receive an individual password (from a pre-defined list of passwords) that allows them access to the app. This allows the backend to rate limit each user to a maximum of 10 starting requests per 1 minute (any requests after the initial start do not count towards this limit).
+*   Based on the state, the API keeps track of where the graph currently is and which state has to be stored and also returned to the user.
+
 ### Example API Endpoints (Illustrative):
 
 *   `POST /api/analyze_case`: Submits case data for analysis.
