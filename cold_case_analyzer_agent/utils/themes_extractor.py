@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from pyairtable import Api
 from config import AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_CONCEPTS_TABLE
@@ -31,9 +32,20 @@ def fetch_themes_dataframe():
     df = df.reset_index(drop=True)
     return df
 
-def fetch_themes_list():
-    df = fetch_themes_dataframe()
-    return df["Theme"].tolist()
+def filter_themes_by_list(themes_list: list[str]) -> str:
+    """
+    Returns a markdown table (string) of Theme|Definition
+    for those themes in themes_list, using the already‐loaded THEMES_TABLE_DF.
+    """
+    if not themes_list or THEMES_TABLE_DF.empty:
+        return "No themes available."
+    # fast in‐memory filter
+    filtered_df = THEMES_TABLE_DF[THEMES_TABLE_DF["Theme"].isin(themes_list)]
+    return format_themes_table(filtered_df)
+
+def fetch_themes_list() -> list[str]:
+    # just return the cached list
+    return THEMES_TABLE_DF["Theme"].dropna().tolist()
 
 def format_themes_table(df):
     if df.empty:
@@ -46,5 +58,7 @@ def format_themes_table(df):
         table_str += f"| {theme} | {definition} |\n"
     return table_str
 
-THEMES_TABLE_DF = fetch_themes_dataframe()
+#THEMES_TABLE_DF = fetch_themes_dataframe()
+CSV_PATH = os.path.join(os.path.dirname(__file__), "../data/themes.csv")
+THEMES_TABLE_DF  = pd.read_csv(CSV_PATH)
 THEMES_TABLE_STR = format_themes_table(THEMES_TABLE_DF)

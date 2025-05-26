@@ -1,5 +1,6 @@
 import json
 import re
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
@@ -10,6 +11,7 @@ from config import llm, thread_id
 from prompts.pil_theme_prompt import PIL_THEME_PROMPT
 from schemas.appstate import AppState
 from utils.themes_extractor import THEMES_TABLE_STR
+from utils.evaluator import prompt_evaluation
 
 
 # ========== NODES ==========
@@ -29,7 +31,7 @@ def theme_classification_node(state: AppState):
     # ===== ADD EXISTING CLASSIFICATION TO PROMPT =====
     previous_classification_text = ""
     existing_classification_messages = state.get("classification")
-    print(f"Existing classification messages: {existing_classification_messages}") # Kept for debugging as in original
+    #print(f"Existing classification messages: {existing_classification_messages}") # Kept for debugging as in original
     
     if existing_classification_messages and isinstance(existing_classification_messages, list) and len(existing_classification_messages) > 0:
         last_classification_message = existing_classification_messages[-1]
@@ -63,19 +65,25 @@ def theme_classification_node(state: AppState):
         elif feedback_text_to_add == "No feedback yet" and not (existing_classification_messages and previous_classification_text):
             prompt += f"\n\nFeedback: {feedback_text_to_add}\n"
 
-    print(f"\nPrompting LLM with:\n{prompt}\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    theme_time = time.time() - start_time
     try:
         classification = json.loads(response.content)
     except Exception:
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
+    # Ask user for evaluation using the shared utility
+    score = prompt_evaluation(state, "theme_evaluation", "Please evaluate the theme classification")
     return {
         "classification": [AIMessage(content=classification)],
-        "theme_feedback": theme_feedback
+        "theme_feedback": theme_feedback,
+        "theme_evaluation": score,
+        "theme_classification_time": theme_time
     }
 
 def theme_feedback_node(state: AppState):

@@ -1,4 +1,5 @@
 import re
+import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
@@ -8,6 +9,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from config import llm, thread_id
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from schemas.appstate import AppState
+from utils.evaluator import prompt_evaluation
 
 
 # ========== NODES ==========
@@ -15,7 +17,7 @@ from schemas.appstate import AppState
 def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
-    feedback = state["col_section_feedback"] if "col_section_feedback" in state else ["No feedback yet"]
+    feedback = state.get("col_section_feedback", ["No feedback yet"])
     prompt = COL_SECTION_PROMPT.format(text=text)
 
     # ===== ADD EXISTING COL SECTION TO PROMPT =====
@@ -39,17 +41,24 @@ def col_section_node(state: AppState):
         else:
             previous_suggestion_text = last_feedback_item_str
         prompt += f"\n\nFeedback: {previous_suggestion_text}\n"
-    print(f"\nPrompting LLM with:\n{prompt}\n")
+    #print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
+    col_time = time.time() - start_time
     col_section = response.content
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
+    # Ask user for evaluation and record time
+    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section")
+
     return {
         "col_section": [AIMessage(content=col_section)],
-        "col_section_feedback": feedback
+        "col_section_feedback": feedback,
+        "col_section_evaluation": score,
+        "col_section_time": col_time
     }
 
 def col_section_feedback_node(state: AppState):
