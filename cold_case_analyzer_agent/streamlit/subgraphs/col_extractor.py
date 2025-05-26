@@ -140,19 +140,3 @@ def run_col_section_extraction(state: AppState):
                     current_state["user_approved_col"] = False
                     app.invoke(Command(resume=user_input), config=thread_config)
     return current_state
-
-def run_col_section_extraction(state: dict) -> dict:
-    """
-    Simplified COL section extraction:
-    - Extracts paragraphs containing 'law'.
-    - Incorporates last feedback by re-running extraction.
-    """
-    text = state.get("full_text", "") or ""
-    paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
-    # simple extraction: paragraphs with 'law'
-    extracted = [p for p in paragraphs if 'law' in p.lower()]
-    if not extracted:
-        extracted = paragraphs[:1] if paragraphs else [""]
-    # update state
-    state["col_section"] = extracted
-    return state
