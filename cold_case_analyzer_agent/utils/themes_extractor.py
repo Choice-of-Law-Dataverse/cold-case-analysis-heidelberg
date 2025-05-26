@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from pyairtable import Api
 from config import AIRTABLE_API_KEY, AIRTABLE_BASE_ID, AIRTABLE_CONCEPTS_TABLE
@@ -44,7 +45,7 @@ def filter_themes_by_list(themes_list: list[str]) -> str:
 
 def fetch_themes_list() -> list[str]:
     # just return the cached list
-    return THEMES_TABLE_DF["Theme"].tolist()
+    return THEMES_TABLE_DF["Theme"].dropna().tolist()
 
 def format_themes_table(df):
     if df.empty:
@@ -57,5 +58,7 @@ def format_themes_table(df):
         table_str += f"| {theme} | {definition} |\n"
     return table_str
 
-THEMES_TABLE_DF = fetch_themes_dataframe()
+#THEMES_TABLE_DF = fetch_themes_dataframe()
+CSV_PATH = os.path.join(os.path.dirname(__file__), "../data/themes.csv")
+THEMES_TABLE_DF  = pd.read_csv(CSV_PATH)
 THEMES_TABLE_STR = format_themes_table(THEMES_TABLE_DF)
