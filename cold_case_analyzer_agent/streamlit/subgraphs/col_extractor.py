@@ -21,6 +21,11 @@ def col_section_node(state: AppState):
     feedback = state.get("col_section_feedback", ["No feedback yet"])
     prompt = COL_SECTION_PROMPT.format(text=text)
 
+    # ===== BUMP AND READ COUNTER =====
+    iter_count = state.get("col_section_eval_iter", 0) + 1
+    state["col_section_eval_iter"] = iter_count
+    key = f"col_section_eval_{iter_count}"
+
     # ===== ADD EXISTING COL SECTION TO PROMPT =====
     existing_col_section_messages = state.get("col_section")
     if existing_col_section_messages and isinstance(existing_col_section_messages, list) and len(existing_col_section_messages) > 0:
@@ -53,7 +58,7 @@ def col_section_node(state: AppState):
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
     # Ask user for evaluation and record time
-    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section")
+    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", key=key)
 
     return {
         "col_section": [AIMessage(content=col_section)],
@@ -131,7 +136,12 @@ def run_col_section_extraction(state: AppState):
             payload = chunk["__interrupt__"][0].value
             print("waiting for user feedback…")
             while True:
-                user_input = INPUT_FUNC(payload["message"])
+                # ===== BUMP AND READ COUNTER =====
+                cnt = current_state.get("col_interrupt_iter", 0) + 1
+                current_state["col_interrupt_iter"] = cnt
+                key = f"col_interrupt_{cnt}"
+
+                user_input = INPUT_FUNC(payload["message"], key=key)
                 if user_input.lower() == "continue":
                     app.invoke(Command(resume=user_input), config=thread_config)
                     final_updated_state = app.get_state(config=thread_config)
