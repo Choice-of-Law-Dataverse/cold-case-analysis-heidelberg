@@ -13,6 +13,7 @@ def streamlit_input(prompt: str, key: str) -> str:
         value = st.number_input(prompt, min_value=0, max_value=100, value=0, key=key)
         return str(value)
     return st.text_input(prompt, key=key)
+    st.session_state.messages.append({"role": "user", "content": prompt})
 # override default
 INPUT_FUNC: Callable[[str], str] = streamlit_input
 # patch builtins.input so that all input() calls use our Streamlit function

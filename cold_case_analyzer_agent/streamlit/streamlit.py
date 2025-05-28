@@ -42,6 +42,9 @@ initial_state: AppState = {
     "courts_position_time": 0.0,
 }
 
+if "app_state" not in st.session_state:
+    st.session_state["app_state"] = initial_state
+
 # Define the workflow
 def run_cold_case_analysis(state: AppState) -> AppState:
     # 1. Choice-of-law section extraction
@@ -57,11 +60,21 @@ st.title("Cold Case Analysis")
 full_text = st.text_area("Court decision text:", value=initial_state["full_text"], height=300)
 
 # Update the state with user-provided text
-initial_state["full_text"] = full_text
+st.session_state["app_state"]["full_text"] = full_text
 
 if st.button("Run analysis"):
     with st.spinner("Analyzing..."):
-        output_state = run_cold_case_analysis(initial_state)
+        output_state = run_cold_case_analysis(st.session_state["app_state"])
+        st.session_state["app_state"] = output_state
         st.success("Analysis complete")
         st.subheader("Final State")
         st.json(output_state)
+
+# Display logic
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])

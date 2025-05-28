@@ -111,10 +111,10 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 import streamlit as st
 from langgraph.types import Command
 
-def streamlit_col_extractor_runner(app, initial_state, thread_config):
+def streamlit_col_extractor_runner(state: AppState):
     # initialize
     if "col_state" not in st.session_state:
-        st.session_state.col_state = initial_state.copy()
+        st.session_state.col_state = st.session_state.app_state.copy()
         st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
         st.session_state.waiting_for = None
 
@@ -153,4 +153,4 @@ def streamlit_col_extractor_runner(app, initial_state, thread_config):
         st.stop()  # stop here so Streamlit will rerun on next click
 
     # no interrupt, keep going automatically
-    return streamlit_col_extractor_runner(app, st.session_state.col_state, thread_config)
+    return streamlit_col_extractor_runner(st.session_state.col_state)
