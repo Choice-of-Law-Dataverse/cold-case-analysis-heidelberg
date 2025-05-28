@@ -108,48 +108,49 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 
 # ========== RUNNER ==========
 
-def run_col_section_extraction(state: AppState):
-    current_state = state.copy()
+import streamlit as st
+from langgraph.types import Command
 
-    for chunk in app.stream(current_state, config=thread_config):
-        # merge output from col_section_node
-        if "col_section_node" in chunk:
-            out = chunk["col_section_node"]
-            if isinstance(out, dict):
-                current_state.update(out)
+def streamlit_col_extractor_runner(app, initial_state, thread_config):
+    # initialize
+    if "col_state" not in st.session_state:
+        st.session_state.col_state = initial_state.copy()
+        st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
+        st.session_state.waiting_for = None
 
-        # merge output from feedback node (Command or dict)
-        if "col_section_feedback_node" in chunk:
-            cmd_or_dict = chunk["col_section_feedback_node"]
-            if isinstance(cmd_or_dict, Command):
-                current_state.update(cmd_or_dict.update)
-                if cmd_or_dict.goto == END:
-                    return current_state
-                # user wants another extraction pass → recurse
-                return run_col_section_extraction(current_state)
+    # if we already asked for feedback, use that to resume the graph
+    if st.session_state.waiting_for:
+        fb = st.session_state.waiting_for
+        cmd = Command(resume=fb)
+        app.invoke(cmd, config=thread_config)
+        st.session_state.waiting_for = None
 
-            # (if you ever return a dict here instead of a Command…)
-            elif isinstance(cmd_or_dict, dict):
-                current_state.update(cmd_or_dict)
+    # pull exactly one chunk
+    try:
+        chunk = next(st.session_state.coler)
+    except StopIteration:
+        # done
+        return st.session_state.col_state
 
-        # legacy __interrupt__ handler (optional if you still need it)
-        if "__interrupt__" in chunk:
-            payload = chunk["__interrupt__"][0].value
-            print("waiting for user feedback…")
-            while True:
-                # ===== BUMP AND READ COUNTER =====
-                cnt = current_state.get("col_interrupt_iter", 0) + 1
-                current_state["col_interrupt_iter"] = cnt
-                key = f"col_interrupt_{cnt}"
-                print(key)
+    # handle node output
+    if "col_section_node" in chunk:
+        st.session_state.col_state.update(chunk["col_section_node"])
+    if "col_section_feedback_node" in chunk:
+        cmd_or_dict = chunk["col_section_feedback_node"]
+        if isinstance(cmd_or_dict, dict):
+            st.session_state.col_state.update(cmd_or_dict)
+        else:  # Command
+            st.session_state.col_state.update(cmd_or_dict.update)
+            if cmd_or_dict.goto == END:
+                return st.session_state.col_state
 
-                user_input = INPUT_FUNC(payload["message"], key=key)
-                if user_input.lower() == "continue":
-                    app.invoke(Command(resume=user_input), config=thread_config)
-                    final_updated_state = app.get_state(config=thread_config)
-                    return final_updated_state
-                else:
-                    current_state.setdefault("col_section_feedback", []).append(user_input)
-                    current_state["user_approved_col"] = False
-                    app.invoke(Command(resume=user_input), config=thread_config)
-    return current_state
+    # handle an interrupt: render a text_input + button and bail out early
+    if "__interrupt__" in chunk:
+        payload = chunk["__interrupt__"][0].value
+        user_fb = st.text_input(payload["message"], key="col_feedback")
+        if st.button("Submit feedback", key="col_submit"):
+            st.session_state.waiting_for = user_fb
+        st.stop()  # stop here so Streamlit will rerun on next click
+
+    # no interrupt, keep going automatically
+    return streamlit_col_extractor_runner(app, st.session_state.col_state, thread_config)

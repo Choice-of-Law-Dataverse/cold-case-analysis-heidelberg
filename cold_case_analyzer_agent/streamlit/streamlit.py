@@ -5,7 +5,7 @@ from utils.input_handler import set_input_func, streamlit_input
 # Override builtins.input to use Streamlit UI
 set_input_func(streamlit_input)
 
-from subgraphs.col_extractor import run_col_section_extraction
+from subgraphs.col_extractor import streamlit_col_extractor_runner
 from subgraphs.themes_classifier import run_theme_classification
 from subgraphs.case_analyzer import run_analysis
 from schemas.appstate import AppState
@@ -45,7 +45,7 @@ initial_state: AppState = {
 # Define the workflow
 def run_cold_case_analysis(state: AppState) -> AppState:
     # 1. Choice-of-law section extraction
-    state_col = run_col_section_extraction(state)
+    state_col = streamlit_col_extractor_runner(state)
     # 2. Theme classification
     state_theme = run_theme_classification(state_col.values)
     # 3. Final case analysis
