@@ -25,6 +25,7 @@ def col_section_node(state: AppState):
     iter_count = state.get("col_section_eval_iter", 0) + 1
     state["col_section_eval_iter"] = iter_count
     key = f"col_section_eval_{iter_count}"
+    print(key)
 
     # ===== ADD EXISTING COL SECTION TO PROMPT =====
     existing_col_section_messages = state.get("col_section")
@@ -58,7 +59,7 @@ def col_section_node(state: AppState):
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
     # Ask user for evaluation and record time
-    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", key=key)
+    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", input_key=key)
 
     return {
         "col_section": [AIMessage(content=col_section)],
@@ -140,6 +141,7 @@ def run_col_section_extraction(state: AppState):
                 cnt = current_state.get("col_interrupt_iter", 0) + 1
                 current_state["col_interrupt_iter"] = cnt
                 key = f"col_interrupt_{cnt}"
+                print(key)
 
                 user_input = INPUT_FUNC(payload["message"], key=key)
                 if user_input.lower() == "continue":

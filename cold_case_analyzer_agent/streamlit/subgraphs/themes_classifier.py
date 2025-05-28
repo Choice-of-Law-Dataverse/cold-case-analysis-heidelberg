@@ -33,6 +33,7 @@ def theme_classification_node(state: AppState):
     iter_count = state.get("theme_classification_iter", 0) + 1
     state["theme_classification_iter"] = iter_count
     key = f"theme_classification{iter_count}"
+    print(key)
 
     # ===== ADD EXISTING CLASSIFICATION TO PROMPT =====
     previous_classification_text = ""
@@ -84,7 +85,7 @@ def theme_classification_node(state: AppState):
         classification = [response.content.strip()]
     print(f"\nClassified theme(s): {classification}\n")
     # Ask user for evaluation using the shared utility
-    score = prompt_evaluation(state, "theme_evaluation", "Please evaluate the theme classification", key=key)
+    score = prompt_evaluation(state, "theme_evaluation", "Please evaluate the theme classification", input_key=key)
     return {
         "classification": [AIMessage(content=classification)],
         "theme_feedback": theme_feedback,
@@ -164,6 +165,7 @@ def run_theme_classification(state: AppState):
                 cnt = current_state.get("theme_interrupt_iter", 0) + 1
                 current_state["theme_interrupt_iter"] = cnt
                 key = f"theme_interrupt_{cnt}"
+                print(key)
 
                 user_feedback = INPUT_FUNC(payloud["message"], key=key)
                 if user_feedback.lower() == "continue":
