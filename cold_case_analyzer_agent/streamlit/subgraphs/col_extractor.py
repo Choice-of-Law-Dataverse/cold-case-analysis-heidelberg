@@ -11,6 +11,7 @@ from config import llm, thread_id
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from schemas.appstate import AppState
 from utils.evaluator import prompt_evaluation
+from utils.debug_print_state import print_state
 from utils.input_handler import INPUT_FUNC
 from utils.output_handler import OUTPUT_FUNC
 
@@ -122,12 +123,17 @@ def streamlit_col_extractor_runner():
         st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
         st.session_state.waiting_for = None
         # debug: print session state after initialization
-        print("[DEBUG] col_extractor init session_state:", dict(st.session_state))
+        print_state("col_extractor init session_state", dict(st.session_state))
 
-    # if we already asked for feedback, resume
+    # handle feedback restart:
     if st.session_state.waiting_for is not None:
-        app.invoke(Command(resume=st.session_state.waiting_for), config=thread_config)
+        # append feedback and restart generator
+        feedback_val = st.session_state.waiting_for
+        st.session_state.col_state.setdefault("col_section_feedback", []).append(feedback_val)
+        # debug: print session state after applying feedback
+        print_state("applied feedback and restarting", dict(st.session_state))
         st.session_state.waiting_for = None
+        st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
 
     # pull exactly one chunk
     try:
@@ -136,7 +142,7 @@ def streamlit_col_extractor_runner():
         # merge results back into app_state
         st.session_state.app_state.update(st.session_state.col_state)
         # debug: print session state after final merge
-        print("[DEBUG] col_extractor final merge session_state:", dict(st.session_state))
+        print_state("col_extractor final merge session_state", dict(st.session_state))
         return st.session_state.col_state
 
     # handle node output
@@ -146,12 +152,16 @@ def streamlit_col_extractor_runner():
         cmd_or_dict = chunk["col_section_feedback_node"]
         if isinstance(cmd_or_dict, dict):
             st.session_state.col_state.update(cmd_or_dict)
-        else:  # Command
+            # debug: print session state after feedback dict merge
+            print("[DEBUG] col_extractor feedback dict merge:", dict(st.session_state))
+        else:
             st.session_state.col_state.update(cmd_or_dict.update)
+            # debug: print session state after feedback cmd update
+            print_state("col_extractor feedback cmd update", dict(st.session_state))
             if cmd_or_dict.goto == END:
                 st.session_state.app_state.update(st.session_state.col_state)
                 # debug: print session state after feedback END merge
-                print("[DEBUG] col_extractor feedback END merge session_state:", dict(st.session_state))
+                print_state("col_extractor feedback END merge session_state", dict(st.session_state))
                 return st.session_state.col_state
 
     # handle interrupt: render a text_input + button
@@ -162,7 +172,7 @@ def streamlit_col_extractor_runner():
         if st.button("Submit feedback", key=f"col_submit_{iter_count}"):
             st.session_state.waiting_for = user_fb
             # debug: print session state after setting waiting_for
-            print("[DEBUG] col_extractor set waiting_for:", st.session_state.waiting_for, dict(st.session_state))
+            print_state("col_extractor set waiting_for", dict(st.session_state))
         st.stop()  # stop here so Streamlit will rerun on next click
 
     # recurse

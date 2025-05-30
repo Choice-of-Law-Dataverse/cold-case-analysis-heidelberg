@@ -2,6 +2,7 @@ import streamlit as st
 import json
 from utils.input_handler import set_input_func, streamlit_input
 from utils.output_handler import set_output_func, streamlit_output
+from utils.debug_print_state import print_state
 
 # wire up Streamlit I/O
 set_input_func(streamlit_input)
@@ -38,17 +39,16 @@ if st.button("Extract COL Section"):
     for k in ["col_state", "coler", "waiting_for"]:
         st.session_state.pop(k, None)
 
-# if extraction has started, run the runner on every rerun
+# if extraction has started, run one step on every rerun and show suggestion
 if st.session_state.get("extract_started", False):
-    with st.spinner("Extracting…"):
-        streamlit_col_extractor_runner()
-    st.success("Done")
+    # run a single step of the extractor
+    streamlit_col_extractor_runner()
+    # display current suggestion
     st.subheader("Extracted COL Section")
-    # show whichever state holds the section
     col_list = []
     if "col_state" in st.session_state:
         col_list = [m.content for m in st.session_state.col_state.get("col_section", [])]
     st.json(col_list)
     # debug: dump session state
-    print("[DEBUG] UI session_state after extraction:", dict(st.session_state))
+    print_state("UI session_state", dict(st.session_state))
 # end of file
