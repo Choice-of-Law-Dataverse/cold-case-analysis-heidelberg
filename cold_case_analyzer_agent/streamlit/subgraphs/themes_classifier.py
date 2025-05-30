@@ -134,46 +134,57 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 
 
 # ========== RUNNER ==========
+import streamlit as st
+from langgraph.types import Command
 
-def run_theme_classification(state: AppState):
-    current_state = state.copy()
+def streamlit_theme_classification_runner():
+    # initialize
+    if 'theme_state' not in st.session_state:
+        st.session_state.theme_state = st.session_state.app_state.copy()
+        st.session_state.themeer = app.stream(st.session_state.theme_state, config=thread_config)
+        st.session_state.theme_waiting_for = None
 
-    for chunk in app.stream(current_state, config=thread_config):
-        # merge output from theme_classification_node
-        if "theme_classification_node" in chunk:
-            out = chunk["theme_classification_node"]
-            if isinstance(out, dict):
-                current_state.update(out)
-        
-        # merge output from feedback node (Command or dict)
-        if "theme_feedback_node" in chunk:
-            cmd_or_dict = chunk["theme_feedback_node"]
-            if isinstance(cmd_or_dict, Command):
-                current_state.update(cmd_or_dict.update)
-                if cmd_or_dict.goto == END:
-                    return current_state
-                return run_theme_classification(current_state)
-            
-            elif isinstance(cmd_or_dict, dict):
-                current_state.update(cmd_or_dict)
+    # resume after feedback
+    if st.session_state.theme_waiting_for:
+        app.invoke(Command(resume=st.session_state.theme_waiting_for), config=thread_config)
+        st.session_state.theme_waiting_for = None
 
-        if "__interrupt__" in chunk:
-            payloud = chunk["__interrupt__"][0].value
-            print("waiting for user feedback...")
-            while True:
-                # ===== BUMP AND READ COUNTER =====
-                cnt = current_state.get("theme_interrupt_iter", 0) + 1
-                current_state["theme_interrupt_iter"] = cnt
-                key = f"theme_interrupt_{cnt}"
-                print(key)
+    try:
+        chunk = next(st.session_state.themeer)
+    except StopIteration:
+        # done, merge back
+        st.session_state.app_state.update(st.session_state.theme_state)
+        return st.session_state.theme_state
 
-                user_feedback = INPUT_FUNC(payloud["message"], key=key)
-                if user_feedback.lower() == "continue":
-                    app.invoke(Command(resume=user_feedback), config=thread_config)
-                    final_updated_state = app.get_state(config=thread_config)
-                    return final_updated_state
-                else:
-                    current_state.setdefault("theme_feedback", []).append(user_feedback)
-                    current_state["user_approved_theme"] = False
-                    app.invoke(Command(resume=user_feedback), config=thread_config)
-    return current_state
+    # handle classification output
+    if 'theme_classification_node' in chunk:
+        out = chunk['theme_classification_node']
+        if isinstance(out, dict):
+            st.session_state.theme_state.update(out)
+    # handle feedback node
+    if 'theme_feedback_node' in chunk:
+        cmd_or_dict = chunk['theme_feedback_node']
+        if isinstance(cmd_or_dict, Command):
+            st.session_state.theme_state.update(cmd_or_dict.update)
+            if cmd_or_dict.goto == END:
+                st.session_state.app_state.update(st.session_state.theme_state)
+                return st.session_state.theme_state
+            # else restart classification
+            return streamlit_theme_classification_runner()
+        elif isinstance(cmd_or_dict, dict):
+            st.session_state.theme_state.update(cmd_or_dict)
+
+    # handle interrupt
+    if '__interrupt__' in chunk:
+        payload = chunk['__interrupt__'][0].value
+        # bump counter for unique key
+        cnt = st.session_state.theme_state.get('theme_interrupt_iter', 0) + 1
+        st.session_state.theme_state['theme_interrupt_iter'] = cnt
+        key = f"theme_fb_{cnt}"
+        user_fb = st.text_input(payload['message'], key=key)
+        if st.button('Submit theme feedback', key=f'submit_theme_{cnt}'):
+            st.session_state.theme_waiting_for = user_fb
+        st.stop()
+
+    # no interrupt, continue automatically
+    return streamlit_theme_classification_runner()

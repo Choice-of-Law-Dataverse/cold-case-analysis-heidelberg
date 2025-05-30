@@ -178,6 +178,34 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 
 
 # ========== RUNNER ==========
+import streamlit as st
+from langgraph.types import Command
+
+def streamlit_case_analyzer_runner():
+    # initialize
+    if 'analysis_state' not in st.session_state:
+        st.session_state.analysis_state = st.session_state.app_state.copy()
+        st.session_state.caser = app.stream(st.session_state.analysis_state, config=thread_config)
+
+    # pull one chunk
+    try:
+        chunk = next(st.session_state.caser)
+    except StopIteration:
+        # done: merge back and return
+        st.session_state.app_state.update(st.session_state.analysis_state)
+        return st.session_state.analysis_state
+
+    # merge node output
+    for node, out in chunk.items():
+        if node == '__end__':
+            continue
+        if isinstance(out, dict):
+            st.session_state.analysis_state.update(out)
+        else:
+            # unexpected non-dict
+            print(f"Warning: Node {node} returned non-dict: {out}")
+    # continue automatically
+    return streamlit_case_analyzer_runner()
 
 def run_analysis(state: AppState):
     current_state = state.copy()

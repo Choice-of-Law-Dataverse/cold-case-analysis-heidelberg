@@ -111,25 +111,27 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 import streamlit as st
 from langgraph.types import Command
 
-def streamlit_col_extractor_runner(state: AppState):
-    # initialize
+def streamlit_col_extractor_runner():
+     # initialize
     if "col_state" not in st.session_state:
+        import streamlit as st
         st.session_state.col_state = st.session_state.app_state.copy()
         st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
         st.session_state.waiting_for = None
 
     # if we already asked for feedback, use that to resume the graph
     if st.session_state.waiting_for:
-        fb = st.session_state.waiting_for
-        cmd = Command(resume=fb)
-        app.invoke(cmd, config=thread_config)
+        import streamlit as st
+        app.invoke(Command(resume=st.session_state.waiting_for), config=thread_config)
         st.session_state.waiting_for = None
 
-    # pull exactly one chunk
-    try:
-        chunk = next(st.session_state.coler)
-    except StopIteration:
-        # done
+     # pull exactly one chunk
+     try:
+         chunk = next(st.session_state.coler)
+     except StopIteration:
+         # done
+        # merge results back into app_state
+        st.session_state.app_state.update(st.session_state.col_state)
         return st.session_state.col_state
 
     # handle node output
@@ -153,4 +155,4 @@ def streamlit_col_extractor_runner(state: AppState):
         st.stop()  # stop here so Streamlit will rerun on next click
 
     # no interrupt, keep going automatically
-    return streamlit_col_extractor_runner(st.session_state.col_state)
+    return streamlit_col_extractor_runner()

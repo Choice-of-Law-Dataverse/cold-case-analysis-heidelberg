@@ -8,12 +8,15 @@ import random
 # core input function via Streamlit
 def streamlit_input(prompt: str, key: str) -> str:
     """Use Streamlit widget: number_input for 0–100 prompts, text_input otherwise."""
-    print("Now using Streamlit input handler with key: ", key)
+    # record prompt as user message
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    # now render input widget
     if "(0-100)" in prompt:
         value = st.number_input(prompt, min_value=0, max_value=100, value=0, key=key)
         return str(value)
     return st.text_input(prompt, key=key)
-    st.session_state.messages.append({"role": "user", "content": prompt})
 # override default
 INPUT_FUNC: Callable[[str], str] = streamlit_input
 # patch builtins.input so that all input() calls use our Streamlit function

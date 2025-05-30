@@ -1,5 +1,6 @@
 import builtins
 import streamlit as st
+from typing import Callable
 
 def streamlit_output(message: str, key: str) -> None:
     """Display a message in Streamlit."""
