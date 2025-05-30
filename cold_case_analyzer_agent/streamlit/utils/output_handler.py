@@ -1,4 +1,3 @@
-import builtins
 import streamlit as st
 from typing import Callable
 
@@ -11,7 +10,7 @@ def streamlit_output(message: str, key: str) -> None:
     st.session_state.messages.append({"role": "assistant", "content": message})
 
 OUTPUT_FUNC: Callable[[str, str], None] = streamlit_output
-builtins.print = OUTPUT_FUNC
+
 def set_output_func(fn: Callable[[str, str], None]) -> None:
     """
     Override the global OUTPUT_FUNC.
@@ -19,4 +18,4 @@ def set_output_func(fn: Callable[[str, str], None]) -> None:
     """
     global OUTPUT_FUNC
     OUTPUT_FUNC = fn
-    builtins.print = fn
+    # Note: print() is no longer overridden. Use OUTPUT_FUNC/message_writer explicitly for Streamlit output.

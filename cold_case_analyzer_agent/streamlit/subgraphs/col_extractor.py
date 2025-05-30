@@ -5,18 +5,20 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
+import streamlit as st
 
 from config import llm, thread_id
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from schemas.appstate import AppState
 from utils.evaluator import prompt_evaluation
 from utils.input_handler import INPUT_FUNC
+from utils.output_handler import OUTPUT_FUNC
 
 
 # ========== NODES ==========
 
 def col_section_node(state: AppState):
-    print("\n--- COL SECTION EXTRACTION ---")
+    #print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
     feedback = state.get("col_section_feedback", ["No feedback yet"])
     prompt = COL_SECTION_PROMPT.format(text=text)
@@ -25,7 +27,7 @@ def col_section_node(state: AppState):
     iter_count = state.get("col_section_eval_iter", 0) + 1
     state["col_section_eval_iter"] = iter_count
     key = f"col_section_eval_{iter_count}"
-    print(key)
+    #print(key)
 
     # ===== ADD EXISTING COL SECTION TO PROMPT =====
     existing_col_section_messages = state.get("col_section")
@@ -56,10 +58,12 @@ def col_section_node(state: AppState):
     ])
     col_time = time.time() - start_time
     col_section = response.content
-    print(f"\nExtracted Choice of Law section:\n{col_section}\n")
+    #print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
     # Ask user for evaluation and record time
     score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", input_key=key)
+
+    OUTPUT_FUNC(col_section, key)
 
     return {
         "col_section": [AIMessage(content=col_section)],
@@ -69,7 +73,7 @@ def col_section_node(state: AppState):
     }
 
 def col_section_feedback_node(state: AppState):
-    print("\n--- USER FEEDBACK: COL SECTION ---")
+    #print("\n--- USER FEEDBACK: COL SECTION ---")
     user_feedback = interrupt({
         "col_section": state["col_section"],
         "message": "Provide feedback for the col section or type 'continue': "
@@ -112,26 +116,27 @@ import streamlit as st
 from langgraph.types import Command
 
 def streamlit_col_extractor_runner():
-     # initialize
+    # initialize
     if "col_state" not in st.session_state:
-        import streamlit as st
         st.session_state.col_state = st.session_state.app_state.copy()
         st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
         st.session_state.waiting_for = None
+        # debug: print session state after initialization
+        print("[DEBUG] col_extractor init session_state:", dict(st.session_state))
 
-    # if we already asked for feedback, use that to resume the graph
-    if st.session_state.waiting_for:
-        import streamlit as st
+    # if we already asked for feedback, resume
+    if st.session_state.waiting_for is not None:
         app.invoke(Command(resume=st.session_state.waiting_for), config=thread_config)
         st.session_state.waiting_for = None
 
-     # pull exactly one chunk
-     try:
-         chunk = next(st.session_state.coler)
-     except StopIteration:
-         # done
+    # pull exactly one chunk
+    try:
+        chunk = next(st.session_state.coler)
+    except StopIteration:
         # merge results back into app_state
         st.session_state.app_state.update(st.session_state.col_state)
+        # debug: print session state after final merge
+        print("[DEBUG] col_extractor final merge session_state:", dict(st.session_state))
         return st.session_state.col_state
 
     # handle node output
@@ -144,15 +149,21 @@ def streamlit_col_extractor_runner():
         else:  # Command
             st.session_state.col_state.update(cmd_or_dict.update)
             if cmd_or_dict.goto == END:
+                st.session_state.app_state.update(st.session_state.col_state)
+                # debug: print session state after feedback END merge
+                print("[DEBUG] col_extractor feedback END merge session_state:", dict(st.session_state))
                 return st.session_state.col_state
 
-    # handle an interrupt: render a text_input + button and bail out early
+    # handle interrupt: render a text_input + button
     if "__interrupt__" in chunk:
         payload = chunk["__interrupt__"][0].value
-        user_fb = st.text_input(payload["message"], key="col_feedback")
-        if st.button("Submit feedback", key="col_submit"):
+        iter_count = st.session_state.col_state.get("col_section_eval_iter", 1)
+        user_fb = st.text_input(payload["message"], key=f"col_fb_{iter_count}")
+        if st.button("Submit feedback", key=f"col_submit_{iter_count}"):
             st.session_state.waiting_for = user_fb
+            # debug: print session state after setting waiting_for
+            print("[DEBUG] col_extractor set waiting_for:", st.session_state.waiting_for, dict(st.session_state))
         st.stop()  # stop here so Streamlit will rerun on next click
 
-    # no interrupt, keep going automatically
+    # recurse
     return streamlit_col_extractor_runner()
