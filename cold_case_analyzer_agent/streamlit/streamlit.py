@@ -8,19 +8,36 @@ from utils.debug_print_state import print_state
 set_input_func(streamlit_input)
 set_output_func(streamlit_output)
 
-from subgraphs.col_extractor import streamlit_col_extractor_runner
+from subgraphs.col_extractor import run_col_section_extraction
 from utils.sample_cd import SAMPLE_COURT_DECISION
 
-# init app_state once
+# init session_state once
+initial_state = {
+    "full_text": SAMPLE_COURT_DECISION,
+    "col_section": "",
+    "col_section_feedback": [],
+    "col_section_evaluation": 101,
+    "user_approved_col": False,
+    "classification": [],
+    "theme_feedback": [],
+    "theme_evaluation": 101,
+    "user_approved_theme": False,
+    "abstract": "",
+    "abstract_evaluation": 101,
+    "relevant_facts": "",
+    "relevant_facts_evaluation": 101,
+    "pil_provisions": "",
+    "pil_provisions_evaluation": 101,
+    "col_issue": "",
+    "col_issue_evaluation": 101,
+    "courts_position": "",
+    "courts_position_evaluation": 101
+}
+
 if "app_state" not in st.session_state:
-    st.session_state.app_state = {
-        "full_text": SAMPLE_COURT_DECISION,
-        "col_section": [],
-        "col_section_feedback": [],
-        "col_section_evaluation": 101,
-        "user_approved_col": False,
-        "col_section_time": 0.0,
-    }
+    st.session_state.app_state = initial_state
+
+print("UI session_state initialized with:", json.dumps(st.session_state.app_state, indent=4))
 
 # UI: title & input
 st.title("Choice‐of‐Law Section Extractor")
@@ -42,7 +59,7 @@ if st.button("Extract COL Section"):
 # if extraction has started, run one step on every rerun and show suggestion
 if st.session_state.get("extract_started", False):
     # run a single step of the extractor
-    streamlit_col_extractor_runner()
+    run_col_section_extraction(st.session_state.app_state)
     # display current suggestion
     st.subheader("Extracted COL Section")
     col_list = []
