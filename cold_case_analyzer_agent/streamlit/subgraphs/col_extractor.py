@@ -144,15 +144,21 @@ def run_col_section_extraction(state: AppState):
                 iter_count = state.get("col_section_eval_iter", 0) + 1
                 state["col_section_eval_iter"] = iter_count
                 user_input = INPUT_FUNC(payload["message"], key=f"col_section_feedback_{iter_count}")
-                #st.session_state.waiting_for = f"col_section_feedback_{iter_count}"
-                #st.stop()
-                OUTPUT_FUNC(f"User input: {user_input}", key=f"col_section_feedback_output_{iter_count}")
+                print(f"User input: {user_input}")
                 if user_input.lower() == "continue":
-                    app.invoke(Command(resume=user_input), config=thread_config)
-                    final_updated_state = app.get_state(config=thread_config)
-                    return final_updated_state
+                    state["user_approved_col"] = True
+                    state["col_section_feedback"].append("Finalised")
+                    st.session_state.waiting_for = None
+                    st.stop()
                 else:
-                    current_state.setdefault("col_section_feedback", []).append(user_input)
-                    current_state["user_approved_col"] = False
-                    app.invoke(Command(resume=user_input), config=thread_config)
-    return current_state
+                    state["user_approved_col"] = False
+                    state["col_section_feedback"].append(user_input)
+                    st.session_state.waiting_for = f"col_section_feedback_{iter_count}"
+                    st.stop()
+            
+            if st.session_state.get("waiting_for") == f"col_section_feedback_{iter_count}":
+                user_input =st.session_state.pop("col_section_feedback_{iter_count}")
+                del st.session_state["waiting_for"]
+                OUTPUT_FUNC(f"User input: {user_input}", key=f"col_section_feedback_output_{iter_count}_output")
+                app.invoke(Command(resume=user_input), config=thread_config)
+                return run_col_section_extraction(current_state)
