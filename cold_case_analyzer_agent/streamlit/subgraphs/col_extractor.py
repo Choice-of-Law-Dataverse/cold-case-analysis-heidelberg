@@ -22,6 +22,7 @@ def col_section_node(state: AppState):
     print("\n--- COL SECTION EXTRACTION ---")
     text = state["full_text"]
     feedback = state.get("col_section_feedback", ["No feedback yet"])
+    print("\nFeedback for col section:", feedback, "\n")
     prompt = COL_SECTION_PROMPT.format(text=text)
 
     # ===== BUMP AND READ COUNTER =====
@@ -58,17 +59,19 @@ def col_section_node(state: AppState):
     ])
     col_time = time.time() - start_time
     col_section = response.content
+    state["col_section"].append(col_section)
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
 
     # Ask user for evaluation and record time
-    score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", input_key=key)
+    #score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", input_key=key)
 
+    print("NOW CALLING OUTPUT_FUNC FROM col_section_node")
     OUTPUT_FUNC(col_section, key)
 
     return {
         "col_section": [AIMessage(content=col_section)],
         "col_section_feedback": feedback,
-        "col_section_evaluation": score,
+        #"col_section_evaluation": score,
         "col_section_time": col_time
     }
 
@@ -78,6 +81,8 @@ def col_section_feedback_node(state: AppState):
         "col_section": state["col_section"],
         "message": "Provide feedback for the col section or type 'continue': "
     })
+    #print("\nNow calling the OUTPUT_FUNC for user feedback from the col_section_feedback_node")
+    #OUTPUT_FUNC(f"User feedback: {user_feedback}", key=f"col_section_feedback_{state['col_section_eval_iter']}")
     if user_feedback.lower() == "continue":
         return Command(
             update={
@@ -113,52 +118,54 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 # ========== RUNNER ==========
 
 def run_col_section_extraction(state: AppState):
-    current_state = state.copy()
+    # Initialize session_state once
+    if "col_state" not in st.session_state:
+        st.session_state.col_state = dict(state)
+        st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
+        st.session_state.waiting_for = None
+        #print_state("col_extractor init session_state", dict(st.session_state))
+    # Resume after previous feedback
+    if st.session_state.waiting_for is not None:
+        app.invoke(Command(resume=st.session_state.waiting_for), config=thread_config)
+        st.session_state.waiting_for = None
 
-    for chunk in app.stream(current_state, config=thread_config):
-        # merge output from col_section_node
+    # Process chunks in a loop until interrupt or END
+    while True:
+        try:
+            chunk = next(st.session_state.coler)
+        except StopIteration:
+            print_state("col_extractor final state", dict(st.session_state))
+            return st.session_state.col_state
+
+        # extraction output
         if "col_section_node" in chunk:
-            out = chunk["col_section_node"]
-            if isinstance(out, dict):
-                current_state.update(out)
+            st.session_state.col_state.update(chunk["col_section_node"])
+            continue
 
-        # merge output from feedback node (Command or dict)
+        # feedback Command
         if "col_section_feedback_node" in chunk:
-            cmd_or_dict = chunk["col_section_feedback_node"]
-            if isinstance(cmd_or_dict, Command):
-                current_state.update(cmd_or_dict.update)
-                if cmd_or_dict.goto == END:
-                    return current_state
-                # user wants another extraction pass → recurse
-                return run_col_section_extraction(current_state)
+            cmd = chunk["col_section_feedback_node"]
+            if isinstance(cmd, Command):
+                st.session_state.col_state.update(cmd.update)
+                print_state("col_extractor feedback cmd update", dict(st.session_state))
+                if cmd.goto == END:
+                    print_state("col_extractor final state after END", dict(st.session_state))
+                    return st.session_state.col_state
+                # else continue loop
+                continue
 
-            # (if you ever return a dict here instead of a Command…)
-            elif isinstance(cmd_or_dict, dict):
-                current_state.update(cmd_or_dict)
-
-        # legacy __interrupt__ handler (optional if you still need it)
+        # LLM interrupt for user feedback
         if "__interrupt__" in chunk:
             payload = chunk["__interrupt__"][0].value
-            print("waiting for user feedback…")
-            while True:
-                iter_count = state.get("col_section_eval_iter", 0) + 1
-                state["col_section_eval_iter"] = iter_count
-                user_input = INPUT_FUNC(payload["message"], key=f"col_section_feedback_{iter_count}")
-                print(f"User input: {user_input}")
-                if user_input.lower() == "continue":
-                    state["user_approved_col"] = True
-                    state["col_section_feedback"].append("Finalised")
-                    st.session_state.waiting_for = None
-                    st.stop()
-                else:
-                    state["user_approved_col"] = False
-                    state["col_section_feedback"].append(user_input)
-                    st.session_state.waiting_for = f"col_section_feedback_{iter_count}"
-                    st.stop()
-            
-            if st.session_state.get("waiting_for") == f"col_section_feedback_{iter_count}":
-                user_input =st.session_state.pop("col_section_feedback_{iter_count}")
-                del st.session_state["waiting_for"]
-                OUTPUT_FUNC(f"User input: {user_input}", key=f"col_section_feedback_output_{iter_count}_output")
-                app.invoke(Command(resume=user_input), config=thread_config)
-                return run_col_section_extraction(current_state)
+            iter_count = st.session_state.col_state.get("col_section_eval_iter", 1)
+            # render feedback widget and pause
+            user_fb = INPUT_FUNC(payload["message"], key=f"col_fb_{iter_count}")
+            st.session_state.app_state["col_section_feedback"].append(user_fb)
+            st.session_state.col_state["col_section_feedback"].append(user_fb)
+            if st.button("Submit feedback", key=f"col_submit_{iter_count}"):
+                st.session_state.waiting_for = user_fb
+                #print_state("col_extractor set waiting_for", dict(st.session_state))
+            st.stop()
+        # otherwise ignore and continue looping
+        continue
+    # end while

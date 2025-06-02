@@ -1,12 +1,8 @@
 import streamlit as st
 import json
-from utils.input_handler import set_input_func, streamlit_input
-from utils.output_handler import set_output_func, streamlit_output
+from utils.input_handler import INPUT_FUNC
+from utils.output_handler import OUTPUT_FUNC
 from utils.debug_print_state import print_state
-
-# wire up Streamlit I/O
-set_input_func(streamlit_input)
-set_output_func(streamlit_output)
 
 from subgraphs.col_extractor import run_col_section_extraction
 from utils.sample_cd import SAMPLE_COURT_DECISION
@@ -41,6 +37,9 @@ print("UI session_state initialized with:", json.dumps(st.session_state.app_stat
 
 # UI: title & input
 st.title("Choice‐of‐Law Section Extractor")
+user_id = INPUT_FUNC("Identify yourself please:", key="user_id_input")
+if user_id:
+    st.session_state.user_id = user_id
 full_text = st.text_area(
     "Court decision text:",
     value=st.session_state.app_state["full_text"],
@@ -53,19 +52,19 @@ st.session_state.app_state["full_text"] = full_text
 if st.button("Extract COL Section"):
     st.session_state.extract_started = True
     # clear previous runner slots
-    for k in ["col_state", "coler", "waiting_for"]:
-        st.session_state.pop(k, None)
+    #for k in ["col_state", "coler", "waiting_for"]:
+        #st.session_state.pop(k, None)
 
-# if extraction has started, run one step on every rerun and show suggestion
 if st.session_state.get("extract_started", False):
-    # run a single step of the extractor
-    run_col_section_extraction(st.session_state.app_state)
-    # display current suggestion
+    # 1) only invoke the runner when we're _not_ waiting for feedback
+    if not st.session_state.get("waiting_for"):
+        # reset chat history so OUTPUT_FUNC writes fresh messages
+        st.session_state["messages"] = []
+        # run until first interrupt or END, then capture the new app state
+        new_state = run_col_section_extraction(st.session_state.app_state)
+        st.session_state.app_state = new_state
+
+    # 2) render whatever messages we have so far
     st.subheader("Extracted COL Section")
-    col_list = []
-    if "col_state" in st.session_state:
-        col_list = [m.content for m in st.session_state.col_state.get("col_section", [])]
-    st.json(col_list)
-    # debug: dump session state
-    print_state("UI session_state", dict(st.session_state))
-# end of file
+    for i, msg in enumerate(st.session_state.get("messages", [])):
+        OUTPUT_FUNC(msg["content"], key=f"message_{i}")
