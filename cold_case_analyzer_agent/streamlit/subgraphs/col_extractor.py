@@ -5,15 +5,12 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Command, interrupt
 from langgraph.checkpoint.memory import MemorySaver
-import streamlit as st
 
 from config import llm, thread_id
 from schemas.appstate import AppState
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 from utils.evaluator import prompt_evaluation
 from utils.debug_print_state import print_state
-from utils.input_handler import INPUT_FUNC
-from utils.output_handler import OUTPUT_FUNC
 
 
 # ========== NODES ==========
@@ -61,12 +58,6 @@ def col_section_node(state: AppState):
     col_section = response.content
     state["col_section"].append(col_section)
     print(f"\nExtracted Choice of Law section:\n{col_section}\n")
-
-    # Ask user for evaluation and record time
-    #score = prompt_evaluation(state, "col_section_evaluation", "Please evaluate the extracted Choice of Law section", input_key=key)
-
-    print("NOW CALLING OUTPUT_FUNC FROM col_section_node")
-    OUTPUT_FUNC(col_section, key)
 
     return {
         "col_section": [AIMessage(content=col_section)],
@@ -118,54 +109,7 @@ thread_config = {"configurable": {"thread_id": thread_id}}
 # ========== RUNNER ==========
 
 def run_col_section_extraction(state: AppState):
-    # Initialize session_state once
-    if "col_state" not in st.session_state:
-        st.session_state.col_state = dict(state)
-        st.session_state.coler = app.stream(st.session_state.col_state, config=thread_config)
-        st.session_state.waiting_for = None
-        #print_state("col_extractor init session_state", dict(st.session_state))
-    # Resume after previous feedback
-    if st.session_state.waiting_for is not None:
-        app.invoke(Command(resume=st.session_state.waiting_for), config=thread_config)
-        st.session_state.waiting_for = None
-
-    # Process chunks in a loop until interrupt or END
-    while True:
-        try:
-            chunk = next(st.session_state.coler)
-        except StopIteration:
-            print_state("col_extractor final state", dict(st.session_state))
-            return st.session_state.col_state
-
-        # extraction output
-        if "col_section_node" in chunk:
-            st.session_state.col_state.update(chunk["col_section_node"])
-            continue
-
-        # feedback Command
-        if "col_section_feedback_node" in chunk:
-            cmd = chunk["col_section_feedback_node"]
-            if isinstance(cmd, Command):
-                st.session_state.col_state.update(cmd.update)
-                print_state("col_extractor feedback cmd update", dict(st.session_state))
-                if cmd.goto == END:
-                    print_state("col_extractor final state after END", dict(st.session_state))
-                    return st.session_state.col_state
-                # else continue loop
-                continue
-
-        # LLM interrupt for user feedback
-        if "__interrupt__" in chunk:
-            payload = chunk["__interrupt__"][0].value
-            iter_count = st.session_state.col_state.get("col_section_eval_iter", 1)
-            # render feedback widget and pause
-            user_fb = INPUT_FUNC(payload["message"], key=f"col_fb_{iter_count}")
-            st.session_state.app_state["col_section_feedback"].append(user_fb)
-            st.session_state.col_state["col_section_feedback"].append(user_fb)
-            if st.button("Submit feedback", key=f"col_submit_{iter_count}"):
-                st.session_state.waiting_for = user_fb
-                #print_state("col_extractor set waiting_for", dict(st.session_state))
-            st.stop()
-        # otherwise ignore and continue looping
-        continue
-    # end while
+    """
+    Stream raw graph execution chunks (node outputs, commands, interrupts) for UI to handle.
+    """
+    return app.stream(state, config=thread_config)
