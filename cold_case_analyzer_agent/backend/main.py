@@ -61,6 +61,7 @@ initial_state = {
 
 if __name__ == "__main__":
     # Run the cold case analysis workflow
+    print(initial_state["full_text"])
     final_state_result = run_cold_case_analysis(initial_state)
     print("\n--- FINAL STATE (PRETTY) ---")
     if final_state_result:
