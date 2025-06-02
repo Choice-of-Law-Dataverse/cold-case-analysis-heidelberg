@@ -187,7 +187,7 @@ You can provide feedback to improve the analysis until you're satisfied with the
 if 'col_state' not in st.session_state:
     st.session_state.col_state = {}
 
-# Initial extraction input or feedback loop
+# Phase 1: initial extraction or feedback
 if not st.session_state.col_state.get("full_text"):
     full_text = st.text_area(
         "Paste the court decision text here:",
@@ -208,34 +208,72 @@ if not st.session_state.col_state.get("full_text"):
             st.rerun()
         else:
             st.warning("Please enter a court decision to analyze.")
-else:
+elif not st.session_state.col_state.get("col_done"):
+    # Phase 2: display extractions and feedback, allow iterations and then proceed
     # Display all past extractions and feedback in chronological order
     extractions = st.session_state.col_state.get("col_section", [])
     feedbacks = st.session_state.col_state.get("col_section_feedback", [])
     for i, col in enumerate(extractions):
-        #st.markdown(f"**Extraction {i+1}:**")
-        st.markdown("**CoLD Case Analyzer:**")
-        # machine-generated extraction
+        st.markdown(f"**Extraction {i+1}:**")
         st.markdown(f"<div class='machine-message'>{col}</div>", unsafe_allow_html=True)
-        # corresponding user feedback if available
         if i < len(feedbacks):
             st.markdown("**User:**")
             st.markdown(f"<div class='user-message'>{feedbacks[i]}</div>", unsafe_allow_html=True)
-
+    
     # Feedback input for improving extraction
     feedback = st.text_area(
         "Enter feedback to improve COL section extraction:",
         height=150,
         help="Provide feedback to refine the extracted Choice of Law section."
     )
-    if st.button("Submit Feedback"):
-        if feedback:
-            st.session_state.col_state["col_section_feedback"].append(feedback)
-            result = extract_col_section(st.session_state.col_state)
-            st.session_state.col_state.update(result)
+    col_state = st.session_state.col_state
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Submit Feedback"):
+            if feedback:
+                col_state["col_section_feedback"].append(feedback)
+                result = extract_col_section(col_state)
+                col_state.update(result)
+                st.rerun()
+            else:
+                st.warning("Please enter feedback to improve the extraction.")
+    with col2:
+        if st.button("Proceed to Theme Classification"):
+            # initialize theme state
+            col_state["col_done"] = True
+            col_state["classification"] = []
+            col_state["theme_feedback"] = []
+            col_state["theme_eval_iter"] = 0
+            st.rerun()
+
+elif st.session_state.col_state.get("col_done"):
+    # Phase 3: theme classification loop
+    from tools.themes_classifier import theme_classification_node
+    state = st.session_state.col_state
+    # Display past classifications and feedback
+    classifications = state.get("classification", [])
+    theme_feedbacks = state.get("theme_feedback", [])
+    for i, cls in enumerate(classifications):
+        st.markdown(f"**Classification {i+1}:**")
+        st.markdown(f"<div class='machine-message'>{cls}</div>", unsafe_allow_html=True)
+        if i < len(theme_feedbacks):
+            st.markdown("**User:**")
+            st.markdown(f"<div class='user-message'>{theme_feedbacks[i]}</div>", unsafe_allow_html=True)
+    
+    # Feedback input for theme classification
+    theme_fb = st.text_area(
+        "Enter feedback to improve theme classification:",
+        height=150,
+        help="Provide feedback to refine the theme classification."
+    )
+    if st.button("Submit Theme Feedback"):
+        if theme_fb:
+            state["theme_feedback"].append(theme_fb)
+            result = theme_classification_node(state)
+            state.update(result)
             st.rerun()
         else:
-            st.warning("Please enter feedback to improve the extraction.")
+            st.warning("Please enter feedback to improve the theme classification.")
 
 # Sidebar with instructions
 with st.sidebar:
