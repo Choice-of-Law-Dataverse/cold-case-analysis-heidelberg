@@ -7,8 +7,6 @@ from config import llm
 from prompts.col_section_prompt import COL_SECTION_PROMPT
 
 
-# ========== NODES ==========
-
 def extract_col_section(state):
     print("\n--- COL SECTION EXTRACTION ---")
     feedback = state.get("col_section_feedback", [])
