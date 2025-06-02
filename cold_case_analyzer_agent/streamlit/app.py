@@ -240,11 +240,16 @@ else:
                     st.warning("Please enter feedback to improve the extraction.")
         with col2:
             if st.button("Proceed to Theme Classification"):
+                # Initialize theme state and perform first classification
                 col_state = st.session_state.col_state
                 col_state["col_done"] = True
                 col_state["classification"] = []
                 col_state["theme_feedback"] = []
                 col_state["theme_eval_iter"] = 0
+                # Run initial theme classification without feedback
+                from tools.themes_classifier import theme_classification_node
+                init_result = theme_classification_node(col_state)
+                col_state.update(init_result)
                 st.rerun()
     
     # Once COL is done, show theme classification section below
