@@ -187,13 +187,16 @@ You can provide feedback to improve the analysis until you're satisfied with the
 if 'col_state' not in st.session_state:
     st.session_state.col_state = {}
 
-# Phase 1 & 2: initial extraction and COL feedback
+
+# ===== Phase 1 & 2: initial extraction and COL feedback =====
+
 if not st.session_state.col_state.get("full_text"):
     # Initial COL extraction input
     full_text = st.text_area(
         "Paste the court decision text here:",
         height=200,
-        help="Enter the full text of the court decision to extract the Choice of Law section."
+        help="Enter the full text of the court decision to extract the Choice of Law section.",
+        key="full_text_input"
     )
     if st.button("Extract COL Section", type="primary"):
         if full_text:
@@ -249,6 +252,7 @@ else:
             feedback = st.text_area(
                 "Enter feedback to improve COL section:",
                 height=150,
+                key="col_feedback",
                 help="Provide feedback to refine the extracted Choice of Law section."
             )
             col1, col2 = st.columns(2)
@@ -272,8 +276,10 @@ else:
                 "Edit extracted Choice of Law section:",
                 value=last_extraction,
                 height=200,
+                key="col_edit_section",
                 help="Modify the extracted section before proceeding to theme classification"
             )
+            print_state("Current CoLD State\n", st.session_state.col_state)
             if st.button("Submit and Classify"):
                 if edited_extraction:
                     # Save edited extraction and run classification
@@ -327,6 +333,7 @@ else:
                 theme_fb = st.text_area(
                     "Enter feedback to improve theme classification:",
                     height=150,
+                    key="theme_feedback_step1",
                     help="Provide feedback to refine the theme classification."
                 )
                 c1, c2 = st.columns(2)
@@ -350,6 +357,7 @@ else:
                     "Edit theme classification:",
                     value=last_cls,
                     height=200,
+                    key="theme_edit_section",
                     help="Modify the classification before rerunning"
                 )
                 if st.button("Submit and Classify Theme"):
@@ -371,6 +379,7 @@ else:
         theme_fb = st.text_area(
             "Enter feedback to improve theme classification:",
             height=150,
+            key="theme_feedback_final",
             help="Provide feedback to refine the theme classification."
         )
         if st.button("Submit Theme Feedback"):
@@ -381,6 +390,76 @@ else:
                 st.rerun()
             else:
                 st.warning("Please enter feedback to improve the theme classification.")
+
+    # Once themes are done, trigger analysis phase
+    # Prepare state reference
+    state = st.session_state.col_state
+    if state.get("theme_done") and not state.get("analysis_ready"):
+        if st.button("Submit Themes and Start Analysis"):
+            state["analysis_ready"] = True
+            state["analysis_step"] = 0
+            st.rerun()
+
+    # Sequential analysis steps
+    if state.get("analysis_ready"):
+        from tools.case_analyzer import (
+            abstract_node, facts_node,
+            pil_provisions_node, col_issue_node,
+            courts_position_node
+        )
+        steps = [
+            ("abstract", abstract_node),
+            ("relevant_facts", facts_node),
+            ("pil_provisions", pil_provisions_node),
+            ("col_issue", col_issue_node),
+            ("courts_position", courts_position_node)
+        ]
+        name, func = steps[state["analysis_step"]]
+        # run node if not yet in state
+        if name not in state or not state.get(f"{name}"):
+            result = func(state)
+            state.update(result)
+        # display last output
+        content = state.get(name)
+        last = content[-1] if isinstance(content, list) else content
+        st.markdown(f"**{name.replace('_',' ').title()}:**")
+        st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
+        # one-time scoring for this step
+        score_key = f"{name}_score_submitted"
+        if not state.get(score_key):
+            score = st.number_input(
+                f"Evaluate this {name.replace('_',' ')} (0-100):",
+                min_value=0, max_value=100, step=1
+            )
+            if st.button(f"Submit {name.replace('_',' ').title()} Score"):
+                state[f"{name}_score"] = score
+                state[score_key] = True
+                st.rerun()
+        else:
+            sc = state.get(f"{name}_score", 0)
+            st.markdown(f"**Your score for {name.replace('_',' ')}:** {sc}")
+        # editable correction
+        edit_key = f"{name}_edited"
+        if state.get(score_key):
+            edited = st.text_area(
+                f"Edit {name.replace('_',' ')}:",
+                value=state.get(edit_key, last),
+                height=200,
+                key=f"{name}_edit_area"
+            )
+            if st.button(f"Submit Edited {name.replace('_',' ').title()}"):
+                state[name][-1] = edited
+                state[edit_key] = edited
+                st.rerun()
+        # proceed to next
+        if state.get(score_key) and state.get(edit_key) is not None:
+            if st.button("Next"):
+                if state["analysis_step"] < len(steps)-1:
+                    state["analysis_step"] += 1
+                else:
+                    state["analysis_done"] = True
+                st.rerun()
+    # ...existing code...
 
 # Sidebar with instructions
 with st.sidebar:
