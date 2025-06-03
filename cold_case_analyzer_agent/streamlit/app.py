@@ -296,12 +296,77 @@ else:
         # Display past theme classifications and feedback
         classifications = state.get("classification", [])
         theme_feedbacks = state.get("theme_feedback", [])
+        # Theme classification evaluation and refinement
         for j, cls in enumerate(classifications):
             st.markdown(f"**Classification {j+1}:**")
             st.markdown(f"<div class='machine-message'>{cls}</div>", unsafe_allow_html=True)
+            # One-time score input for first classification
+            if j == 0:
+                if not state.get("theme_first_score_submitted"):
+                    score_in = st.number_input(
+                        "Evaluate this first classification (0-100):",
+                        min_value=0, max_value=100, step=1,
+                        help="Provide a score for the quality of the first theme classification"
+                    )
+                    if st.button("Submit Classification Score"):
+                        state["theme_first_score"] = score_in
+                        state["theme_first_score_submitted"] = True
+                        st.rerun()
+                else:
+                    sc = state.get("theme_first_score", 0)
+                    st.markdown("**Your score for classification 1:**")
+                    st.markdown(f"<div class='user-message'>Score: {sc}</div>", unsafe_allow_html=True)
+            # show any existing user feedback
             if j < len(theme_feedbacks):
                 st.markdown("**User:**")
                 st.markdown(f"<div class='user-message'>{theme_feedbacks[j]}</div>", unsafe_allow_html=True)
+        # If still refining theme, manage feedback and editing flows
+        if not state.get("theme_done"):
+            # Step 1: feedback and proceed to edit
+            if not state.get("theme_ready_edit"):
+                theme_fb = st.text_area(
+                    "Enter feedback to improve theme classification:",
+                    height=150,
+                    help="Provide feedback to refine the theme classification."
+                )
+                c1, c2 = st.columns(2)
+                with c1:
+                    if st.button("Submit Theme Feedback"):
+                        if theme_fb:
+                            state["theme_feedback"].append(theme_fb)
+                            result = theme_classification_node(state)
+                            state.update(result)
+                            st.rerun()
+                        else:
+                            st.warning("Please enter feedback to improve the theme classification.")
+                with c2:
+                    if st.button("Proceed to Edit Theme"):
+                        state["theme_ready_edit"] = True
+                        st.rerun()
+            # Step 2: show edit area and final classification
+            else:
+                last_cls = state.get("classification", [""])[-1]
+                edited_cls = st.text_area(
+                    "Edit theme classification:",
+                    value=last_cls,
+                    height=200,
+                    help="Modify the classification before rerunning"
+                )
+                if st.button("Submit and Classify Theme"):
+                    if edited_cls:
+                        state["classification"][-1] = edited_cls
+                        # perform classification iteration
+                        result = theme_classification_node(state)
+                        state.update(result)
+                        # reset edit flag for next loop
+                        state.pop("theme_ready_edit", None)
+                        st.rerun()
+                    else:
+                        st.warning("Please edit the classification before proceeding.")
+        else:
+            # If theme classification is done, show nothing or final summary
+            pass
+        
         # Feedback input for themes
         theme_fb = st.text_area(
             "Enter feedback to improve theme classification:",
