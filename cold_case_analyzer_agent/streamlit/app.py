@@ -219,6 +219,24 @@ else:
     for i, col in enumerate(extractions):
         st.markdown(f"**Extraction {i+1}:**")
         st.markdown(f"<div class='machine-message'>{col}</div>", unsafe_allow_html=True)
+        if i == 0:
+            # One-time score input for extraction 1
+            if not st.session_state.col_state.get("col_first_score_submitted"):
+                score_input = st.number_input(
+                    "Evaluate this first extraction (0-100):",
+                    min_value=0,
+                    max_value=100,
+                    step=1,
+                    help="Provide a score for the quality of the first extraction"
+                )
+                if st.button("Submit Score"):
+                    st.session_state.col_state["col_first_score"] = score_input
+                    st.session_state.col_state["col_first_score_submitted"] = True
+                    st.rerun()
+            else:
+                score = st.session_state.col_state.get("col_first_score", 0)
+                st.markdown("**Your score for extraction 1:**")
+                st.markdown(f"<div class='user-message'>Score: {score}</div>", unsafe_allow_html=True)
         if i < len(feedbacks):
             st.markdown("**User:**")
             st.markdown(f"<div class='user-message'>{feedbacks[i]}</div>", unsafe_allow_html=True)
