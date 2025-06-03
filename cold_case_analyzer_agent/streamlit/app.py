@@ -210,6 +210,9 @@ if not st.session_state.col_state.get("full_text"):
         else:
             st.warning("Please enter a court decision to analyze.")
 else:
+    # Display the full court decision text at the top as a user message
+    st.markdown("**Your Input (Court Decision Text):**")
+    st.markdown(f"<div class='user-message'>{st.session_state.col_state['full_text']}</div>", unsafe_allow_html=True)
     # Always show COL extraction history
     extractions = st.session_state.col_state.get("col_section", [])
     feedbacks = st.session_state.col_state.get("col_section_feedback", [])
@@ -220,37 +223,53 @@ else:
             st.markdown("**User:**")
             st.markdown(f"<div class='user-message'>{feedbacks[i]}</div>", unsafe_allow_html=True)
     
-    # If still refining COL, show feedback controls and proceed button
+    # If still refining COL, manage feedback and editing flows
     if not st.session_state.col_state.get("col_done"):
-        feedback = st.text_area(
-            "Enter feedback to improve COL section:",
-            height=150,
-            help="Provide feedback to refine the extracted Choice of Law section."
-        )
-        col1, col2 = st.columns(2)
         col_state = st.session_state.col_state
-        with col1:
-            if st.button("Submit Feedback"):
-                if feedback:
-                    col_state["col_section_feedback"].append(feedback)
-                    result = extract_col_section(col_state)
-                    col_state.update(result)
+        # Step 1: feedback and proceed to edit
+        if not col_state.get("col_ready_edit"):
+            feedback = st.text_area(
+                "Enter feedback to improve COL section:",
+                height=150,
+                help="Provide feedback to refine the extracted Choice of Law section."
+            )
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Submit Feedback"):
+                    if feedback:
+                        col_state["col_section_feedback"].append(feedback)
+                        result = extract_col_section(col_state)
+                        col_state.update(result)
+                        st.rerun()
+                    else:
+                        st.warning("Please enter feedback to improve the extraction.")
+            with col2:
+                if st.button("Proceed to Edit Section"):
+                    col_state["col_ready_edit"] = True
+                    st.rerun()
+        # Step 2: show edit area and final classification
+        else:
+            last_extraction = col_state.get("col_section", [""])[-1]
+            edited_extraction = st.text_area(
+                "Edit extracted Choice of Law section:",
+                value=last_extraction,
+                height=200,
+                help="Modify the extracted section before proceeding to theme classification"
+            )
+            if st.button("Submit and Classify"):
+                if edited_extraction:
+                    # Save edited extraction and run classification
+                    col_state["col_section"][-1] = edited_extraction
+                    col_state["col_done"] = True
+                    col_state["classification"] = []
+                    col_state["theme_feedback"] = []
+                    col_state["theme_eval_iter"] = 0
+                    from tools.themes_classifier import theme_classification_node
+                    init_result = theme_classification_node(col_state)
+                    col_state.update(init_result)
                     st.rerun()
                 else:
-                    st.warning("Please enter feedback to improve the extraction.")
-        with col2:
-            if st.button("Proceed to Theme Classification"):
-                # Initialize theme state and perform first classification
-                col_state = st.session_state.col_state
-                col_state["col_done"] = True
-                col_state["classification"] = []
-                col_state["theme_feedback"] = []
-                col_state["theme_eval_iter"] = 0
-                # Run initial theme classification without feedback
-                from tools.themes_classifier import theme_classification_node
-                init_result = theme_classification_node(col_state)
-                col_state.update(init_result)
-                st.rerun()
+                    st.warning("Please edit the extracted section before proceeding.")
     
     # Once COL is done, show theme classification section below
     if st.session_state.col_state.get("col_done"):
