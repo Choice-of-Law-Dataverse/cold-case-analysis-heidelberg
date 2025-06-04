@@ -352,7 +352,7 @@ else:
                 )
                 c1, c2 = st.columns(2)
                 with c1:
-                    if st.button("Submit Theme Feedback"):
+                    if st.button("Submit Theme Feedback", key="submit_theme_feedback_step1"):
                         if theme_fb:
                             state["theme_feedback"].append(theme_fb)
                             result = theme_classification_node(state)
@@ -388,23 +388,7 @@ else:
         else:
             # If theme classification is done, show nothing or final summary
             pass
-        
-        # Feedback input for themes
-        theme_fb = st.text_area(
-            "Enter feedback to improve theme classification:",
-            height=150,
-            key="theme_feedback_final",
-            help="Provide feedback to refine the theme classification."
-        )
-        if st.button("Submit Theme Feedback"):
-            if theme_fb:
-                state["theme_feedback"].append(theme_fb)
-                result = theme_classification_node(state)
-                state.update(result)
-                st.rerun()
-            else:
-                st.warning("Please enter feedback to improve the theme classification.")
-
+    
     # Once themes are done, trigger analysis phase
     # Prepare state reference
     state = st.session_state.col_state
