@@ -239,14 +239,16 @@ else:
         if i == 0:
             # One-time score input for extraction 1
             if not st.session_state.col_state.get("col_first_score_submitted"):
+                # Score input restricted to 0–100
                 score_input = st.number_input(
                     "Evaluate this first extraction (0-100):",
                     min_value=0,
                     max_value=100,
                     step=1,
-                    help="Provide a score for the quality of the first extraction"
+                    help="Provide a score for the quality of the first extraction",
+                    key="col_first_score_input"
                 )
-                if st.button("Submit Score"):
+                if st.button("Submit Score", key="submit_col_score"):
                     st.session_state.col_state["col_first_score"] = score_input
                     st.session_state.col_state["col_first_score_submitted"] = True
                     st.rerun()
@@ -327,12 +329,16 @@ else:
             # One-time score input for first classification
             if j == 0:
                 if not state.get("theme_first_score_submitted"):
+                    # Score input restricted to 0–100
                     score_in = st.number_input(
                         "Evaluate this first classification (0-100):",
-                        min_value=0, max_value=100, step=1,
-                        help="Provide a score for the quality of the first theme classification"
+                        min_value=0,
+                        max_value=100,
+                        step=1,
+                        help="Provide a score for the quality of the first theme classification",
+                        key="theme_first_score_input"
                     )
-                    if st.button("Submit Classification Score"):
+                    if st.button("Submit Classification Score", key="submit_theme_score"):
                         state["theme_first_score"] = score_in
                         state["theme_first_score_submitted"] = True
                         st.rerun()
@@ -433,11 +439,15 @@ else:
         # one-time scoring for this step
         score_key = f"{name}_score_submitted"
         if not state.get(score_key):
+            # Score input restricted to 0–100
             score = st.number_input(
                 f"Evaluate this {name.replace('_',' ')} (0-100):",
-                min_value=0, max_value=100, step=1
+                min_value=0,
+                max_value=100,
+                step=1,
+                key=f"{name}_score_input"
             )
-            if st.button(f"Submit {name.replace('_',' ').title()} Score"):
+            if st.button(f"Submit {name.replace('_',' ').title()} Score", key=f"submit_{name}_score"):
                 state[f"{name}_score"] = score
                 state[score_key] = True
                 st.rerun()
@@ -488,9 +498,11 @@ with st.sidebar:
     """)
     
     # Add a button to clear history
-    if st.button("Clear History"):
-        st.session_state.chat_history = []
-        st.session_state.current_thread_id = f"court-analysis-{st.session_state.current_thread_id.split('-')[-1]}"
+    if st.button("Clear History", key="clear_history"):
+        # Remove analysis state to reset the interface
+        for k in ['col_state', 'full_text_input']:
+            if k in st.session_state:
+                del st.session_state[k]
         st.rerun()
 
 # Debugging state printout
