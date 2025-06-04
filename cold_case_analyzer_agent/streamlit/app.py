@@ -263,26 +263,30 @@ else:
         col_state = st.session_state.col_state
         # Step 1: feedback and proceed to edit
         if not col_state.get("col_ready_edit"):
-            feedback = st.text_area(
-                "Enter feedback to improve COL section:",
-                height=150,
-                key="col_feedback",
-                help="Provide feedback to refine the extracted Choice of Law section."
-            )
-            col1, col2 = st.columns(2)
-            with col1:
-                if st.button("Submit Feedback"):
-                    if feedback:
-                        col_state["col_section_feedback"].append(feedback)
-                        result = extract_col_section(col_state)
-                        col_state.update(result)
+            # Only allow feedback after initial score
+            if not col_state.get("col_first_score_submitted"):
+                st.info("Please submit the extraction score before providing feedback.")
+            else:
+                feedback = st.text_area(
+                    "Enter feedback to improve COL section:",
+                    height=150,
+                    key="col_feedback",
+                    help="Provide feedback to refine the extracted Choice of Law section."
+                )
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Submit Feedback", key="submit_col_feedback"):
+                        if feedback:
+                            col_state["col_section_feedback"].append(feedback)
+                            result = extract_col_section(col_state)
+                            col_state.update(result)
+                            st.rerun()
+                        else:
+                            st.warning("Please enter feedback to improve the extraction.")
+                with col2:
+                    if st.button("Proceed to Edit Section", key="proceed_col_edit"):
+                        col_state["col_ready_edit"] = True
                         st.rerun()
-                    else:
-                        st.warning("Please enter feedback to improve the extraction.")
-            with col2:
-                if st.button("Proceed to Edit Section"):
-                    col_state["col_ready_edit"] = True
-                    st.rerun()
         # Step 2: show edit area and final classification
         else:
             last_extraction = col_state.get("col_section", [""])[-1]
@@ -342,49 +346,53 @@ else:
                 st.markdown(f"<div class='user-message'>{theme_feedbacks[j]}</div>", unsafe_allow_html=True)
         # If still refining theme, manage feedback and editing flows
         if not state.get("theme_done"):
-            # Step 1: feedback and proceed to edit
-            if not state.get("theme_ready_edit"):
-                theme_fb = st.text_area(
-                    "Enter feedback to improve theme classification:",
-                    height=150,
-                    key="theme_feedback_step1",
-                    help="Provide feedback to refine the theme classification."
-                )
-                c1, c2 = st.columns(2)
-                with c1:
-                    if st.button("Submit Theme Feedback", key="submit_theme_feedback_step1"):
-                        if theme_fb:
-                            state["theme_feedback"].append(theme_fb)
+            # Only allow feedback after initial score
+            if not state.get("theme_first_score_submitted"):
+                st.info("Please submit the classification score before providing feedback.")
+            else:
+                # Step 1: feedback and proceed to edit
+                if not state.get("theme_ready_edit"):
+                    theme_fb = st.text_area(
+                        "Enter feedback to improve theme classification:",
+                        height=150,
+                        key="theme_feedback_step1",
+                        help="Provide feedback to refine the theme classification."
+                    )
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        if st.button("Submit Theme Feedback", key="submit_theme_feedback_step1"):
+                            if theme_fb:
+                                state["theme_feedback"].append(theme_fb)
+                                result = theme_classification_node(state)
+                                state.update(result)
+                                st.rerun()
+                            else:
+                                st.warning("Please enter feedback to improve the theme classification.")
+                    with c2:
+                        if st.button("Proceed to Edit Theme"):
+                            state["theme_ready_edit"] = True
+                            st.rerun()
+                # Step 2: show edit area and final classification
+                else:
+                    last_cls = state.get("classification", [""])[-1]
+                    edited_cls = st.text_area(
+                        "Edit theme classification:",
+                        value=last_cls,
+                        height=200,
+                        key="theme_edit_section",
+                        help="Modify the classification before rerunning"
+                    )
+                    if st.button("Submit and Classify Theme"):
+                        if edited_cls:
+                            state["classification"][-1] = edited_cls
+                            # perform classification iteration
                             result = theme_classification_node(state)
                             state.update(result)
+                            # reset edit flag for next loop
+                            state.pop("theme_ready_edit", None)
                             st.rerun()
                         else:
-                            st.warning("Please enter feedback to improve the theme classification.")
-                with c2:
-                    if st.button("Proceed to Edit Theme"):
-                        state["theme_ready_edit"] = True
-                        st.rerun()
-            # Step 2: show edit area and final classification
-            else:
-                last_cls = state.get("classification", [""])[-1]
-                edited_cls = st.text_area(
-                    "Edit theme classification:",
-                    value=last_cls,
-                    height=200,
-                    key="theme_edit_section",
-                    help="Modify the classification before rerunning"
-                )
-                if st.button("Submit and Classify Theme"):
-                    if edited_cls:
-                        state["classification"][-1] = edited_cls
-                        # perform classification iteration
-                        result = theme_classification_node(state)
-                        state.update(result)
-                        # reset edit flag for next loop
-                        state.pop("theme_ready_edit", None)
-                        st.rerun()
-                    else:
-                        st.warning("Please edit the classification before proceeding.")
+                            st.warning("Please edit the classification before proceeding.")
         else:
             # If theme classification is done, show nothing or final summary
             pass
