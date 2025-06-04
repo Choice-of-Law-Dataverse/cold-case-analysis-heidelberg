@@ -4,7 +4,16 @@ import uuid
 from langchain_openai import ChatOpenAI
 
 load_dotenv()
-llm = ChatOpenAI(model="gpt-4.1-nano", temperature=0)
+
+def get_llm(model: str | None = None):
+    """
+    Return a ChatOpenAI instance. If `model` is provided, use it; otherwise fallback to env var or default.
+    """
+    selected = model or os.getenv("OPENAI_MODEL") or "gpt-4.1-nano"
+    return ChatOpenAI(model=selected)
+
+# default llm instance
+llm = get_llm()
 
 AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
 AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID")

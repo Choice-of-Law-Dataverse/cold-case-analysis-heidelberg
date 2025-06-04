@@ -4,6 +4,7 @@ from pathlib import Path
 from tools.col_extractor import extract_col_section
 from utils.debug_print_state import print_state
 from utils.sample_cd import SAMPLE_COURT_DECISION
+import config
 
 # Load valid themes list immediately after imports
 themes_csv = Path(__file__).parent / 'data' / 'themes.csv'
@@ -24,6 +25,16 @@ st.set_page_config(
     page_icon="https://choiceoflawdataverse.blob.core.windows.net/assets/favicon/favicon.ico",
     layout="wide"
 )
+
+# LLM model selection (single choice)
+model_options = ["gpt-4.1-nano", "o4-mini", "o3"]
+chosen_model = st.selectbox(
+    "Select LLM Model:",
+    model_options,
+    index=0,
+    key="llm_model_select"
+)
+config.llm = config.get_llm(chosen_model)
 
 # Custom CSS for chat styling
 st.markdown("""
