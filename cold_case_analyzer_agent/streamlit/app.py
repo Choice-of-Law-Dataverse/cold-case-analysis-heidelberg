@@ -1,7 +1,17 @@
 import streamlit as st
+import csv
+from pathlib import Path
 from tools.col_extractor import extract_col_section
 from utils.debug_print_state import print_state
 from utils.sample_cd import SAMPLE_COURT_DECISION
+
+# Load valid themes list immediately after imports
+themes_csv = Path(__file__).parent / 'data' / 'themes.csv'
+valid_themes = []
+with open(themes_csv, newline='') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        valid_themes.append(row['Theme'])
 
 # Demo loader callback
 def load_demo_case():
@@ -370,24 +380,26 @@ else:
             else:
                 # Proceed to edit
                 last_cls = state.get("classification", [""])[-1]
-                edited_cls = st.text_area(
-                    "Edit theme classification:",
-                    value=last_cls,
-                    height=200,
-                    key="theme_edit_section",
-                    help="Modify the classification before rerunning"
+                # Theme selection via multiselect
+                default_selected = [t.strip() for t in last_cls.split(",") if t.strip()]
+                selected = st.multiselect(
+                    "Select themes:",
+                    options=valid_themes,
+                    default=default_selected,
+                    key="theme_select",
+                    help="Select or deselect themes from the predefined list."
                 )
                 if st.button("Submit Themes and Start Analysis"):
-                    if edited_cls:
-                        state["classification"][-1] = edited_cls
+                    if selected:
+                        # Append edited selection rather than replace
+                        new_selection = ", ".join(selected)
+                        state.setdefault("classification", []).append(new_selection)
                         state["theme_done"] = True
                         state["analysis_ready"] = True
                         state["analysis_step"] = 0
-                        # reset edit flag for next loop
-                        state.pop("theme_ready_edit", None)
                         st.rerun()
                     else:
-                        st.warning("Please edit the classification before proceeding.")
+                        st.warning("Please select at least one theme before proceeding.")
         else:
             # Display the final edited theme classification as a human message
             final_theme = state.get("classification", [""])[-1]
@@ -516,6 +528,3 @@ with st.sidebar:
             if k in st.session_state:
                 del st.session_state[k]
         st.rerun()
-
-# Debugging state printout
-#print_state("Current CoLD State", st.session_state.col_state)
