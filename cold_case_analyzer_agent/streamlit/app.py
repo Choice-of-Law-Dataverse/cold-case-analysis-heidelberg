@@ -21,7 +21,7 @@ def load_demo_case():
 # Set page config
 st.set_page_config(
     page_title="CoLD Case Analyzer",
-    page_icon="⚖️",
+    page_icon="https://choiceoflawdataverse.blob.core.windows.net/assets/favicon/favicon.ico",
     layout="wide"
 )
 
