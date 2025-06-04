@@ -372,9 +372,6 @@ else:
                         state["theme_done"] = True
                         state["analysis_ready"] = True
                         state["analysis_step"] = 0
-                        # perform classification iteration
-                        result = edited_cls
-                        state.update(result)
                         # reset edit flag for next loop
                         state.pop("theme_ready_edit", None)
                         st.rerun()
@@ -419,11 +416,6 @@ else:
             last = out[-1] if isinstance(out, list) else out
             state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
             state[f"{name}_printed"] = True
-        # display last output
-        content = state.get(name)
-        last = content[-1] if isinstance(content, list) else content
-        st.markdown(f"**{name.replace('_',' ').title()}:**")
-        st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
         # one-time scoring for this step
         score_key = f"{name}_score_submitted"
         if not state.get(score_key):
@@ -464,12 +456,6 @@ else:
                     state["analysis_done"] = True
                 print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                 st.rerun()
-            elif state["analysis_done"]:
-                st.markdown(
-                    "<div class='machine-message'>Thank you for using CoLD Case Analyser! "
-                    "For more information, visit [CoLD Global](https://cold.global).</div>",
-                    unsafe_allow_html=True
-                )
 
 # Sidebar with instructions
 with st.sidebar:
