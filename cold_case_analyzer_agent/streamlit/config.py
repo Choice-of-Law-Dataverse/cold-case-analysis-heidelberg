@@ -19,5 +19,7 @@ AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
 AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID")
 AIRTABLE_CONCEPTS_TABLE = os.getenv("AIRTABLE_CONCEPTS_TABLE")
 
+SQL_CONN_STRING = os.getenv("SQL_CONN_STRING")
+
 thread_id = str(uuid.uuid4())
 #print(f"Thread ID: {thread_id}")

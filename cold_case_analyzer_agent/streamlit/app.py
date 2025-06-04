@@ -5,6 +5,8 @@ from tools.col_extractor import extract_col_section
 from utils.debug_print_state import print_state
 from utils.sample_cd import SAMPLE_COURT_DECISION
 import config
+import psycopg2
+import json
 
 # Predefined user credentials
 credentials = {
@@ -510,6 +512,39 @@ else:
                         state["analysis_done"] = True
                     print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                     st.rerun()
+
+# Database persistence helper
+def save_to_db(state):
+    """
+    Persist the analysis state as JSON into PostgreSQL.
+    """
+    try:
+        conn = psycopg2.connect(config.SQL_CONN_STRING)
+        cur = conn.cursor()
+        # Create table if not exists
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS analysis_results (
+                id SERIAL PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                data JSONB
+            );
+            """
+        )
+        # Insert state JSON
+        cur.execute(
+            "INSERT INTO analysis_results(data) VALUES (%s)",
+            (json.dumps(state),)
+        )
+        conn.commit()
+    except Exception as e:
+        st.error(f"Failed to save results: {e}")
+    finally:
+        try:
+            cur.close()
+            conn.close()
+        except:
+            pass
 
 # Sidebar with login and instructions
 with st.sidebar:
