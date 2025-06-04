@@ -31,7 +31,7 @@ def _get_classification_content_str(messages: list | None) -> str:
     return content_str
 
 # ===== ABSTRACT =====
-def abstract_node(state):
+def abstract(state):
     print("\n--- ABSTRACT ---")
     text = state["full_text"]
     # ABSTRACT_PROMPT only needs {text}
@@ -44,10 +44,17 @@ def abstract_node(state):
     abstract_time = time.time() - start_time
     abstract = response.content
     print(f"\nAbstract:\n{abstract}\n")
-    return {"abstract": [AIMessage(content=abstract)], "abstract_time": abstract_time}
+    # append abstract
+    state.setdefault("abstract", []).append(abstract)
+    # return full updated lists
+    return {
+        "abstract": state["abstract"],
+        "abstract_time": abstract_time
+    }
+
 
 # ===== RELEVANT FACTS =====
-def facts_node(state):
+def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
@@ -60,10 +67,16 @@ def facts_node(state):
     facts_time = time.time() - start_time
     facts = response.content
     print(f"\nRelevant Facts:\n{facts}\n")
-    return {"relevant_facts": [AIMessage(content=facts)], "relevant_facts_time": facts_time}
+    # append relevant facts
+    state.setdefault("relevant_facts", []).append(facts)
+    # return full updated lists
+    return {
+        "relevant_facts": state["relevant_facts"],
+        "relevant_facts_time": facts_time
+    }
 
 # ===== PIL PROVISIONS =====
-def pil_provisions_node(state):
+def pil_provisions(state):
     print("\n--- PIL PROVISIONS ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
@@ -81,10 +94,16 @@ def pil_provisions_node(state):
         print(f"Warning: Could not parse PIL provisions as JSON. Content: {response.content}")
         pil_provisions = [response.content.strip()]
     print(f"\nPIL Provisions:\n{pil_provisions}\n")
-    return {"pil_provisions": [AIMessage(content=pil_provisions)], "pil_provisions_time": provisions_time}
+    # append pil_provisions
+    state.setdefault("pil_provisions", []).append(pil_provisions)
+    # return full updated lists
+    return {
+        "pil_provisions": state["pil_provisions"],
+        "pil_provisions_time": provisions_time
+    }
 
 # ===== CHOICE OF LAW ISSUE =====
-def col_issue_node(state):
+def col_issue(state):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
@@ -113,10 +132,16 @@ def col_issue_node(state):
     issue_time = time.time() - start_time
     col_issue = response.content
     print(f"\nChoice of Law Issue:\n{col_issue}\n")
-    return {"col_issue": [AIMessage(content=col_issue)], "col_issue_time": issue_time}
+    # append col_issue
+    state.setdefault("col_issue", []).append(col_issue)
+    # return full updated lists
+    return {
+        "col_issue": state["col_issue"],
+        "col_issue_time": issue_time
+    }
 
 # ===== COURT'S POSITION =====
-def courts_position_node(state):
+def courts_position(state):
     print("\n--- COURT'S POSITION ---")
     text = state["full_text"]
     col_section_content = _get_last_message_content(state.get("col_section"))
@@ -135,4 +160,10 @@ def courts_position_node(state):
     position_time = time.time() - start_time
     courts_position = response.content
     print(f"\nCourt's Position:\n{courts_position}\n")
-    return {"courts_position": [AIMessage(content=courts_position)], "courts_position_time": position_time}
+    # append courts_position
+    state.setdefault("courts_position", []).append(courts_position)
+    # return full updated lists
+    return {
+        "courts_position": state["courts_position"],
+        "courts_position_time": position_time
+    }

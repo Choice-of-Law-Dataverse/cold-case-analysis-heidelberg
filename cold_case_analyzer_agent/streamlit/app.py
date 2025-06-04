@@ -366,9 +366,12 @@ else:
                     key="theme_edit_section",
                     help="Modify the classification before rerunning"
                 )
-                if st.button("Submit Themes"):
+                if st.button("Submit Themes and Start Analysis"):
                     if edited_cls:
                         state["classification"][-1] = edited_cls
+                        state["theme_done"] = True
+                        state["analysis_ready"] = True
+                        state["analysis_step"] = 0
                         # perform classification iteration
                         result = theme_classification_node(state)
                         state.update(result)
@@ -384,25 +387,20 @@ else:
     # Once themes are done, trigger analysis phase
     # Prepare state reference
     state = st.session_state.col_state
-    if state.get("theme_done") and not state.get("analysis_ready"):
-        if st.button("Submit Themes and Start Analysis"):
-            state["analysis_ready"] = True
-            state["analysis_step"] = 0
-            st.rerun()
 
     # Sequential analysis steps
     if state.get("analysis_ready"):
         from tools.case_analyzer import (
-            abstract_node, facts_node,
-            pil_provisions_node, col_issue_node,
-            courts_position_node
+            abstract, relevant_facts,
+            pil_provisions, col_issue,
+            courts_position
         )
         steps = [
-            ("abstract", abstract_node),
-            ("relevant_facts", facts_node),
-            ("pil_provisions", pil_provisions_node),
-            ("col_issue", col_issue_node),
-            ("courts_position", courts_position_node)
+            ("abstract", abstract),
+            ("relevant_facts", relevant_facts),
+            ("pil_provisions", pil_provisions),
+            ("col_issue", col_issue),
+            ("courts_position", courts_position)
         ]
         name, func = steps[state["analysis_step"]]
         # run node if not yet in state
@@ -434,7 +432,7 @@ else:
             st.markdown(f"**Your score for {name.replace('_',' ')}:** {sc}")
         # editable correction
         edit_key = f"{name}_edited"
-        if state.get(score_key):
+        if state.get(score_key) and state.get(edit_key) is not None:
             edited = st.text_area(
                 f"Edit {name.replace('_',' ')}:",
                 value=state.get(edit_key, last),
@@ -444,16 +442,12 @@ else:
             if st.button(f"Submit Edited {name.replace('_',' ').title()}"):
                 state[name][-1] = edited
                 state[edit_key] = edited
-                st.rerun()
-        # proceed to next
-        if state.get(score_key) and state.get(edit_key) is not None:
-            if st.button("Next"):
                 if state["analysis_step"] < len(steps)-1:
                     state["analysis_step"] += 1
                 else:
                     state["analysis_done"] = True
+                print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                 st.rerun()
-    # ...existing code...
 
 # Sidebar with instructions
 with st.sidebar:
