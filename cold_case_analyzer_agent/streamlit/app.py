@@ -459,9 +459,6 @@ else:
                     state[score_key] = True
                     state.setdefault("chat_history", []).append(("user", f"Score for {name.replace('_',' ').title()}: {score}"))
                     st.rerun()
-            else:
-                sc = state.get(f"{name}_score", 0)
-                st.markdown(f"<div class='user-message'>Score for {name.replace('_',' ')}: {sc}</div>", unsafe_allow_html=True)
             # determine last output for default in edit area
             content = state.get(name)
             last = content[-1] if isinstance(content, list) else content
