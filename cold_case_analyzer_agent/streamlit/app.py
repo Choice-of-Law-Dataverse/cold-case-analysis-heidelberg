@@ -265,6 +265,7 @@ else:
                     "Evaluate this first extraction (0-100):",
                     min_value=0,
                     max_value=100,
+                    value=100,
                     step=1,
                     help="Provide a score for the quality of the first extraction",
                     key="col_first_score_input"
@@ -356,6 +357,7 @@ else:
                         "Evaluate this first classification (0-100):",
                         min_value=0,
                         max_value=100,
+                        value=100,
                         step=1,
                         help="Provide a score for the quality of the first theme classification",
                         key="theme_first_score_input"
@@ -468,6 +470,7 @@ else:
                     f"Evaluate this {name.replace('_',' ')} (0-100):",
                     min_value=0,
                     max_value=100,
+                    value=100,
                     step=1,
                     key=f"{name}_score_input"
                 )
