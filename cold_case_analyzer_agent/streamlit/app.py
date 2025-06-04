@@ -338,75 +338,56 @@ else:
                 else:
                     st.warning("Please edit the extracted section before proceeding.")
     
-    # Once COL is done, show theme classification section below
+    # Once COL is done, show a single theme classification and evaluation
     if st.session_state.col_state.get("col_done"):
-        from tools.themes_classifier import theme_classification_node
         state = st.session_state.col_state
-        # Display past theme classifications and feedback
-        classifications = state.get("classification", [])
-        theme_feedbacks = state.get("theme_feedback", [])
-        # Theme classification evaluation and refinement
-        for j, cls in enumerate(classifications):
-            st.markdown(f"**Classification {j+1}:**")
-            st.markdown(f"<div class='machine-message'>{cls}</div>", unsafe_allow_html=True)
-            # One-time score input for first classification
-            if j == 0:
-                if not state.get("theme_first_score_submitted"):
-                    # Score input restricted to 0–100
-                    score_in = st.slider(
-                        "Evaluate this first classification (0-100):",
-                        min_value=0,
-                        max_value=100,
-                        value=100,
-                        step=1,
-                        help="Provide a score for the quality of the first theme classification",
-                        key="theme_first_score_input"
-                    )
-                    if st.button("Submit Classification Score", key="submit_theme_score"):
-                        state["theme_first_score"] = score_in
-                        state["theme_first_score_submitted"] = True
-                        st.rerun()
-                else:
-                    sc = state.get("theme_first_score", 0)
-                    st.markdown("**Your score for classification 1:**")
-                    st.markdown(f"<div class='user-message'>Score: {sc}</div>", unsafe_allow_html=True)
-            # show any existing user feedback
-            if j < len(theme_feedbacks):
-                st.markdown("**User:**")
-                st.markdown(f"<div class='user-message'>{theme_feedbacks[j]}</div>", unsafe_allow_html=True)
-        # If still refining theme, manage feedback and editing flows
-        if not state.get("theme_done"):
-            # Only allow feedback after initial score
-            if not state.get("theme_first_score_submitted"):
-                st.info("Please submit the classification score before providing feedback.")
-            else:
-                # Proceed to edit
-                last_cls = state.get("classification", [""])[-1]
-                # Theme selection via multiselect
-                default_selected = [t.strip() for t in last_cls.split(",") if t.strip()]
+        # Show machine classification once
+        themes = state.get("classification", [])
+        if themes:
+            last_theme = themes[-1]
+            st.markdown("**Themes:**")
+            st.markdown(f"<div class='machine-message'>{last_theme}</div>", unsafe_allow_html=True)
+        # First-time scoring
+        if not state.get("theme_first_score_submitted"):
+            score = st.slider(
+                "Evaluate these themes (0-100):",
+                min_value=0,
+                max_value=100,
+                step=1,
+                key="theme_first_score_input"
+            )
+            if st.button("Submit Theme Score", key="submit_theme_score"):
+                state["theme_first_score"] = score
+                state["theme_first_score_submitted"] = True
+                st.rerun()
+        else:
+            sc = state.get("theme_first_score", 0)
+            st.markdown("**Your score for themes:**")
+            st.markdown(f"<div class='user-message'>Score: {sc}</div>", unsafe_allow_html=True)
+            # Allow editing via multiselect
+            if not state.get("theme_done"):
+                default_sel = [t.strip() for t in last_theme.split(",") if t.strip()]
                 selected = st.multiselect(
-                    "Select themes:",
+                    "Adjust themes:",
                     options=valid_themes,
-                    default=default_selected,
-                    key="theme_select",
-                    help="Select or deselect themes from the predefined list."
+                    default=default_sel,
+                    key="theme_select"
                 )
-                if st.button("Submit Themes and Start Analysis"):
+                if st.button("Submit Final Themes"):
                     if selected:
-                        # Append edited selection rather than replace
-                        new_selection = ", ".join(selected)
-                        state.setdefault("classification", []).append(new_selection)
+                        new_sel = ", ".join(selected)
+                        state.setdefault("classification", []).append(new_sel)
                         state["theme_done"] = True
                         state["analysis_ready"] = True
                         state["analysis_step"] = 0
                         st.rerun()
                     else:
-                        st.warning("Please select at least one theme before proceeding.")
-        else:
-            # Display the final edited theme classification as a human message
-            final_theme = state.get("classification", [""])[-1]
-            st.markdown("**Your Edited Theme Classification:**")
-            st.markdown(f"<div class='user-message'>{final_theme}</div>", unsafe_allow_html=True)
+                        st.warning("Select at least one theme before proceeding.")
+        # Display user’s final edited classification
+        if state.get("theme_done"):
+            final = state.get("classification", [])[-1]
+            st.markdown("**Final Themes:**")
+            st.markdown(f"<div class='user-message'>{final}</div>", unsafe_allow_html=True)
     
     # Once themes are done, trigger analysis phase
     # Prepare state reference
