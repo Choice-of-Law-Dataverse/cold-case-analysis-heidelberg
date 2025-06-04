@@ -6,6 +6,17 @@ from utils.debug_print_state import print_state
 from utils.sample_cd import SAMPLE_COURT_DECISION
 import config
 
+# Predefined user credentials
+credentials = {
+    "alice": "wonderland",
+    "bob": "builder"
+}
+# Initialize login state
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+if "user" not in st.session_state:
+    st.session_state["user"] = ""
+
 # Load valid themes list immediately after imports
 themes_csv = Path(__file__).parent / 'data' / 'themes.csv'
 valid_themes = []
@@ -27,7 +38,11 @@ st.set_page_config(
 )
 
 # LLM model selection (single choice)
-model_options = ["gpt-4.1-nano", "o4-mini", "o3"]
+# Set available models based on authentication status
+if st.session_state.get("logged_in"):
+    model_options = ["gpt-4.1-nano", "o4-mini", "o3"]
+else:
+    model_options = ["gpt-4.1-nano"]
 chosen_model = st.selectbox(
     "Select LLM Model:",
     model_options,
@@ -496,8 +511,30 @@ else:
                     print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                     st.rerun()
 
-# Sidebar with instructions
+# Sidebar with login and instructions
 with st.sidebar:
+    st.subheader("Login")
+    # Display login form only if not logged in
+    if not st.session_state.get("logged_in"):
+        username = st.text_input("Username", key="login_user")
+        password = st.text_input("Password", type="password", key="login_pass")
+        if st.button("Login", key="login_button"):
+            if credentials.get(username) == password:
+                st.session_state["logged_in"] = True
+                st.session_state["user"] = username
+                st.success(f"Logged in as {username}")
+                st.rerun()
+            else:
+                st.error("Invalid username or password")
+    # Display logout only when logged in
+    else:
+        st.write(f"Logged in as: {st.session_state['user']}")
+        if st.button("Logout", key="logout_button"):
+            st.session_state["logged_in"] = False
+            st.session_state["user"] = ""
+            st.success("Logged out")
+            st.rerun()
+    
     st.header("How to Use")
     st.markdown("""
     1. **Input**: Paste the court decision text
