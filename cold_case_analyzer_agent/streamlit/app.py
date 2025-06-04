@@ -299,11 +299,11 @@ else:
                 key="col_edit_section",
                 help="Modify the extracted section before proceeding to theme classification"
             )
-            print_state("Current CoLD State\n", st.session_state.col_state)
+            print_state("\n\n\nCurrent CoLD State\n\n", st.session_state.col_state)
             if st.button("Submit and Classify"):
                 if edited_extraction:
                     # Save edited extraction and run classification
-                    col_state["col_section"][-1] = edited_extraction
+                    col_state["col_section"].append(edited_extraction)
                     col_state["col_done"] = True
                     col_state["classification"] = []
                     col_state["theme_feedback"] = []
@@ -311,6 +311,7 @@ else:
                     from tools.themes_classifier import theme_classification_node
                     init_result = theme_classification_node(col_state)
                     col_state.update(init_result)
+                    print_state("\n\n\nUpdated CoLD State after classification\n\n", st.session_state.col_state)
                     st.rerun()
                 else:
                     st.warning("Please edit the extracted section before proceeding.")
