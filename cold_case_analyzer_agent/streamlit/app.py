@@ -20,7 +20,7 @@ def load_demo_case():
 
 # Set page config
 st.set_page_config(
-    page_title="CoLD Case Analyser",
+    page_title="CoLD Case Analyzer",
     page_icon="⚖️",
     layout="wide"
 )
@@ -199,7 +199,7 @@ a {
 """, unsafe_allow_html=True)
 
 # Title and description
-st.title("CoLD Case Analyser")
+st.title("CoLD Case Analyzer")
 st.markdown("""
 This tool helps you analyze court decisions and get structured summaries. 
 You can provide feedback to improve the analysis until you're satisfied with the result.
