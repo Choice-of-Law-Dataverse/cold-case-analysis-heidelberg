@@ -132,6 +132,12 @@ p {
     background-color: #5a3fd9 !important;  /* slightly darker cold-purple */
 }
 
+/* Sliders */
+.stSlider {
+    /* constrain slider width */
+    max-width: 400px;
+}
+
 /* Sidebar */
 section[data-testid="stSidebar"] {
     background-color: #FAFAFA !important;
