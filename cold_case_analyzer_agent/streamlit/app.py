@@ -234,11 +234,12 @@ else:
     extractions = st.session_state.col_state.get("col_section", [])
     feedbacks = st.session_state.col_state.get("col_section_feedback", [])
     for i, col in enumerate(extractions):
-        st.markdown(f"**Extraction {i+1}:**")
         # show all extractions as machine messages, but if final edited extraction has been submitted, show it as a user message
         if i == len(extractions) - 1 and st.session_state.col_state.get("col_done"):
+            st.markdown("**Your Edited Choice of Law Section:**")
             st.markdown(f"<div class='user-message'>{col}</div>", unsafe_allow_html=True)
         else:
+            st.markdown(f"**Choice of Law Section Extraction {i+1}:**")
             st.markdown(f"<div class='machine-message'>{col}</div>", unsafe_allow_html=True)
         if i == 0:
             # One-time score input for extraction 1
@@ -382,8 +383,10 @@ else:
                     else:
                         st.warning("Please edit the classification before proceeding.")
         else:
-            # If theme classification is done, show nothing or final summary
-            pass
+            # Display the final edited theme classification as a human message
+            final_theme = state.get("classification", [""])[-1]
+            st.markdown("**Your Edited Theme Classification:**")
+            st.markdown(f"<div class='user-message'>{final_theme}</div>", unsafe_allow_html=True)
     
     # Once themes are done, trigger analysis phase
     # Prepare state reference
