@@ -1,8 +1,10 @@
 import json
 import re
 import time
+import csv
+from pathlib import Path
 
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from config import llm, thread_id
 from prompts.pil_theme_prompt import PIL_THEME_PROMPT
@@ -29,19 +31,35 @@ def theme_classification_node(state):
         prev = existing[-1]
         if prev:
             prompt += f"\n\nPrevious classification: {prev}\n"
-    # invoke LLM
-    print(f"\nPrompting LLM with:\n{prompt}\n")
-    start_time = time.time()
-    response = llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
-        HumanMessage(content=prompt)
-    ])
-    theme_time = time.time() - start_time
-    # parse classification list
-    try:
-        cls_list = json.loads(response.content)
-    except Exception:
-        cls_list = [response.content.strip()]
+    # load valid themes from CSV
+    themes_path = Path(__file__).parents[1] / 'data' / 'themes.csv'
+    valid_themes = set()
+    with open(themes_path, newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            valid_themes.add(row['Theme'])
+    # attempt classification up to 5 times ensuring valid themes
+    max_attempts = 5
+    for attempt in range(1, max_attempts + 1):
+        print(f"\nPrompting LLM (attempt {attempt}/{max_attempts}) with:\n{prompt}\n")
+        start_time = time.time()
+        response = llm.invoke([
+            SystemMessage(content="You are an expert in private international law"),
+            HumanMessage(content=prompt)
+        ])
+        theme_time = time.time() - start_time
+        # parse classification list
+        try:
+            cls_list = json.loads(response.content)
+        except Exception:
+            cls_list = [response.content.strip()]
+        # validate returned themes
+        invalid = [item for item in cls_list if item not in valid_themes]
+        if not invalid:
+            break
+        print(f"Invalid themes returned: {invalid}. Retrying...\n")
+    else:
+        print(f"Max attempts reached. Proceeding with last classification: {cls_list}\n")
     # convert to string for display
     cls_str = ", ".join(str(item) for item in cls_list)
     print(f"\nClassified theme(s): {cls_list}\n")
