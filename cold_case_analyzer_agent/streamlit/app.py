@@ -1,6 +1,12 @@
 import streamlit as st
 from tools.col_extractor import extract_col_section
 from utils.debug_print_state import print_state
+from utils.sample_cd import SAMPLE_COURT_DECISION
+
+# Demo loader callback
+def load_demo_case():
+    # populate the text widget state (on_click will trigger rerun automatically)
+    st.session_state.full_text_input = SAMPLE_COURT_DECISION
 
 # Set page config
 st.set_page_config(
@@ -191,6 +197,9 @@ if 'col_state' not in st.session_state:
 # ===== Phase 1 & 2: initial extraction and COL feedback =====
 
 if not st.session_state.col_state.get("full_text"):
+    # Ensure default session state for text input
+    if "full_text_input" not in st.session_state:
+        st.session_state.full_text_input = ""
     # Initial COL extraction input
     full_text = st.text_area(
         "Paste the court decision text here:",
@@ -198,20 +207,25 @@ if not st.session_state.col_state.get("full_text"):
         help="Enter the full text of the court decision to extract the Choice of Law section.",
         key="full_text_input"
     )
-    if st.button("Extract COL Section", type="primary"):
-        if full_text:
-            state = {
-                "full_text": full_text,
-                "col_section": [],
-                "col_section_feedback": [],
-                "col_section_eval_iter": 0
-            }
-            result = extract_col_section(state)
-            state.update(result)
-            st.session_state.col_state = state
-            st.rerun()
-        else:
-            st.warning("Please enter a court decision to analyze.")
+    # Extraction and demo buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Extract COL Section", type="primary"):
+            if full_text:
+                state = {
+                    "full_text": full_text,
+                    "col_section": [],
+                    "col_section_feedback": [],
+                    "col_section_eval_iter": 0
+                }
+                result = extract_col_section(state)
+                state.update(result)
+                st.session_state.col_state = state
+                st.rerun()
+            else:
+                st.warning("Please enter a court decision to analyze.")
+    with col2:
+        st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
 else:
     # Display the full court decision text at the top as a user message
     st.markdown("**Your Input (Court Decision Text):**")
