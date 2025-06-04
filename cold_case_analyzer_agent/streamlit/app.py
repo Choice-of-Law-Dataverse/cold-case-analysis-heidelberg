@@ -397,7 +397,15 @@ else:
         # display chronological chat history of analysis
         for speaker, msg in state.get("chat_history", []):
             if speaker == 'machine':
-                st.markdown(f"<div class='machine-message'>{msg}</div>", unsafe_allow_html=True)
+                # Separate step label and content if formatted as 'Step: content'
+                if ': ' in msg:
+                    step_label, content = msg.split(': ', 1)
+                    # display step label in bold
+                    st.markdown(f"**{step_label}**")
+                    # display content as machine message
+                    st.markdown(f"<div class='machine-message'>{content}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='machine-message'>{msg}</div>", unsafe_allow_html=True)
             else:
                 st.markdown(f"<div class='user-message'>{msg}</div>", unsafe_allow_html=True)
         # Show final thank-you message after last analysis step
@@ -427,8 +435,10 @@ else:
                 # append machine message to history
                 out = state.get(name)
                 last = out[-1] if isinstance(out, list) else out
-                # use st.markdown to display the current analysis step
-                st.markdown(f"<div class='machine-message'>{name.replace('_',' ').title()}: {last}</div>", unsafe_allow_html=True)
+                # display analysis step label
+                st.markdown(f"**{name.replace('_',' ').title()}**")
+                # use st.markdown to display the analysis content
+                st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
                 state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
                 state[f"{name}_printed"] = True
                 st.rerun()
