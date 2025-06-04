@@ -373,7 +373,7 @@ else:
                         state["analysis_ready"] = True
                         state["analysis_step"] = 0
                         # perform classification iteration
-                        result = theme_classification_node(state)
+                        result = edited_cls
                         state.update(result)
                         # reset edit flag for next loop
                         state.pop("theme_ready_edit", None)
@@ -464,6 +464,12 @@ else:
                     state["analysis_done"] = True
                 print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                 st.rerun()
+            elif state["analysis_done"]:
+                st.markdown(
+                    "<div class='machine-message'>Thank you for using CoLD Case Analyser! "
+                    "For more information, visit [CoLD Global](https://cold.global).</div>",
+                    unsafe_allow_html=True
+                )
 
 # Sidebar with instructions
 with st.sidebar:
