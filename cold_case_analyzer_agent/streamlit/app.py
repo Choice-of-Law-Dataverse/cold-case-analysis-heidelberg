@@ -245,7 +245,7 @@ else:
             # One-time score input for extraction 1
             if not st.session_state.col_state.get("col_first_score_submitted"):
                 # Score input restricted to 0–100
-                score_input = st.number_input(
+                score_input = st.slider(
                     "Evaluate this first extraction (0-100):",
                     min_value=0,
                     max_value=100,
@@ -336,7 +336,7 @@ else:
             if j == 0:
                 if not state.get("theme_first_score_submitted"):
                     # Score input restricted to 0–100
-                    score_in = st.number_input(
+                    score_in = st.slider(
                         "Evaluate this first classification (0-100):",
                         min_value=0,
                         max_value=100,
@@ -446,7 +446,7 @@ else:
             score_key = f"{name}_score_submitted"
             if not state.get(score_key):
                 # Score input restricted to 0–100
-                score = st.number_input(
+                score = st.slider(
                     f"Evaluate this {name.replace('_',' ')} (0-100):",
                     min_value=0,
                     max_value=100,
