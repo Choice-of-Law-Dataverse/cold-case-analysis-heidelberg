@@ -396,76 +396,78 @@ else:
         # Show final thank-you message after last analysis step
         if state.get("analysis_done"):
             st.markdown(
-                "<div class='machine-message'>Thank you for using the CoLD Case Analyzer.<br>If you would like to find out more about the project, please visit<a href=\"https://cold.global\" target=\"_blank\">cold.global</a></div>",
+                "<div class='machine-message'>Thank you for using the CoLD Case Analyzer.<br>If you would like to find out more about the project, please visit <a href=\"https://cold.global\" target=\"_blank\">cold.global</a></div>",
                 unsafe_allow_html=True
             )
-            st.stop()
-        from tools.case_analyzer import (
-            abstract, relevant_facts,
-            pil_provisions, col_issue,
-            courts_position
-        )
-        steps = [
-            ("abstract", abstract),
-            ("relevant_facts", relevant_facts),
-            ("pil_provisions", pil_provisions),
-            ("col_issue", col_issue),
-            ("courts_position", courts_position)
-        ]
-        name, func = steps[state["analysis_step"]]
-        # run node once, record machine output
-        if not state.get(f"{name}_printed"):
-            result = func(state)
-            state.update(result)
-            # append machine message to history
-            out = state.get(name)
-            last = out[-1] if isinstance(out, list) else out
-            state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
-            state[f"{name}_printed"] = True
-            st.rerun()
-        # one-time scoring for this step
-        score_key = f"{name}_score_submitted"
-        if not state.get(score_key):
-            # Score input restricted to 0–100
-            score = st.number_input(
-                f"Evaluate this {name.replace('_',' ')} (0-100):",
-                min_value=0,
-                max_value=100,
-                step=1,
-                key=f"{name}_score_input"
-            )
-            if st.button(f"Submit {name.replace('_',' ').title()} Score", key=f"submit_{name}_score"):
-                # record user score and add to history
-                state[f"{name}_score"] = score
-                state[score_key] = True
-                state.setdefault("chat_history", []).append(("user", f"Score for {name.replace('_',' ').title()}: {score}"))
-                st.rerun()
         else:
-            sc = state.get(f"{name}_score", 0)
-            st.markdown(f"<div class='user-message'>Score for {name.replace('_',' ')}: {sc}</div>", unsafe_allow_html=True)
-        # determine last output for default in edit area
-        content = state.get(name)
-        last = content[-1] if isinstance(content, list) else content
-        # editable correction after score submission
-        edit_key = f"{name}_edited"
-        if state.get(score_key):
-            edited = st.text_area(
-                f"Edit {name.replace('_',' ')}:",
-                value=state.get(edit_key, last),
-                height=200,
-                key=f"{name}_edit_area"
+            from tools.case_analyzer import (
+                abstract, relevant_facts,
+                pil_provisions, col_issue,
+                courts_position
             )
-            if st.button(f"Submit Edited {name.replace('_',' ').title()}", key=f"submit_edited_{name}"):
-                # record user edit and advance to next step
-                state[name][-1] = edited
-                state[edit_key] = edited
-                state.setdefault("chat_history", []).append(("user", edited))
-                if state["analysis_step"] < len(steps)-1:
-                    state["analysis_step"] += 1
-                else:
-                    state["analysis_done"] = True
-                print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
+            steps = [
+                ("abstract", abstract),
+                ("relevant_facts", relevant_facts),
+                ("pil_provisions", pil_provisions),
+                ("col_issue", col_issue),
+                ("courts_position", courts_position)
+            ]
+            name, func = steps[state["analysis_step"]]
+            # run node once, record machine output
+            if not state.get(f"{name}_printed"):
+                result = func(state)
+                state.update(result)
+                # append machine message to history
+                out = state.get(name)
+                last = out[-1] if isinstance(out, list) else out
+                # use st.markdown to display the current analysis step
+                st.markdown(f"<div class='machine-message'>{name.replace('_',' ').title()}: {last}</div>", unsafe_allow_html=True)
+                state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
+                state[f"{name}_printed"] = True
                 st.rerun()
+            # one-time scoring for this step
+            score_key = f"{name}_score_submitted"
+            if not state.get(score_key):
+                # Score input restricted to 0–100
+                score = st.number_input(
+                    f"Evaluate this {name.replace('_',' ')} (0-100):",
+                    min_value=0,
+                    max_value=100,
+                    step=1,
+                    key=f"{name}_score_input"
+                )
+                if st.button(f"Submit {name.replace('_',' ').title()} Score", key=f"submit_{name}_score"):
+                    # record user score and add to history
+                    state[f"{name}_score"] = score
+                    state[score_key] = True
+                    state.setdefault("chat_history", []).append(("user", f"Score for {name.replace('_',' ').title()}: {score}"))
+                    st.rerun()
+            else:
+                sc = state.get(f"{name}_score", 0)
+                st.markdown(f"<div class='user-message'>Score for {name.replace('_',' ')}: {sc}</div>", unsafe_allow_html=True)
+            # determine last output for default in edit area
+            content = state.get(name)
+            last = content[-1] if isinstance(content, list) else content
+            # editable correction after score submission
+            edit_key = f"{name}_edited"
+            if state.get(score_key):
+                edited = st.text_area(
+                    f"Edit {name.replace('_',' ')}:",
+                    value=state.get(edit_key, last),
+                    height=200,
+                    key=f"{name}_edit_area"
+                )
+                if st.button(f"Submit Edited {name.replace('_',' ').title()}", key=f"submit_edited_{name}"):
+                    # record user edit and advance to next step
+                    state[name][-1] = edited
+                    state[edit_key] = edited
+                    state.setdefault("chat_history", []).append(("user", edited))
+                    if state["analysis_step"] < len(steps)-1:
+                        state["analysis_step"] += 1
+                    else:
+                        state["analysis_done"] = True
+                    print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
+                    st.rerun()
 
 # Sidebar with instructions
 with st.sidebar:
