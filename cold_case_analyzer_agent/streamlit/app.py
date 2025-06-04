@@ -416,6 +416,7 @@ else:
             last = out[-1] if isinstance(out, list) else out
             state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
             state[f"{name}_printed"] = True
+            st.rerun()
         # one-time scoring for this step
         score_key = f"{name}_score_submitted"
         if not state.get(score_key):
@@ -436,6 +437,9 @@ else:
         else:
             sc = state.get(f"{name}_score", 0)
             st.markdown(f"<div class='user-message'>Score for {name.replace('_',' ')}: {sc}</div>", unsafe_allow_html=True)
+        # determine last output for default in edit area
+        content = state.get(name)
+        last = content[-1] if isinstance(content, list) else content
         # editable correction after score submission
         edit_key = f"{name}_edited"
         if state.get(score_key):
