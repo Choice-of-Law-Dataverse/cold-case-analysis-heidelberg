@@ -393,7 +393,13 @@ else:
                 st.markdown(f"<div class='machine-message'>{msg}</div>", unsafe_allow_html=True)
             else:
                 st.markdown(f"<div class='user-message'>{msg}</div>", unsafe_allow_html=True)
-        
+        # Show final thank-you message after last analysis step
+        if state.get("analysis_done"):
+            st.markdown(
+                "<div class='machine-message'>Thank you for using the CoLD Case Analyzer.<br>If you would like to find out more about the project, please visit<a href=\"https://cold.global\" target=\"_blank\">cold.global</a></div>",
+                unsafe_allow_html=True
+            )
+            st.stop()
         from tools.case_analyzer import (
             abstract, relevant_facts,
             pil_provisions, col_issue,
