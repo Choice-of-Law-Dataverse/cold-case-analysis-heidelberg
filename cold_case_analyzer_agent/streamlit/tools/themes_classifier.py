@@ -29,10 +29,6 @@ def theme_classification_node(state):
         prev = existing[-1]
         if prev:
             prompt += f"\n\nPrevious classification: {prev}\n"
-    # add feedback if exists
-    feedback = state.get("theme_feedback", [])
-    if feedback:
-        prompt += f"\n\nFeedback: {feedback[-1]}\n"
     # invoke LLM
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
