@@ -235,7 +235,11 @@ else:
     feedbacks = st.session_state.col_state.get("col_section_feedback", [])
     for i, col in enumerate(extractions):
         st.markdown(f"**Extraction {i+1}:**")
-        st.markdown(f"<div class='machine-message'>{col}</div>", unsafe_allow_html=True)
+        # show all extractions as machine messages, but if final edited extraction has been submitted, show it as a user message
+        if i == len(extractions) - 1 and st.session_state.col_state.get("col_done"):
+            st.markdown(f"<div class='user-message'>{col}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='machine-message'>{col}</div>", unsafe_allow_html=True)
         if i == 0:
             # One-time score input for extraction 1
             if not st.session_state.col_state.get("col_first_score_submitted"):
