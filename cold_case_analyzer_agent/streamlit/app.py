@@ -390,6 +390,13 @@ else:
 
     # Sequential analysis steps
     if state.get("analysis_ready"):
+        # display chronological chat history of analysis
+        for speaker, msg in state.get("chat_history", []):
+            if speaker == 'machine':
+                st.markdown(f"<div class='machine-message'>{msg}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div class='user-message'>{msg}</div>", unsafe_allow_html=True)
+        
         from tools.case_analyzer import (
             abstract, relevant_facts,
             pil_provisions, col_issue,
@@ -403,10 +410,15 @@ else:
             ("courts_position", courts_position)
         ]
         name, func = steps[state["analysis_step"]]
-        # run node if not yet in state
-        if name not in state or not state.get(f"{name}"):
+        # run node once, record machine output
+        if not state.get(f"{name}_printed"):
             result = func(state)
             state.update(result)
+            # append machine message to history
+            out = state.get(name)
+            last = out[-1] if isinstance(out, list) else out
+            state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
+            state[f"{name}_printed"] = True
         # display last output
         content = state.get(name)
         last = content[-1] if isinstance(content, list) else content
@@ -424,24 +436,28 @@ else:
                 key=f"{name}_score_input"
             )
             if st.button(f"Submit {name.replace('_',' ').title()} Score", key=f"submit_{name}_score"):
+                # record user score and add to history
                 state[f"{name}_score"] = score
                 state[score_key] = True
+                state.setdefault("chat_history", []).append(("user", f"Score for {name.replace('_',' ').title()}: {score}"))
                 st.rerun()
         else:
             sc = state.get(f"{name}_score", 0)
-            st.markdown(f"**Your score for {name.replace('_',' ')}:** {sc}")
-        # editable correction
+            st.markdown(f"<div class='user-message'>Score for {name.replace('_',' ')}: {sc}</div>", unsafe_allow_html=True)
+        # editable correction after score submission
         edit_key = f"{name}_edited"
-        if state.get(score_key) and state.get(edit_key) is not None:
+        if state.get(score_key):
             edited = st.text_area(
                 f"Edit {name.replace('_',' ')}:",
                 value=state.get(edit_key, last),
                 height=200,
                 key=f"{name}_edit_area"
             )
-            if st.button(f"Submit Edited {name.replace('_',' ').title()}"):
+            if st.button(f"Submit Edited {name.replace('_',' ').title()}", key=f"submit_edited_{name}"):
+                # record user edit and advance to next step
                 state[name][-1] = edited
                 state[edit_key] = edited
+                state.setdefault("chat_history", []).append(("user", edited))
                 if state["analysis_step"] < len(steps)-1:
                     state["analysis_step"] += 1
                 else:
