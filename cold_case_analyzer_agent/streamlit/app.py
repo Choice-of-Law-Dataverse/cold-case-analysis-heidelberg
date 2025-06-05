@@ -37,11 +37,12 @@ def save_to_db(state):
                 cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS model TEXT;")
                 cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS case_citation TEXT;")
                 cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS data JSONB;")
-                # Insert record with user and citation
+                # Insert record with user, model, and citation
                 cur.execute(
-                    "INSERT INTO analysis_results(username, case_citation, data) VALUES (%s, %s, %s)",
+                    "INSERT INTO analysis_results(username, model, case_citation, data) VALUES (%s, %s, %s, %s)",
                     (
                         st.session_state.get("user", None),
+                        st.session_state.get("llm_model_select", None),
                         st.session_state.get("case_citation", None),
                         json.dumps(state)
                     )
