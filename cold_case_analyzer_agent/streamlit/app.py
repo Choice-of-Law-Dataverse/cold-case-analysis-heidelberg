@@ -24,18 +24,27 @@ def save_to_db(state):
             password=creds.get("password")
         ) as conn_pg:
             with conn_pg.cursor() as cur:
+                # Ensure table and columns
                 cur.execute(
                     """
                     CREATE TABLE IF NOT EXISTS analysis_results (
                         id SERIAL PRIMARY KEY,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        data JSONB
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     );
                     """
                 )
+                cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS username TEXT;")
+                cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS model TEXT;")
+                cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS case_citation TEXT;")
+                cur.execute("ALTER TABLE analysis_results ADD COLUMN IF NOT EXISTS data JSONB;")
+                # Insert record with user and citation
                 cur.execute(
-                    "INSERT INTO analysis_results(data) VALUES (%s)",
-                    (json.dumps(state),)
+                    "INSERT INTO analysis_results(username, case_citation, data) VALUES (%s, %s, %s)",
+                    (
+                        st.session_state.get("user", None),
+                        st.session_state.get("case_citation", None),
+                        json.dumps(state)
+                    )
                 )
             conn_pg.commit()
     except Exception as e:
@@ -271,6 +280,12 @@ if 'col_state' not in st.session_state:
 # ===== Phase 1 & 2: initial extraction and COL feedback =====
 
 if not st.session_state.col_state.get("full_text"):
+    # Case citation input stored in session state
+    case_citation = st.text_input(
+        "Case Citation:",
+        key="case_citation",
+        help="Enter the case citation for this decision"
+    )
     # Ensure default session state for text input
     if "full_text_input" not in st.session_state:
         st.session_state.full_text_input = ""
@@ -286,7 +301,9 @@ if not st.session_state.col_state.get("full_text"):
     with col1:
         if st.button("Extract COL Section", type="primary"):
             if full_text:
+                # carry over case citation into analysis state
                 state = {
+                    "case_citation": st.session_state.get("case_citation"),
                     "full_text": full_text,
                     "col_section": [],
                     "col_section_feedback": [],
@@ -301,6 +318,11 @@ if not st.session_state.col_state.get("full_text"):
     with col2:
         st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
 else:
+    # Display the case citation and full court decision text
+    citation = st.session_state.col_state.get("case_citation")
+    if citation:
+        st.markdown("**Case Citation:**")
+        st.markdown(f"<div class='user-message'>{citation}</div>", unsafe_allow_html=True)
     # Display the full court decision text at the top as a user message
     st.markdown("**Your Input (Court Decision Text):**")
     st.markdown(f"<div class='user-message'>{st.session_state.col_state['full_text']}</div>", unsafe_allow_html=True)
