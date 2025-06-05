@@ -7,7 +7,7 @@ dialect = "${POSTGRESQL_DIALECT}"
 host = "${POSTGRESQL_HOST}"
 port = "${POSTGRESQL_PORT}"
 database = "${POSTGRESQL_DATABASE}"
-username = "${POSTGRESQL_USERNAME}"
+user = "${POSTGRESQL_USERNAME}"
 password = "${POSTGRESQL_PASSWORD}"
 EOF
 
