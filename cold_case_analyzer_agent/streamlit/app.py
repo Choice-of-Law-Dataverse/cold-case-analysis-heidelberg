@@ -5,8 +5,41 @@ from tools.col_extractor import extract_col_section
 from utils.debug_print_state import print_state
 from utils.sample_cd import SAMPLE_COURT_DECISION
 import config
-import psycopg2
 import json
+import psycopg2
+
+# Database persistence helper
+def save_to_db(state):
+    """
+    Persist the analysis state as JSON into PostgreSQL.
+    """
+    try:
+        # Load Postgres credentials from Streamlit secrets
+        creds = st.secrets["connections"]["postgresql"]
+        with psycopg2.connect(
+            host=creds.get("host"),
+            port=creds.get("port", 5432),
+            dbname=creds.get("database"),
+            user=creds.get("user"),
+            password=creds.get("password")
+        ) as conn_pg:
+            with conn_pg.cursor() as cur:
+                cur.execute(
+                    """
+                    CREATE TABLE IF NOT EXISTS analysis_results (
+                        id SERIAL PRIMARY KEY,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        data JSONB
+                    );
+                    """
+                )
+                cur.execute(
+                    "INSERT INTO analysis_results(data) VALUES (%s)",
+                    (json.dumps(state),)
+                )
+            conn_pg.commit()
+    except Exception as e:
+        st.error(f"Failed to save results: {e}")
 
 # Predefined user credentials
 credentials = {
@@ -439,6 +472,8 @@ else:
                 st.markdown(f"<div class='user-message'>{msg}</div>", unsafe_allow_html=True)
         # Show final thank-you message after last analysis step
         if state.get("analysis_done"):
+            print("\n\n\nAnalysis completed, saving state to database...\n\n")
+            save_to_db(state)
             st.markdown(
                 "<div class='machine-message'>Thank you for using the CoLD Case Analyzer.<br>If you would like to find out more about the project, please visit <a href=\"https://cold.global\" target=\"_blank\">cold.global</a></div>",
                 unsafe_allow_html=True
@@ -512,39 +547,6 @@ else:
                         state["analysis_done"] = True
                     print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                     st.rerun()
-
-# Database persistence helper
-def save_to_db(state):
-    """
-    Persist the analysis state as JSON into PostgreSQL.
-    """
-    try:
-        conn = psycopg2.connect(config.SQL_CONN_STRING)
-        cur = conn.cursor()
-        # Create table if not exists
-        cur.execute(
-            """
-            CREATE TABLE IF NOT EXISTS analysis_results (
-                id SERIAL PRIMARY KEY,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                data JSONB
-            );
-            """
-        )
-        # Insert state JSON
-        cur.execute(
-            "INSERT INTO analysis_results(data) VALUES (%s)",
-            (json.dumps(state),)
-        )
-        conn.commit()
-    except Exception as e:
-        st.error(f"Failed to save results: {e}")
-    finally:
-        try:
-            cur.close()
-            conn.close()
-        except:
-            pass
 
 # Sidebar with login and instructions
 with st.sidebar:
