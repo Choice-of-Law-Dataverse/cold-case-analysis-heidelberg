@@ -41,11 +41,8 @@ def save_to_db(state):
     except Exception as e:
         st.error(f"Failed to save results: {e}")
 
-# Predefined user credentials
-credentials = {
-    "alice": "wonderland",
-    "bob": "builder"
-}
+# Predefined user credentials (loaded from .env via config)
+credentials = config.USER_CREDENTIALS
 # Initialize login state
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False

@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import uuid
 from langchain_openai import ChatOpenAI
+import json
 
 load_dotenv()
 
@@ -20,6 +21,8 @@ AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID")
 AIRTABLE_CONCEPTS_TABLE = os.getenv("AIRTABLE_CONCEPTS_TABLE")
 
 SQL_CONN_STRING = os.getenv("SQL_CONN_STRING")
+# Load user credentials (as JSON string in .env): e.g. USER_CREDENTIALS='{"alice":"wonderland","bob":"builder"}'
+USER_CREDENTIALS = json.loads(os.getenv("USER_CREDENTIALS", "{}"))
 
 thread_id = str(uuid.uuid4())
 #print(f"Thread ID: {thread_id}")
