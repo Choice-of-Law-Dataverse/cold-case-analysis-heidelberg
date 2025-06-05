@@ -41,9 +41,9 @@ def save_to_db(state):
                 cur.execute(
                     "INSERT INTO analysis_results(username, model, case_citation, data) VALUES (%s, %s, %s, %s)",
                     (
-                        st.session_state.get("user", None),
-                        st.session_state.get("llm_model_select", None),
-                        st.session_state.get("case_citation", None),
+                        state.get("username"),
+                        state.get("model"),
+                        state.get("case_citation"),
                         json.dumps(state)
                     )
                 )
@@ -305,6 +305,8 @@ if not st.session_state.col_state.get("full_text"):
                 # carry over case citation into analysis state
                 state = {
                     "case_citation": st.session_state.get("case_citation"),
+                    "username": st.session_state.get("user"),
+                    "model": st.session_state.get("llm_model_select"),
                     "full_text": full_text,
                     "col_section": [],
                     "col_section_feedback": [],
@@ -434,6 +436,7 @@ else:
                 "Evaluate these themes (0-100):",
                 min_value=0,
                 max_value=100,
+                value=100,
                 step=1,
                 key="theme_first_score_input"
             )
