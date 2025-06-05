@@ -597,20 +597,23 @@ with st.sidebar:
     
     st.header("How to Use")
     st.markdown("""
-    1. **Input**: Paste the court decision text
-    2. **Analyse**: Click the 'Analyse Decision' button
-    3. **Review**: Check the initial analysis
-    4. **Feedback**: Provide feedback to improve the analysis
-    5. **Iterate**: Continue providing feedback until satisfied
+    1. (Optional) Log in to access more advanced models
+    2. Select the model you want to use
+    3. Enter the case citation for the court decision
+    4. Paste the full text of the court decision
+    5. Extract the Choice of Law section, evaluate it, and provide feedback
+    6. Classify the court decision into themes, evaluate the classification, and edit if necessary
+    7. Analyze the decision step-by-step, providing evaluations and edits as needed
     
     The analysis will include:
     - Abstract
-    - Choice of Law Section
     - Relevant Facts
     - Private International Law Provisions
-    - Private International Law Theme
     - Choice of Law Issue
     - Court's Position
+                
+    After evaluating and optionally editing the Court's Position, the analysis will be saved to a database. Note that results are only saved if you complete the analysis steps and click "Submit" at the end.
+    You can clear the history at any time to start fresh.
     """)
     
     # Add a button to clear history
