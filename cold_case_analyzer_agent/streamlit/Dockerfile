@@ -16,10 +16,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the Streamlit app code
 COPY . .
+# Copy docker-entrypoint and make it executable
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 # Expose Streamlit port
 EXPOSE 8501
 
-# Entrypoint to run Streamlit
-# We recommend mounting .env and .streamlit/secrets.toml at runtime
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Entrypoint: assemble secrets.toml then run Streamlit
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
