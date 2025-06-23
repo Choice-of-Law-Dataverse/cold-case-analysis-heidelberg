@@ -314,8 +314,16 @@ if not st.session_state.col_state.get("full_text"):
         key="full_text_input"
     )
 
-    # Jurisdiction detection workflow
-    if st.button("Detect Jurisdiction", key="detect_jurisdiction_btn"):
+    # Place Detect Jurisdiction and Use Demo Case buttons on the same line
+    button_col1, button_col2 = st.columns([2, 1])
+    with button_col1:
+        detect_clicked = st.button("Detect Jurisdiction", key="detect_jurisdiction_btn")
+    with button_col2:
+        demo_clicked = False
+        if not full_text.strip():
+            demo_clicked = st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
+
+    if detect_clicked:
         if full_text.strip():
             detected = detect_jurisdiction(full_text)
             st.session_state["jurisdiction"] = detected
@@ -382,13 +390,6 @@ if not st.session_state.col_state.get("full_text"):
                     st.rerun()
                 else:
                     st.warning("Please enter a court decision to analyze.")
-        with col2:
-            st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
-    else:
-        # Show only the demo button if jurisdiction not confirmed
-        col1, col2 = st.columns(2)
-        with col2:
-            st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
 else:
     # Display the case citation and full court decision text
     citation = st.session_state.col_state.get("case_citation")
