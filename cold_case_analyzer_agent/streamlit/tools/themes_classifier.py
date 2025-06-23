@@ -34,7 +34,7 @@ def theme_classification_node(state):
     # load valid themes from CSV
     themes_path = Path(__file__).parents[1] / 'data' / 'themes.csv'
     valid_themes = set()
-    with open(themes_path, newline='') as f:
+    with open(themes_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             valid_themes.add(row['Theme'])
