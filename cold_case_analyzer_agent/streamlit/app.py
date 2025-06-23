@@ -7,6 +7,7 @@ from utils.sample_cd import SAMPLE_COURT_DECISION
 import config
 import json
 import psycopg2
+from tools.jurisdiction_detector import detect_jurisdiction
 
 # Database persistence helper
 def save_to_db(state):
@@ -58,11 +59,26 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "user" not in st.session_state:
     st.session_state["user"] = ""
+# Initialize jurisdiction detection state
+if "jurisdiction" not in st.session_state:
+    st.session_state["jurisdiction"] = None
+if "jurisdiction_detected" not in st.session_state:
+    st.session_state["jurisdiction_detected"] = False
+if "jurisdiction_eval_score" not in st.session_state:
+    st.session_state["jurisdiction_eval_score"] = None
+if "jurisdiction_eval_submitted" not in st.session_state:
+    st.session_state["jurisdiction_eval_submitted"] = False
+if "jurisdiction_edit" not in st.session_state:
+    st.session_state["jurisdiction_edit"] = None
+if "jurisdiction_edit_submitted" not in st.session_state:
+    st.session_state["jurisdiction_edit_submitted"] = False
+if "jurisdiction_confirmed" not in st.session_state:
+    st.session_state["jurisdiction_confirmed"] = False
 
 # Load valid themes list immediately after imports
 themes_csv = Path(__file__).parent / 'data' / 'themes.csv'
 valid_themes = []
-with open(themes_csv, newline='') as f:
+with open(themes_csv, newline='', encoding='utf-8') as f:
     reader = csv.DictReader(f)
     for row in reader:
         valid_themes.append(row['Theme'])
@@ -297,29 +313,82 @@ if not st.session_state.col_state.get("full_text"):
         help="Enter the full text of the court decision to extract the Choice of Law section.",
         key="full_text_input"
     )
-    # Extraction and demo buttons
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("Extract COL Section", type="primary"):
-            if full_text:
-                # carry over case citation into analysis state
-                state = {
-                    "case_citation": st.session_state.get("case_citation"),
-                    "username": st.session_state.get("user"),
-                    "model": st.session_state.get("llm_model_select"),
-                    "full_text": full_text,
-                    "col_section": [],
-                    "col_section_feedback": [],
-                    "col_section_eval_iter": 0
-                }
-                result = extract_col_section(state)
-                state.update(result)
-                st.session_state.col_state = state
+
+    # Jurisdiction detection workflow
+    if st.button("Detect Jurisdiction", key="detect_jurisdiction_btn"):
+        if full_text.strip():
+            detected = detect_jurisdiction(full_text)
+            st.session_state["jurisdiction"] = detected
+            st.session_state["jurisdiction_detected"] = True
+            st.session_state["jurisdiction_eval_score"] = None
+            st.session_state["jurisdiction_eval_submitted"] = False
+            st.session_state["jurisdiction_edit"] = detected
+            st.session_state["jurisdiction_edit_submitted"] = False
+            st.session_state["jurisdiction_confirmed"] = False
+            st.rerun()
+        else:
+            st.warning("Please enter the court decision text before detecting jurisdiction.")
+
+    if st.session_state["jurisdiction_detected"]:
+        st.markdown(f"**Detected Jurisdiction:** <span style='color:#6F4DFA'>{st.session_state['jurisdiction']}</span>", unsafe_allow_html=True)
+        # Evaluation step
+        if not st.session_state["jurisdiction_eval_submitted"]:
+            score = st.slider(
+                "How accurate is this jurisdiction detection? (0-100)",
+                min_value=0, max_value=100, value=100, step=1, key="jurisdiction_eval_slider"
+            )
+            if st.button("Submit Jurisdiction Evaluation", key="submit_jurisdiction_eval"):
+                st.session_state["jurisdiction_eval_score"] = score
+                st.session_state["jurisdiction_eval_submitted"] = True
                 st.rerun()
-            else:
-                st.warning("Please enter a court decision to analyze.")
-    with col2:
-        st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
+        else:
+            st.markdown(f"**Your evaluation score:** <span class='user-message'>Score: {st.session_state['jurisdiction_eval_score']}</span>", unsafe_allow_html=True)
+        # Edit step
+        if st.session_state["jurisdiction_eval_submitted"] and not st.session_state["jurisdiction_edit_submitted"]:
+            edited = st.selectbox(
+                "Edit or confirm the jurisdiction classification:",
+                ["Civil-law jurisdiction", "Common-law jurisdiction", "No court decision"],
+                index=["Civil-law jurisdiction", "Common-law jurisdiction", "No court decision"].index(st.session_state["jurisdiction"]),
+                key="jurisdiction_edit_select"
+            )
+            if st.button("Confirm Jurisdiction", key="confirm_jurisdiction_edit"):
+                st.session_state["jurisdiction_edit"] = edited
+                st.session_state["jurisdiction_edit_submitted"] = True
+                st.session_state["jurisdiction_confirmed"] = True
+                st.rerun()
+        elif st.session_state["jurisdiction_edit_submitted"]:
+            st.markdown(f"**Final Jurisdiction:** <span style='color:#6F4DFA'>{st.session_state['jurisdiction_edit']}</span>", unsafe_allow_html=True)
+
+    # Only allow COL extraction after jurisdiction confirmed
+    if st.session_state["jurisdiction_edit_submitted"]:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Extract COL Section", type="primary"):
+                if full_text:
+                    # carry over case citation into analysis state
+                    state = {
+                        "case_citation": st.session_state.get("case_citation"),
+                        "username": st.session_state.get("user"),
+                        "model": st.session_state.get("llm_model_select"),
+                        "full_text": full_text,
+                        "col_section": [],
+                        "col_section_feedback": [],
+                        "col_section_eval_iter": 0,
+                        "jurisdiction": st.session_state["jurisdiction_edit"]
+                    }
+                    result = extract_col_section(state)
+                    state.update(result)
+                    st.session_state.col_state = state
+                    st.rerun()
+                else:
+                    st.warning("Please enter a court decision to analyze.")
+        with col2:
+            st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
+    else:
+        # Show only the demo button if jurisdiction not confirmed
+        col1, col2 = st.columns(2)
+        with col2:
+            st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
 else:
     # Display the case citation and full court decision text
     citation = st.session_state.col_state.get("case_citation")
