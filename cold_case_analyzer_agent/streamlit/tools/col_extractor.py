@@ -2,15 +2,17 @@ import re
 import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-
 from config import llm
-from prompts.col_section_prompt import COL_SECTION_PROMPT
+from prompts.prompt_selector import get_prompt_module
 
 
 def extract_col_section(state):
     print("\n--- COL SECTION EXTRACTION ---")
     feedback = state.get("col_section_feedback", [])
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    # Dynamically select the correct prompt
+    COL_SECTION_PROMPT = get_prompt_module(jurisdiction, 'col_section').COL_SECTION_PROMPT
     # add feedback info to logs if exists
     if feedback:
         print("\nFeedback for col section:", feedback, "\n")

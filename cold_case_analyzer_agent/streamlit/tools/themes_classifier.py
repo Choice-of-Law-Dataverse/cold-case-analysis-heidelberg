@@ -3,18 +3,18 @@ import re
 import time
 import csv
 from pathlib import Path
-
 from langchain_core.messages import HumanMessage, SystemMessage
-
 from config import llm, thread_id
-from prompts.pil_theme_prompt import PIL_THEME_PROMPT
+from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import THEMES_TABLE_STR
 
 
 def theme_classification_node(state):
-    # mirror extract_col_section pattern for theme classification
     print("\n--- THEME CLASSIFICATION ---")
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    # Dynamically select the correct prompt
+    PIL_THEME_PROMPT = get_prompt_module(jurisdiction, 'theme').PIL_THEME_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])

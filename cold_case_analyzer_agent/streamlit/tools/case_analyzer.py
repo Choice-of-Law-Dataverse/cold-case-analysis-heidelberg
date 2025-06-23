@@ -1,11 +1,9 @@
 import json
 import re
 import time
-
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-
 from config import llm
-from prompts.analysis_prompts import ABSTRACT_PROMPT, FACTS_PROMPT, PIL_PROVISIONS_PROMPT, COL_ISSUE_PROMPT, COURTS_POSITION_PROMPT
+from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import filter_themes_by_list
 
 
@@ -34,7 +32,8 @@ def _get_classification_content_str(messages: list | None) -> str:
 def abstract(state):
     print("\n--- ABSTRACT ---")
     text = state["full_text"]
-    # ABSTRACT_PROMPT only needs {text}
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
     prompt = ABSTRACT_PROMPT.format(text=text)
     start_time = time.time()
     response = llm.invoke([
@@ -57,6 +56,8 @@ def abstract(state):
 def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis').FACTS_PROMPT
     col_section_content = _get_last_message_content(state.get("col_section"))
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
     start_time = time.time()
@@ -79,6 +80,8 @@ def relevant_facts(state):
 def pil_provisions(state):
     print("\n--- PIL PROVISIONS ---")
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis').PIL_PROVISIONS_PROMPT
     col_section_content = _get_last_message_content(state.get("col_section"))
 
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
@@ -106,6 +109,8 @@ def pil_provisions(state):
 def col_issue(state):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis').COL_ISSUE_PROMPT
     col_section_content = _get_last_message_content(state.get("col_section"))
     classification_messages = state.get("classification", [])
     themes_list: list[str] = []
@@ -144,6 +149,8 @@ def col_issue(state):
 def courts_position(state):
     print("\n--- COURT'S POSITION ---")
     text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis').COURTS_POSITION_PROMPT
     col_section_content = _get_last_message_content(state.get("col_section"))
     classification_content = _get_classification_content_str(state.get("classification"))
 
