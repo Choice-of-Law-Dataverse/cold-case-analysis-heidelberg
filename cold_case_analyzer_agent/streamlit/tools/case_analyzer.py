@@ -155,6 +155,7 @@ def courts_position(state):
     classification_content = _get_classification_content_str(state.get("classification"))
 
     prompt = COURTS_POSITION_PROMPT.format(
+        col_issue=_get_last_message_content(state.get("col_issue")),
         text=text, 
         col_section=col_section_content, 
         classification=classification_content
