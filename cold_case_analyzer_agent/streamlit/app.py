@@ -671,9 +671,10 @@ with st.sidebar:
     2. Select the model you want to use
     3. Enter the case citation for the court decision
     4. Paste the full text of the court decision
-    5. Extract the Choice of Law section, evaluate it, and provide feedback
-    6. Classify the court decision into themes, evaluate the classification, and edit if necessary
-    7. Analyze the decision step-by-step, providing evaluations and edits as needed
+    5. Click "Detect Jurisdiction" to classify the jurisdiction of the decision, evaluate its accuracy and optionally edit it
+    6. Extract the Choice of Law section, evaluate it, and provide feedback
+    7. Classify the court decision into themes, evaluate the classification, and edit if necessary
+    8. Analyze the decision step-by-step, providing evaluations and edits as needed
     
     The analysis will include:
     - Abstract
