@@ -6,6 +6,9 @@ import json
 
 load_dotenv()
 
+if not os.environ.get("OPENAI_API_KEY"):
+    raise ValueError("OPENAI_API_KEY environment variable is not set. Please set it in your .env file.")
+
 def get_llm(model: str | None = None):
     """
     Return a ChatOpenAI instance. If `model` is provided, use it; otherwise fallback to env var or default.
