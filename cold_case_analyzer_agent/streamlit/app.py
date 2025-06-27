@@ -371,7 +371,7 @@ if not st.session_state.col_state.get("full_text"):
     if st.session_state["jurisdiction_edit_submitted"]:
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("Extract COL Section", type="primary"):
+            if st.button("Extract Choice of Law Section", type="primary"):
                 if full_text:
                     # carry over case citation into analysis state
                     state = {

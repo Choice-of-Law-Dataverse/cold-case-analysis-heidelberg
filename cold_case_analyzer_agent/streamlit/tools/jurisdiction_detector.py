@@ -20,6 +20,7 @@ def detect_jurisdiction(text: str) -> str:
     if not text or len(text.strip()) < 50:
         return "No court decision"
     prompt = JURISDICTION_DETECTION_PROMPT.format(text=text)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     response = llm.invoke([
         SystemMessage(content="You are an expert in legal systems and court decisions."),
         HumanMessage(content=prompt)

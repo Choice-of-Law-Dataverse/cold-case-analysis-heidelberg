@@ -35,6 +35,7 @@ def abstract(state):
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
     prompt = ABSTRACT_PROMPT.format(text=text)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -60,6 +61,7 @@ def relevant_facts(state):
     FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis').FACTS_PROMPT
     col_section_content = _get_last_message_content(state.get("col_section"))
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -85,6 +87,7 @@ def pil_provisions(state):
     col_section_content = _get_last_message_content(state.get("col_section"))
 
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -129,6 +132,7 @@ def col_issue(state):
         col_section=col_section_content, 
         classification_definitions=classification_definitions
     )
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -160,6 +164,7 @@ def courts_position(state):
         col_section=col_section_content, 
         classification=classification_content
     )
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
