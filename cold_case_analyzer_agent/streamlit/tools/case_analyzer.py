@@ -35,6 +35,7 @@ def abstract(state):
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
     prompt = ABSTRACT_PROMPT.format(text=text)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -58,8 +59,13 @@ def relevant_facts(state):
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis').FACTS_PROMPT
-    col_section_content = _get_last_message_content(state.get("col_section"))
-    prompt = FACTS_PROMPT.format(text=text, col_section=col_section_content)
+    # get last col_section (string)
+    col_section = ""
+    sections = state.get("col_section", [])
+    if sections:
+        col_section = sections[-1]
+    prompt = FACTS_PROMPT.format(text=text, col_section=col_section)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -82,9 +88,13 @@ def pil_provisions(state):
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis').PIL_PROVISIONS_PROMPT
-    col_section_content = _get_last_message_content(state.get("col_section"))
-
-    prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section_content)
+    # get last col_section (string)
+    col_section = ""
+    sections = state.get("col_section", [])
+    if sections:
+        col_section = sections[-1]
+    prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -111,7 +121,11 @@ def col_issue(state):
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis').COL_ISSUE_PROMPT
-    col_section_content = _get_last_message_content(state.get("col_section"))
+    # get last col_section (string)
+    col_section = ""
+    sections = state.get("col_section", [])
+    if sections:
+        col_section = sections[-1]
     classification_messages = state.get("classification", [])
     themes_list: list[str] = []
     if classification_messages:
@@ -122,13 +136,15 @@ def col_issue(state):
                 themes_list = content_value
             elif isinstance(content_value, str) and content_value:
                 themes_list = [content_value]
+    print(f"\nThemes list for classification: {themes_list}\n")
     classification_definitions = filter_themes_by_list(themes_list)
 
     prompt = COL_ISSUE_PROMPT.format(
-        text=text, 
-        col_section=col_section_content, 
+        text=text,
+        col_section=col_section,
         classification_definitions=classification_definitions
     )
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
@@ -151,15 +167,29 @@ def courts_position(state):
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis').COURTS_POSITION_PROMPT
-    col_section_content = _get_last_message_content(state.get("col_section"))
-    classification_content = _get_classification_content_str(state.get("classification"))
+    # get last col_section (string)
+    col_section = ""
+    sections = state.get("col_section", [])
+    if sections:
+        col_section = sections[-1]
+    # get classification (string)
+    classification = ""
+    all_classifications = state.get("classification", [])
+    if all_classifications:
+        classification = all_classifications[-1]
+    # get last col_issue (string)
+    col_issue = ""
+    all_col_issues = state.get("col_issue", [])
+    if all_col_issues:
+        col_issue = all_col_issues[-1]
 
     prompt = COURTS_POSITION_PROMPT.format(
-        col_issue=_get_last_message_content(state.get("col_issue")),
+        col_issue=col_issue,
         text=text, 
-        col_section=col_section_content, 
-        classification=classification_content
+        col_section=col_section, 
+        classification=classification
     )
+    print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
