@@ -4,7 +4,7 @@ The CoLD Case Analyzer is an AI-powered tool that systematically analyzes court 
 
 ## Getting Started
 
-Optional login provides access to advanced AI models (o3, o4-mini), while guest users can access the basic model (gpt-4.1-nano). Select your preferred model from the dropdown. Enter the case citation for record-keeping, then paste the complete court decision text. Use "Use Demo Case" to load a sample Swiss case for practice.
+Optional login provides access to advanced AI models (o3, o4-mini), while guest users can access the basic model (gpt-4.1-nano). Select your preferred model from the dropdown. Enter the case citation for record-keeping, then enter the complete court decision text. You can either upload a PDF and revise the automatically extracted text or paste the text of the court decision into the input field. Use "Use Demo Case" to load a sample Swiss case for practice.
 
 The system processes cases through eight sequential phases: jurisdiction detection, choice of law section extraction, theme classification, and five-step legal analysis. Each phase includes AI generation followed by expert evaluation and optional refinement.
 
@@ -38,12 +38,8 @@ For editing, the text areas are pre-populated with current AI output. Make compr
 
 ## Technical Considerations and Best Practices
 
-The system cannot process PDF files directly - manual text extraction is required. Ensure complete court decision text is provided, as incomplete input affects all subsequent analysis. The system works with multiple input languages but produces English output with proper legal terminology.
+The system can process PDF files directly or use raw text provided by the user. Ensure complete court decision text is provided, as incomplete input affects all subsequent analysis. The system works with multiple input languages but produces English output with proper legal terminology.
 
-Analysis state is maintained throughout the session but lost if the browser session ends unexpectedly. Complete the full analysis in a single session when possible. Use "Clear History" to reset and start a new case analysis.
-
-For optimal results, prepare by reviewing the case beforehand and formulating preliminary opinions about appropriate answers for each analysis category. This enables more effective evaluation and editing of AI outputs.
-
-Results are automatically saved to the database upon completion of all analysis steps, including user identification, model used, case citation, and complete analysis state with timestamps. The system provides a completion message with links to the broader CoLD project resources.
+Analysis state is maintained throughout the session but lost if the browser session ends unexpectedly. Complete the full analysis in a single session when possible. Use "Clear History" to reset and start a new case analysis. For optimal results, prepare by reviewing the case beforehand and formulating preliminary opinions about appropriate answers for each analysis category. This enables more effective evaluation and editing of AI outputs. Results are automatically saved to the database upon completion of all analysis steps, including user identification, model used, case citation, and complete analysis state with timestamps. The system provides a completion message with links to the broader CoLD project resources.
 
 The analyzer integrates with the broader CoLD project workflow where legal specialists access court decisions through NocoDB, extract full text from various sources, and use this tool for systematic PIL analysis. The structured output supports comparative research and contributes to the CoLD database of analyzed cases.
