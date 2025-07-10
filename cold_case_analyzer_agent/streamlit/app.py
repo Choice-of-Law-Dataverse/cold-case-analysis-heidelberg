@@ -8,6 +8,7 @@ import config
 import json
 import psycopg2
 from tools.jurisdiction_detector import detect_jurisdiction
+from utils.pdf_handler import extract_text_from_pdf
 
 # Database persistence helper
 def save_to_db(state):
@@ -306,6 +307,20 @@ if not st.session_state.col_state.get("full_text"):
     # Ensure default session state for text input
     if "full_text_input" not in st.session_state:
         st.session_state.full_text_input = ""
+    # PDF uploader and automatic extraction
+    pdf_file = st.file_uploader(
+        "Or drag and drop a PDF file here:",
+        type=["pdf"],
+        key="pdf_upload",
+        help="Upload a PDF to extract the full text automatically"
+    )
+    if pdf_file is not None:
+        try:
+            extracted = extract_text_from_pdf(pdf_file)
+            st.session_state.full_text_input = extracted
+            st.success("Extracted text from PDF successfully.")
+        except Exception as e:
+            st.error(f"Failed to extract text from PDF: {e}")
     # Initial COL extraction input
     full_text = st.text_area(
         "Paste the court decision text here:",
