@@ -8,6 +8,7 @@ import config
 import json
 import psycopg2
 from tools.jurisdiction_detector import detect_jurisdiction
+from utils.pdf_handler import extract_text_from_pdf
 
 # Database persistence helper
 def save_to_db(state):
@@ -306,6 +307,20 @@ if not st.session_state.col_state.get("full_text"):
     # Ensure default session state for text input
     if "full_text_input" not in st.session_state:
         st.session_state.full_text_input = ""
+    # PDF uploader and automatic extraction
+    pdf_file = st.file_uploader(
+        "Or drag and drop a PDF file here:",
+        type=["pdf"],
+        key="pdf_upload",
+        help="Upload a PDF to extract the full text automatically"
+    )
+    if pdf_file is not None:
+        try:
+            extracted = extract_text_from_pdf(pdf_file)
+            st.session_state.full_text_input = extracted
+            st.success("Extracted text from PDF successfully.")
+        except Exception as e:
+            st.error(f"Failed to extract text from PDF: {e}")
     # Initial COL extraction input
     full_text = st.text_area(
         "Paste the court decision text here:",
@@ -687,14 +702,22 @@ with st.sidebar:
     You can clear the history at any time to start fresh.
     """)
     
-    # Add a button to clear history
+    # Add documentation download button
+    doc_path = Path(__file__).parent / 'user_documentation.pdf'
+    try:
+        with open(doc_path, 'rb') as doc_file:
+            doc_bytes = doc_file.read()
+        st.download_button(
+            label='Download User Documentation',
+            data=doc_bytes,
+            file_name='user_documentation.pdf',
+            mime='application/pdf'
+        )
+    except Exception as e:
+        st.error(f"Unable to load documentation: {e}")
+    
+    # Add a button to clear history and reset all inputs
     if st.button("Clear History", key="clear_history"):
-        # Remove analysis state to reset the interface
-        for k in [
-            'col_state', 'full_text_input',
-            'jurisdiction', 'jurisdiction_detected', 'jurisdiction_eval_score',
-            'jurisdiction_eval_submitted', 'jurisdiction_edit',
-            'jurisdiction_edit_submitted', 'jurisdiction_confirmed']:
-            if k in st.session_state:
-                del st.session_state[k]
+        # Clear all session state to reset the interface completely
+        st.session_state.clear()
         st.rerun()
