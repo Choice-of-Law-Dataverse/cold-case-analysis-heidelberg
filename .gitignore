@@ -184,3 +184,5 @@ ic2s2_2025/
 agent_langgraph_basics-Dateien/
 agent_langgraph_basics.htm
 
+# Streamlit secrets
+cold_case_analyzer_agent/streamlit/.streamlit/secrets.toml
