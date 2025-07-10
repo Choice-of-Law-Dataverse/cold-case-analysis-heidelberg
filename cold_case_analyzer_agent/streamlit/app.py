@@ -702,6 +702,20 @@ with st.sidebar:
     You can clear the history at any time to start fresh.
     """)
     
+    # Add documentation download button
+    doc_path = Path(__file__).parent / 'user_documentation.pdf'
+    try:
+        with open(doc_path, 'rb') as doc_file:
+            doc_bytes = doc_file.read()
+        st.download_button(
+            label='Download User Documentation',
+            data=doc_bytes,
+            file_name='user_documentation.pdf',
+            mime='application/pdf'
+        )
+    except Exception as e:
+        st.error(f"Unable to load documentation: {e}")
+    
     # Add a button to clear history and reset all inputs
     if st.button("Clear History", key="clear_history"):
         # Clear all session state to reset the interface completely
