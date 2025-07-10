@@ -702,14 +702,8 @@ with st.sidebar:
     You can clear the history at any time to start fresh.
     """)
     
-    # Add a button to clear history
+    # Add a button to clear history and reset all inputs
     if st.button("Clear History", key="clear_history"):
-        # Remove analysis state to reset the interface
-        for k in [
-            'col_state', 'full_text_input',
-            'jurisdiction', 'jurisdiction_detected', 'jurisdiction_eval_score',
-            'jurisdiction_eval_submitted', 'jurisdiction_edit',
-            'jurisdiction_edit_submitted', 'jurisdiction_confirmed']:
-            if k in st.session_state:
-                del st.session_state[k]
+        # Clear all session state to reset the interface completely
+        st.session_state.clear()
         st.rerun()
