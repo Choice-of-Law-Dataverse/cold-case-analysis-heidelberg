@@ -28,17 +28,100 @@ Base the factual narrative solely on the provided judgment text, synthesizing in
 
 # ===== PIL PROVISIONS =====
 PIL_PROVISIONS_PROMPT = """
-Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually comes from the citation of previous case law (precedents) from the same or from a foreign jurisdiction. It always has to be related to the choice of law issue. It is also possible that principles or legislations are used. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"].\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
+TASK: Extract only the legal authorities that the court actually used to support its choice of law reasoning and decision.
+INSTRUCTIONS:
+1.	Inclusion Standard: Include authorities only where the court: 
+-	Applied the authority's principle to reach its conclusion
+-	Adopted the authority's reasoning as part of its analysis
+-	Used the authority to interpret or clarify legal principles
+-	Distinguished or followed the authority's approach
+-	If no textbooks/academic sources, and/or statutory provisions have been cited, then do not output these headings.
+2.	Authority Categories: 
+-	Judicial Decisions: Indian and foreign cases the court followed, distinguished, or applied
+-	Textbooks/Treatises: Academic sources (Dicey, Cheshire, etc.) the court cited for legal principles
+-	Statutory Provisions: Specific legislative rules the court applied
+-	Legal Principles: Established doctrines or tests the court referenced.
+3.	Usage Description Requirements: 
+-	For Cases: List case name only. Include citations only if provided in the judgment. (no usage explanation needed)
+-	For Textbooks/Academic Sources: List names. Provide one-line explanation of how used for each.
+-	For Statutory Provisions: List provision only (no usage explanation needed)
+4.	Exclusions: 
+-	Authorities cited by parties/counsel unless court adopted their reasoning
+-	Cases mentioned for historical context without direct application
+-	Authorities cited but not used in the court's actual reasoning
+-	General legal background citations not supporting the specific decision
+5.	OUTPUT FORMAT:
+**LEGAL AUTHORITIES RELIED UPON:**
+
+**Judicial Precedents:**
+-	[Case name 1]
+-	[Case name 2]
+**Textbooks/Academic Sources:**
+-	[Source]: [Brief explanation of how court used it]
+**Statutory Provisions:**
+-	[Provision name/section]
+6.	CONSTRAINT: Extract only from the court's own reasoning in the provided judgment text, focusing on authorities that directly supported the choice of law analysis and conclusion.
+\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe authorities are:\n
 """
 
 # ===== CHOICE OF LAW ISSUE =====
 COL_ISSUE_PROMPT = """
-Your task is to identify the main Private International Law issue  from a court decision. Your response will be a concise question (usually a yes or no question). The issue you extract will have to do with Choice of Law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case, but rather the overall choice of law issue behind the case.\nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
+TASK: Identify the specific choice of law questions that the court actually decided in this private international law (PIL) case. 
+INSTRUCTIONS:
+1.	Issue Identification Criteria: 
+Extract only questions about applicable law that the court explicitly or implicitly resolved to reach its decision. Focus on what the court needed to determine, not what parties argued or preliminary questions considered but not decided. There may be one or more issues. If there is only one issue, then return only one question.
+2.	Question Formulation: 
+Frame each issue as a precise legal question using "Whether..." format. Examples: 
+-	"Whether parties can validly choose the law of a country with no connection to their contract?"
+-	"Whether implied choice of law can be inferred from forum selection clauses?"
+-	"Whether the closest connection test applies when parties made no express choice of law?"
+-	"Whether Indian courts should apply foreign law to determine contractual validity?"
+3.	Scope Guidelines: 
+-	Include: Questions about validity of express choices, methods for determining implied choices, default rules in absence of choice, scope of chosen law, renvoi issues
+-	Include: Issues about connecting factors, party autonomy limitations, public policy exceptions
+-	Exclude: Pure jurisdictional questions, procedural law issues, enforcement matters unrelated to choice of law
+4.	Output Requirements: 
+-	List each issue as a separate numbered question
+-	Use precise, legally accurate terminology
+-	Ensure each question reflects a choice of law determination actually made by the court
+-	Order issues from primary to secondary based on their importance to the court's reasoning
+5.	Quality Check: Each identified issue should be answerable by pointing to specific court reasoning in the choice of law analysis.
+6.	OUTPUT FORMAT:
+**LEGAL ISSUES:**
+1. Whether [specific choice of law question court resolved]
+2. Whether [additional issue if present]
+7.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
+\nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
 """
 
 # ===== COURT'S POSITION =====
 COURTS_POSITION_PROMPT = """
-Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. The summary of the court’s position must be structured by (1) Majority Decisions, (2) Minority Decisions, and (3) Dissenting Opinions  if the court decision contains any of them.\nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
+TASK: Extract the binding legal principle(s) that the court established as essential to its choice of law decision.
+INSTRUCTIONS:
+1.	Ratio Identification Method: 
+-	Identify each legal proposition the court stated regarding choice of law
+-	Apply the inversion test mentally: Would reversing this proposition change the court's conclusion?
+-	Include only propositions where the answer is "no" - these are ratio decidendi
+2.	Content Requirements: 
+-	Extract the court's binding legal rule(s), not factual findings or case-specific applications
+-	State each principle as a clear, precedential rule applicable to future cases
+-	Focus on private international law (PIL) methodology, not the specific contractual or factual outcome
+-	Use the court's own formulation where possible, condensed into the form of a principle.
+3.	Output Specifications: 
+-	State each ratio as a complete legal principle in 1-2 sentences maximum
+-	If multiple ratios exist on different choice of law points, number them separately
+-	Ensure each principle directly addresses the legal issue(s) previously identified
+-	Avoid factual details, policy reasoning, or persuasive commentary
+4.	Quality Standards: 
+-	Each ratio should be actionable as precedent in future PIL cases
+-	Principles should be neither too narrow (case-specific) nor too broad (unhelpful generalization)
+-	Focus on what the court held must be done, not what it suggested or considered
+5.	OUTPUT FORMAT:
+**COURT’S POSITION**
+[Legal principle 1 - complete rule in 1-2 sentences]
+[Legal principle 2 - if applicable]
+6.	CONSTRAINT: Extract principles solely from the court's binding determinations in the provided judgment text, ensuring each principle was necessary for the court's choice of law conclusion.
+\nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
 """
 
 COURTS_POSITION_OBITER_DICTA_PROMPT = """
