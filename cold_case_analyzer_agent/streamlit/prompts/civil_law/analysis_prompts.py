@@ -1,11 +1,29 @@
-# ===== ABSTRACT =====
-ABSTRACT_PROMPT = """
-Your task is to extract the abstract from a court decision. Your response only consists of the abstract, with no explanations or additional information. The official abstract in the case is right at the beginning, usually called "Regeste". Please translate this section into English. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less. If any legal provisions are mentioned, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nThe abstract is:\n
-"""
-
 # ===== RELEVANT FACTS =====
 FACTS_PROMPT = """
-Your task is to extract and summarise the relevant facts from a court decision. Your response consists of the relevant facts only, no explanations or other additional information. You return a structured paragraph meaningful to private international law practitioners. The relevant facts summed up from the case must provide a concise account of the factual background that is essential to understanding the legal dispute, avoiding extraneous details. Relevant information includes who the parties are, what happened, what the dispute is about, and what the different stages of court proceedings are. Your response prioritizes information on choice of law and can only contain accurate information. Under no circumstances can you add assumptions that are not stated in the case. If any legal provisions are mentioned, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe relevant facts are:\n
+TASK: Extract and synthesize factual elements essential for understanding the choice of law analysis into a single, coherent paragraph.
+INSTRUCTIONS:
+1.	Output Requirement: 
+Provide exactly ONE paragraph containing all relevant facts in narrative form.
+2.	Content Priority:
+Elaborate on facts including, but not limited to the following, as long as they are relevant for the private international law (PIL) and choice of law discussion in the decision: 
+-	Party characteristics (nationality, domicile, place of business/incorporation)
+-	Nature and geography of the underlying transaction/relationship
+-	Express or implied choice of law indicators
+-	Specific circumstances that created the choice of law issue
+3.	Writing Guidelines: 
+-	Use flowing, connected sentences rather than listing facts in points
+-	Employ transitional phrases to link different factual elements
+-	Maintain chronological or logical progression 
+-	Keep sentences concise but substantive
+4.	Inclusion Standards: 
+-	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
+-	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
+5.	OUTPUT FORMAT:
+**FACTS:**
+[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis.]
+6.	CONSTRAINT:
+Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
+\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
 """
 
 # ===== PIL PROVISIONS =====
@@ -21,4 +39,9 @@ Your task is to identify the main private international law issue from a court d
 # ===== COURT'S POSITION =====
 COURTS_POSITION_PROMPT = """
 Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
+"""
+
+# ===== ABSTRACT =====
+ABSTRACT_PROMPT = """
+Your task is to extract the abstract from a court decision. Your response only consists of the abstract, with no explanations or additional information. The official abstract in the case is right at the beginning, usually called "Regeste". Please translate this section into English. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less. If any legal provisions are mentioned, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nThe abstract is:\n
 """
