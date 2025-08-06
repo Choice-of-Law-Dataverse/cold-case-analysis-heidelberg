@@ -33,7 +33,12 @@ Your task is to extract rules related to choice of law cited in a court decision
 
 # ===== CHOICE OF LAW ISSUE =====
 COL_ISSUE_PROMPT = """
-Your task is to identify the main private international law issue from a court decision. Your response will be a concise yes-no question. The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.\n\nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
+Your task is to identify the main private international law issue from a court decision. Your response will be a concise question. Examples:
+-	“Can the parties validly choose the law of a country with no connection to their contract?”
+-	"Can an implied choice of law be inferred from forum selection clauses?"
+-	"Does the closest connection test apply when parties made no express choice of law?"
+
+The issue you extract will have to do with choice of law and the output has to be phrased in a general fashion. The issue is not about the specific details of the case but rather the overall choice-of-law issue behind the case. If any legal provisions are mentioned, use their English abbreviation.\n\nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
 """
 
 # ===== COURT'S POSITION =====
