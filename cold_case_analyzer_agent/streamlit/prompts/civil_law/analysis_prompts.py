@@ -43,5 +43,36 @@ Summarize the court's position on the choice-of-law issue(s) within the decision
 
 # ===== ABSTRACT =====
 ABSTRACT_PROMPT = """
-Your task is to extract the abstract from a court decision. Your response only consists of the abstract, with no explanations or additional information. The official abstract in the case is right at the beginning, usually called "Regeste". Please translate this section into English. If there is no dedicated abstract to be found, and only then, you have to return a general description of the information in the file. It has to be concise and condense all the key details (topic, provisions, information about the legal dispute) in a single paragraph or less. If any legal provisions are mentioned, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nThe abstract is:\n
+TASK: Create a concise abstract summarizing this PIL case's choice of law analysis and outcome.
+INSTRUCTIONS:
+1.	Primary Approach: 
+Synthesize a comprehensive abstract using the analytical components you have previously extracted from this judgment.
+2.	Content Integration: Your abstract must incorporate: 
+-	Essential facts establishing the PIL context
+-	The choice of law issue(s) the court addressed
+-	The court's ratio decidendi on applicable law
+-	The legal outcome/conclusion
+3.	Structure Requirements: 
+-	Write exactly one paragraph
+-	Begin with the factual context that created the PIL issue
+-	Progress through the legal question and court's reasoning
+-	Conclude with the precedential principle established
+4.	Writing Standards: 
+-	Use clear, professional language
+-	Maintain logical flow from facts to legal conclusion
+-	Focus on PIL methodology and choice of law principles, not case-specific outcomes
+-	Include sufficient detail for legal research purposes while remaining concise
+5.  Fallback Instruction: 
+If an official “abstract”, “headnote”/ “case note” exists in the judgment text, extract it instead of synthesizing. Please translate it into English and state that it is a verbatim translation.
+
+6.	OUTPUT FORMAT:
+A.	**ABSTRACT WHEN NOTHING IS AVAILABLE IN THE DECISION:**
+[Single paragraph synthesizing facts, PIL issues, court's reasoning, and precedential outcome]
+B.	**ABSTRACT WHEN A SUMMARY IS AVAILABLE IN THE DECISION:**
+[Extracted and translated paragraph adding (verbatim) at the end].
+
+
+7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
+
+Court Decision Text:\n{text}\n\nThe abstract is:\n
 """
