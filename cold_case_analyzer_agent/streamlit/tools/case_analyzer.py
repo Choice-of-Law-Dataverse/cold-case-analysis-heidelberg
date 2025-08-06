@@ -28,30 +28,6 @@ def _get_classification_content_str(messages: list | None) -> str:
                 content_str = raw_content
     return content_str
 
-# ===== ABSTRACT =====
-def abstract(state):
-    print("\n--- ABSTRACT ---")
-    text = state["full_text"]
-    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
-    prompt = ABSTRACT_PROMPT.format(text=text)
-    print(f"\nPrompting LLM with:\n{prompt}\n")
-    start_time = time.time()
-    response = llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
-        HumanMessage(content=prompt)
-    ])
-    abstract_time = time.time() - start_time
-    abstract = response.content
-    print(f"\nAbstract:\n{abstract}\n")
-    # append abstract
-    state.setdefault("abstract", []).append(abstract)
-    # return full updated lists
-    return {
-        "abstract": state["abstract"],
-        "abstract_time": abstract_time
-    }
-
 # ===== RELEVANT FACTS =====
 def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
@@ -254,3 +230,27 @@ def dissenting_opinions(state):
     print(f"\nDissenting Opinions:\n{dissent}\n")
     state.setdefault("dissenting_opinions", []).append(dissent)
     return {"dissenting_opinions": state["dissenting_opinions"]}
+
+# ===== ABSTRACT =====
+def abstract(state):
+    print("\n--- ABSTRACT ---")
+    text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
+    prompt = ABSTRACT_PROMPT.format(text=text)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    abstract_time = time.time() - start_time
+    abstract = response.content
+    print(f"\nAbstract:\n{abstract}\n")
+    # append abstract
+    state.setdefault("abstract", []).append(abstract)
+    # return full updated lists
+    return {
+        "abstract": state["abstract"],
+        "abstract_time": abstract_time
+    }
