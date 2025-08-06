@@ -422,8 +422,9 @@ else:
             from tools.case_analyzer import (
                 abstract, relevant_facts,
                 pil_provisions, col_issue,
-                courts_position
+                courts_position, obiter_dicta, dissenting_opinions
             )
+            # Build base pipeline
             steps = [
                 ("abstract", abstract),
                 ("relevant_facts", relevant_facts),
@@ -431,6 +432,12 @@ else:
                 ("col_issue", col_issue),
                 ("courts_position", courts_position)
             ]
+            # Add extra steps for common-law decisions
+            if state.get("jurisdiction") == "Common-law jurisdiction":
+                steps.extend([
+                    ("obiter_dicta", obiter_dicta),
+                    ("dissenting_opinions", dissenting_opinions)
+                ])
             name, func = steps[state["analysis_step"]]
             # run node once, record machine output
             if not state.get(f"{name}_printed"):

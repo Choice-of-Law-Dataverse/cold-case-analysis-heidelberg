@@ -19,7 +19,7 @@ Your task is to identify the main Private International Law issue  from a court 
 """
 
 # ===== COURT'S POSITION =====
-COURTS_POSITION_RATIO_DECIDENDI_PROMPT = """
+COURTS_POSITION_PROMPT = """
 Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. The summary of the court’s position must be structured by (1) Majority Decisions, (2) Minority Decisions, and (3) Dissenting Opinions  if the court decision contains any of them.\nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
 """
 
@@ -53,6 +53,7 @@ INSTRUCTIONS:
 
 [Legal observation 2 - if applicable]
 6.	CONSTRAINT: Extract only judicial commentary from the provided judgment text that relates to PIL methodology or choice of law principles but was not necessary for the court's actual decision.
+\nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe obiter dicta is:\n
 """
 
 COURTS_POSITION_DISSENTING_OPINIONS_PROMPT = """
@@ -81,4 +82,5 @@ INSTRUCTIONS:
 OR
 "No dissenting opinion or minority opinion on the choice of law issue."
 6.	CONSTRAINT: Extract only from the provided judgment text, focusing exclusively on choice of law disagreements while ignoring dissents on other legal issues.
+\nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe dissenting opinions are:\n
 """

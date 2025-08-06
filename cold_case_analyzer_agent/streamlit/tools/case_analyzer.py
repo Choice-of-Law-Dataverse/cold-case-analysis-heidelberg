@@ -52,7 +52,6 @@ def abstract(state):
         "abstract_time": abstract_time
     }
 
-
 # ===== RELEVANT FACTS =====
 def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
@@ -205,3 +204,53 @@ def courts_position(state):
         "courts_position": state["courts_position"],
         "courts_position_time": position_time
     }
+    
+def obiter_dicta(state):
+    print("\n--- OBITER DICTA ---")
+    text = state.get("full_text", "")
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis')
+    OBITER_PROMPT = prompt_module.COURTS_POSITION_OBITER_DICTA_PROMPT
+    col_section = state.get("col_section", [""])[-1]
+    classification = state.get("classification", [""])[-1]
+    col_issue = state.get("col_issue", [""])[-1]
+    prompt = OBITER_PROMPT.format(
+        text=text,
+        col_section=col_section,
+        classification=classification,
+        col_issue=col_issue
+    )
+    print(f"\nPrompting LLM for obiter dicta with:\n{prompt}\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    obiter = response.content
+    print(f"\nObiter Dicta:\n{obiter}\n")
+    state.setdefault("obiter_dicta", []).append(obiter)
+    return {"obiter_dicta": state["obiter_dicta"]}
+
+def dissenting_opinions(state):
+    print("\n--- DISSENTING OPINIONS ---")
+    text = state.get("full_text", "")
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis')
+    DISSENT_PROMPT = prompt_module.COURTS_POSITION_DISSENTING_OPINIONS_PROMPT
+    col_section = state.get("col_section", [""])[-1]
+    classification = state.get("classification", [""])[-1]
+    col_issue = state.get("col_issue", [""])[-1]
+    prompt = DISSENT_PROMPT.format(
+        text=text,
+        col_section=col_section,
+        classification=classification,
+        col_issue=col_issue
+    )
+    print(f"\nPrompting LLM for dissenting opinions with:\n{prompt}\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    dissent = response.content
+    print(f"\nDissenting Opinions:\n{dissent}\n")
+    state.setdefault("dissenting_opinions", []).append(dissent)
+    return {"dissenting_opinions": state["dissenting_opinions"]}
