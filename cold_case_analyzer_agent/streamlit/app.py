@@ -488,4 +488,3 @@ else:
                     print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                     st.rerun()
 
-render_sidebar()
