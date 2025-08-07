@@ -5,13 +5,11 @@ PROMPT_MODULES = {
         'col_section': 'prompts.civil_law.col_section_prompt',
         'theme': 'prompts.civil_law.pil_theme_prompt',
         'analysis': 'prompts.civil_law.analysis_prompts',
-        'jurisdiction_detection': 'prompts.civil_law.jurisdiction_detection_prompt',
     },
     'common-law': {
         'col_section': 'prompts.common_law.col_section_prompt',
         'theme': 'prompts.common_law.pil_theme_prompt',
         'analysis': 'prompts.common_law.analysis_prompts',
-        'jurisdiction_detection': 'prompts.common_law.jurisdiction_detection_prompt',
     },
 }
 

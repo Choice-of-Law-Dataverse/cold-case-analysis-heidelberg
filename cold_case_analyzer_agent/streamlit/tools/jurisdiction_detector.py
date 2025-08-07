@@ -5,10 +5,7 @@ Detects the jurisdiction type of a court decision: Civil-law, Common-law, or No 
 import re
 from config import llm
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from prompts.prompt_selector import get_prompt_module
-
-# Always use civil-law prompt for initial detection (since jurisdiction is not yet known)
-JURISDICTION_DETECTION_PROMPT = get_prompt_module('Civil-law jurisdiction', 'jurisdiction_detection').JURISDICTION_DETECTION_PROMPT
+from prompts.jurisdiction_detection_prompt import JURISDICTION_DETECTION_PROMPT
 
 def detect_jurisdiction(text: str) -> str:
     """
