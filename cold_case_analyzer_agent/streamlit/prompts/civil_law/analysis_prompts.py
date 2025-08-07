@@ -55,8 +55,7 @@ Synthesize a comprehensive abstract using the analytical components you have pre
 2.	Content Integration: Your abstract must incorporate: 
 -	Essential facts establishing the PIL context
 -	The choice of law issue(s) the court addressed
--	The court's ratio decidendi on applicable law
--	The legal outcome/conclusion
+-	The court's position
 3.	Structure Requirements: 
 -	Write exactly one paragraph
 -	Begin with the factual context that created the PIL issue

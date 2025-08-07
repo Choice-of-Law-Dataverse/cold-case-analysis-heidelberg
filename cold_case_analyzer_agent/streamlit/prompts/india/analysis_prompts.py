@@ -37,7 +37,7 @@ INSTRUCTIONS:
 -	Distinguished or followed the authority's approach
 -	If no textbooks/academic sources, and/or statutory provisions have been cited, then do not output these headings.
 2.	Authority Categories: 
--	Judicial Decisions: Cases the court followed, distinguished, or applied
+-	Judicial Decisions: Indian and foreign cases the court followed, distinguished, or applied
 -	Textbooks/Treatises: Academic sources (Dicey, Cheshire, etc.) the court cited for legal principles
 -	Statutory Provisions: Specific legislative rules the court applied
 -	Legal Principles: Established doctrines or tests the court referenced.
@@ -71,10 +71,11 @@ INSTRUCTIONS:
 1.	Issue Identification Criteria: 
 Extract only questions about applicable law that the court explicitly or implicitly resolved to reach its decision. Focus on what the court needed to determine, not what parties argued or preliminary questions considered but not decided. There may be one or more issues. If there is only one issue, then return only one question.
 2.	Question Formulation: 
-Frame each issue as a precise legal question. Examples:
--	“Can the parties validly choose the law of a country with no connection to their contract?”
--	"Can an implied choice of law be inferred from forum selection clauses?"
--	"Does the closest connection test apply when parties made no express choice of law?"
+Frame each issue as a precise legal question using "Whether..." format. Examples: 
+-	"Whether parties can validly choose the law of a country with no connection to their contract?"
+-	"Whether implied choice of law can be inferred from forum selection clauses?"
+-	"Whether the closest connection test applies when parties made no express choice of law?"
+-	"Whether Indian courts should apply foreign law to determine contractual validity?"
 3.	Scope Guidelines: 
 -	Include: Questions about validity of express choices, methods for determining implied choices, default rules in absence of choice, scope of chosen law, renvoi issues
 -	Include: Issues about connecting factors, party autonomy limitations, public policy exceptions
@@ -85,7 +86,11 @@ Frame each issue as a precise legal question. Examples:
 -	Ensure each question reflects a choice of law determination actually made by the court
 -	Order issues from primary to secondary based on their importance to the court's reasoning
 5.	Quality Check: Each identified issue should be answerable by pointing to specific court reasoning in the choice of law analysis.
-6.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
+6.	OUTPUT FORMAT:
+**LEGAL ISSUES:**
+1. Whether [specific choice of law question court resolved]
+2. Whether [additional issue if present]
+7.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
 \nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
 """
 
@@ -129,7 +134,7 @@ INSTRUCTIONS:
 2.	PIL-Relevant Obiter Categories: 
 -	Alternative choice of law approaches the court considered but didn't apply
 -	Comparative observations about foreign private international law (PIL) systems or practices
--	Commentary on the development or future direction of PIL
+-	Commentary on the development or future direction of Indian PIL
 -	Hypothetical scenarios or broader applications beyond the case facts
 -	Judicial observations about PIL methodology or theoretical frameworks
 -	Commentary on party autonomy principles not directly applied
