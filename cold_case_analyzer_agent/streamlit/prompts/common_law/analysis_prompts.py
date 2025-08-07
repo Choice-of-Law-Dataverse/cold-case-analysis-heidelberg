@@ -213,5 +213,21 @@ B.	**ABSTRACT WHEN A CASE NOTE IS AVAILABLE IN THE DECISION:**
 
 7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
 
-Court Decision Text:\n{text}\n\nThe abstract is:\n
+Court Decision Text:\n{text}
+
+The private international law themes are:\n{classification}
+
+The relevant facts are:\n{facts}
+
+The private international law provisions are:\n{pil_provisions}
+
+The choice of law issue is:\n{col_issue}
+
+The court's position is (ratio decidendi):\n{court_position}
+
+The obiter dicta is:\n{obiter_dicta}
+
+The dissenting opinions are:\n{dissenting_opinions}
+
+\n\nThe abstract is:\n
 """
