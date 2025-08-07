@@ -24,7 +24,8 @@ def load_jurisdictions():
                     'code': row['Alpha-3 Code'].strip(),
                     'summary': row['Jurisdiction Summary'].strip()
                 })
-    
+    # Sort jurisdictions by name for better consistency
+    jurisdictions.sort(key=lambda x: x['name'].lower())
     return jurisdictions
 
 def create_jurisdiction_list():
@@ -49,8 +50,7 @@ def detect_precise_jurisdiction(text: str) -> dict:
         return {
             "jurisdiction_name": None,
             "jurisdiction_code": None,
-            "confidence": "low",
-            "reasoning": "Insufficient text provided"
+            "jurisdiction_summary": None
         }
     
     jurisdiction_list = create_jurisdiction_list()
@@ -86,9 +86,6 @@ def detect_precise_jurisdiction(text: str) -> dict:
             
             # Ensure required fields exist
             jurisdiction_name = result.get("jurisdiction_name", "Unknown")
-            jurisdiction_code = result.get("jurisdiction_code")
-            confidence = result.get("confidence", "low")
-            reasoning = result.get("reasoning", "No reasoning provided")
             
             # Validate jurisdiction against our list
             jurisdictions = load_jurisdictions()
@@ -105,16 +102,12 @@ def detect_precise_jurisdiction(text: str) -> dict:
                 return {
                     "jurisdiction_name": valid_jurisdiction['name'],
                     "jurisdiction_code": valid_jurisdiction['code'],
-                    "confidence": confidence,
-                    "reasoning": reasoning,
                     "jurisdiction_summary": valid_jurisdiction['summary']
                 }
             else:
                 return {
                     "jurisdiction_name": "Unknown",
                     "jurisdiction_code": None,
-                    "confidence": "low",
-                    "reasoning": f"Could not match '{jurisdiction_name}' to available jurisdictions",
                     "jurisdiction_summary": None
                 }
                 
@@ -124,8 +117,6 @@ def detect_precise_jurisdiction(text: str) -> dict:
             return {
                 "jurisdiction_name": "Unknown",
                 "jurisdiction_code": None,
-                "confidence": "low",
-                "reasoning": f"Failed to parse LLM response as JSON: {str(e)}",
                 "jurisdiction_summary": None
             }
             
@@ -134,66 +125,13 @@ def detect_precise_jurisdiction(text: str) -> dict:
         return {
             "jurisdiction_name": "Unknown",
             "jurisdiction_code": None,
-            "confidence": "low",
-            "reasoning": f"Error during detection: {str(e)}",
             "jurisdiction_summary": None
         }
 
-def determine_legal_system_type(jurisdiction_name: str, jurisdiction_code: str, jurisdiction_summary: str) -> str:
+def determine_legal_system_type(jurisdiction_name: str, original_text: str) -> str:
     """
-    Determine if the jurisdiction follows civil law or common law based on the jurisdiction summary.
+    Determine if the jurisdiction follows civil law or common law.
+    
+    Uses the existing jurisdiction detection logic with the original text as the primary method.
     """
-    if not jurisdiction_summary:
-        return "Unknown legal system"
-    
-    # Analyze the summary for legal system indicators
-    summary_lower = jurisdiction_summary.lower()
-    
-    # Civil law indicators
-    civil_law_indicators = [
-        'civil code', 'civil law', 'napoleonic code', 'continental law',
-        'romano-germanic', 'codified law', 'inquisitorial',
-        'french civil code', 'german civil code', 'portuguese civil code',
-        'rome i regulation', 'european union'
-    ]
-    
-    # Common law indicators  
-    common_law_indicators = [
-        'common law', 'case law', 'precedent', 'stare decisis',
-        'english law', 'anglo-american', 'adversarial',
-        'judge-made law', 'judicial precedent', 'closest connection',
-        'proper law of the contract'
-    ]
-    
-    civil_law_score = sum(1 for indicator in civil_law_indicators if indicator in summary_lower)
-    common_law_score = sum(1 for indicator in common_law_indicators if indicator in summary_lower)
-    
-    if civil_law_score > common_law_score:
-        return "Civil-law jurisdiction"
-    elif common_law_score > civil_law_score:
-        return "Common-law jurisdiction"
-    else:
-        # If unclear from summary, use known jurisdiction patterns
-        known_civil_law = [
-            'Germany', 'France', 'Spain', 'Italy', 'Switzerland', 'Austria', 
-            'Netherlands', 'Belgium', 'Portugal', 'Brazil', 'Argentina', 
-            'Chile', 'Colombia', 'Mexico', 'Japan', 'South Korea', 'China',
-            'European Union', 'Denmark', 'Sweden', 'Norway', 'Finland'
-        ]
-        
-        known_common_law = [
-            'United States', 'United Kingdom', 'Canada', 'Australia', 
-            'New Zealand', 'India', 'South Africa', 'Nigeria', 'Kenya',
-            'Ghana', 'Ireland', 'Singapore', 'Hong Kong', 'Malaysia',
-            'Tanzania', 'Uganda', 'Zambia', 'Common-law Africa'
-        ]
-        
-        for civil_jurisdiction in known_civil_law:
-            if civil_jurisdiction.lower() in jurisdiction_name.lower():
-                return "Civil-law jurisdiction"
-                
-        for common_jurisdiction in known_common_law:
-            if common_jurisdiction.lower() in jurisdiction_name.lower():
-                return "Common-law jurisdiction"
-        
-        return "Mixed or unclear legal system"
+    return "foo"

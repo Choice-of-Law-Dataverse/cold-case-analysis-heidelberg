@@ -42,9 +42,6 @@ RESPONSE REQUIREMENTS:
 
 Respond in JSON format with:
 - jurisdiction_name: Exact name from the list or "Unknown"
-- jurisdiction_code: The three-letter code if available
-- confidence: "high", "medium", or "low"
-- reasoning: Detailed explanation of identification basis
 
 COURT DECISION TEXT:
 {text}

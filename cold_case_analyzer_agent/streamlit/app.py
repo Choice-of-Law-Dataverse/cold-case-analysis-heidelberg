@@ -153,16 +153,14 @@ if not st.session_state.col_state.get("full_text"):
             pass  # The on_click callback handles the logic
 
     # Enhanced Jurisdiction Detection
-    st.markdown("---")
-    st.markdown("## 🌍 Jurisdiction Identification")
-    st.markdown("First, we need to identify the precise jurisdiction and legal system type from the court decision.")
+    st.markdown("## Jurisdiction Identification")
+    st.markdown("The first step consists of identifying the precise jurisdiction and legal system type from the court decision.")
     
     jurisdiction_confirmed = render_jurisdiction_detection(full_text)
 
     # Only allow COL extraction after jurisdiction confirmed
     if jurisdiction_confirmed:
-        st.markdown("---")
-        st.markdown("## 📋 Choice of Law Analysis")
+        st.markdown("## Choice of Law Analysis")
         
         if st.button("Extract Choice of Law Section", type="primary", key="extract_col_btn"):
             if full_text:
@@ -180,8 +178,6 @@ if not st.session_state.col_state.get("full_text"):
                     "col_section_eval_iter": 0,
                     "jurisdiction": final_jurisdiction_data.get("legal_system_type", "Unknown legal system"),
                     "precise_jurisdiction": final_jurisdiction_data.get("jurisdiction_name"),
-                    "jurisdiction_code": final_jurisdiction_data.get("jurisdiction_code"),
-                    "jurisdiction_confidence": final_jurisdiction_data.get("confidence"),
                     "jurisdiction_eval_score": final_jurisdiction_data.get("evaluation_score")
                 }
                 result = extract_col_section(state)
@@ -203,7 +199,7 @@ else:
     jurisdiction_code = st.session_state.col_state.get("jurisdiction_code")
     
     if precise_jurisdiction or jurisdiction:
-        st.markdown("### 🌍 Identified Jurisdiction")
+        st.markdown("### Identified Jurisdiction")
         col1, col2 = st.columns([2, 1])
         
         with col1:
@@ -214,24 +210,7 @@ else:
                 st.markdown(f"**Specific Jurisdiction:** {jurisdiction_display}")
             
             if jurisdiction:
-                legal_system_icon = {
-                    "Civil-law jurisdiction": "⚖️",
-                    "Common-law jurisdiction": "🏛️", 
-                    "Mixed or unclear legal system": "🔀",
-                    "Unknown legal system": "❓"
-                }.get(jurisdiction, "❓")
-                st.markdown(f"**Legal System:** {legal_system_icon} {jurisdiction}")
-        
-        with col2:
-            confidence = st.session_state.col_state.get("jurisdiction_confidence")
-            if confidence:
-                confidence_color = {
-                    "high": "🟢",
-                    "medium": "🟡", 
-                    "low": "🔴",
-                    "manual_override": "✏️"
-                }.get(confidence, "⚪")
-                st.markdown(f"**Confidence:** {confidence_color} {confidence}")
+                st.markdown(f"**Legal System:** {jurisdiction}")
         
         st.markdown("---")
     
