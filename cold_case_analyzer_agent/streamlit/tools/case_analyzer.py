@@ -28,37 +28,13 @@ def _get_classification_content_str(messages: list | None) -> str:
                 content_str = raw_content
     return content_str
 
-# ===== ABSTRACT =====
-def abstract(state):
-    print("\n--- ABSTRACT ---")
-    text = state["full_text"]
-    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
-    prompt = ABSTRACT_PROMPT.format(text=text)
-    print(f"\nPrompting LLM with:\n{prompt}\n")
-    start_time = time.time()
-    response = llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
-        HumanMessage(content=prompt)
-    ])
-    abstract_time = time.time() - start_time
-    abstract = response.content
-    print(f"\nAbstract:\n{abstract}\n")
-    # append abstract
-    state.setdefault("abstract", []).append(abstract)
-    # return full updated lists
-    return {
-        "abstract": state["abstract"],
-        "abstract_time": abstract_time
-    }
-
-
 # ===== RELEVANT FACTS =====
 def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis').FACTS_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).FACTS_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -87,7 +63,8 @@ def pil_provisions(state):
     print("\n--- PIL PROVISIONS ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis').PIL_PROVISIONS_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).PIL_PROVISIONS_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -120,7 +97,8 @@ def col_issue(state):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis').COL_ISSUE_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).COL_ISSUE_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -166,7 +144,8 @@ def courts_position(state):
     print("\n--- COURT'S POSITION ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis').COURTS_POSITION_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).COURTS_POSITION_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -204,4 +183,108 @@ def courts_position(state):
     return {
         "courts_position": state["courts_position"],
         "courts_position_time": position_time
+    }
+    
+def obiter_dicta(state):
+    print("\n--- OBITER DICTA ---")
+    text = state.get("full_text", "")
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction)
+    OBITER_PROMPT = prompt_module.COURTS_POSITION_OBITER_DICTA_PROMPT
+    col_section = state.get("col_section", [""])[-1]
+    classification = state.get("classification", [""])[-1]
+    col_issue = state.get("col_issue", [""])[-1]
+    prompt = OBITER_PROMPT.format(
+        text=text,
+        col_section=col_section,
+        classification=classification,
+        col_issue=col_issue
+    )
+    print(f"\nPrompting LLM for obiter dicta with:\n{prompt}\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    obiter = response.content
+    print(f"\nObiter Dicta:\n{obiter}\n")
+    state.setdefault("obiter_dicta", []).append(obiter)
+    return {"obiter_dicta": state["obiter_dicta"]}
+
+def dissenting_opinions(state):
+    print("\n--- DISSENTING OPINIONS ---")
+    text = state.get("full_text", "")
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction)
+    DISSENT_PROMPT = prompt_module.COURTS_POSITION_DISSENTING_OPINIONS_PROMPT
+    col_section = state.get("col_section", [""])[-1]
+    classification = state.get("classification", [""])[-1]
+    col_issue = state.get("col_issue", [""])[-1]
+    prompt = DISSENT_PROMPT.format(
+        text=text,
+        col_section=col_section,
+        classification=classification,
+        col_issue=col_issue
+    )
+    print(f"\nPrompting LLM for dissenting opinions with:\n{prompt}\n")
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    dissent = response.content
+    print(f"\nDissenting Opinions:\n{dissent}\n")
+    state.setdefault("dissenting_opinions", []).append(dissent)
+    return {"dissenting_opinions": state["dissenting_opinions"]}
+
+# ===== ABSTRACT =====
+def abstract(state):
+    print("\n--- ABSTRACT ---")
+    text = state["full_text"]
+    jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).ABSTRACT_PROMPT
+    
+    # Get required variables for all jurisdictions
+    classification = state.get("classification", [""])[-1] if state.get("classification") else ""
+    facts = state.get("relevant_facts", [""])[-1] if state.get("relevant_facts") else ""
+    pil_provisions = state.get("pil_provisions", [""])[-1] if state.get("pil_provisions") else ""
+    col_issue = state.get("col_issue", [""])[-1] if state.get("col_issue") else ""
+    court_position = state.get("courts_position", [""])[-1] if state.get("courts_position") else ""
+    
+    # Prepare base prompt variables
+    prompt_vars = {
+        "text": text,
+        "classification": classification,
+        "facts": facts,
+        "pil_provisions": pil_provisions,
+        "col_issue": col_issue,
+        "court_position": court_position
+    }
+    
+    # Add common law / India specific variables if available
+    if jurisdiction == "Common-law jurisdiction" or (specific_jurisdiction and specific_jurisdiction.lower() == "india"):
+        obiter_dicta = state.get("obiter_dicta", [""])[-1] if state.get("obiter_dicta") else ""
+        dissenting_opinions = state.get("dissenting_opinions", [""])[-1] if state.get("dissenting_opinions") else ""
+        prompt_vars.update({
+            "obiter_dicta": obiter_dicta,
+            "dissenting_opinions": dissenting_opinions
+        })
+    
+    prompt = ABSTRACT_PROMPT.format(**prompt_vars)
+    print(f"\nPrompting LLM with:\n{prompt}\n")
+    start_time = time.time()
+    response = llm.invoke([
+        SystemMessage(content="You are an expert in private international law"),
+        HumanMessage(content=prompt)
+    ])
+    abstract_time = time.time() - start_time
+    abstract = response.content
+    print(f"\nAbstract:\n{abstract}\n")
+    # append abstract
+    state.setdefault("abstract", []).append(abstract)
+    # return full updated lists
+    return {
+        "abstract": state["abstract"],
+        "abstract_time": abstract_time
     }

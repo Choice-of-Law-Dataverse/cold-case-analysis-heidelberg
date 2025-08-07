@@ -11,8 +11,9 @@ def extract_col_section(state):
     feedback = state.get("col_section_feedback", [])
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    specific_jurisdiction = state.get("precise_jurisdiction")
     # Dynamically select the correct prompt
-    COL_SECTION_PROMPT = get_prompt_module(jurisdiction, 'col_section').COL_SECTION_PROMPT
+    COL_SECTION_PROMPT = get_prompt_module(jurisdiction, 'col_section', specific_jurisdiction).COL_SECTION_PROMPT
     # add feedback info to logs if exists
     if feedback:
         print("\nFeedback for col section:", feedback, "\n")

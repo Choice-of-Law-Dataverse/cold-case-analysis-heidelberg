@@ -7,7 +7,9 @@ from utils.sample_cd import SAMPLE_COURT_DECISION
 import config
 import json
 import psycopg2
-from tools.jurisdiction_detector import detect_jurisdiction
+from components.css import load_css
+from components.sidebar import render_sidebar
+from components.jurisdiction_detection import render_jurisdiction_detection, get_final_jurisdiction_data
 from utils.pdf_handler import extract_text_from_pdf
 
 # Database persistence helper
@@ -60,21 +62,6 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "user" not in st.session_state:
     st.session_state["user"] = ""
-# Initialize jurisdiction detection state
-if "jurisdiction" not in st.session_state:
-    st.session_state["jurisdiction"] = None
-if "jurisdiction_detected" not in st.session_state:
-    st.session_state["jurisdiction_detected"] = False
-if "jurisdiction_eval_score" not in st.session_state:
-    st.session_state["jurisdiction_eval_score"] = None
-if "jurisdiction_eval_submitted" not in st.session_state:
-    st.session_state["jurisdiction_eval_submitted"] = False
-if "jurisdiction_edit" not in st.session_state:
-    st.session_state["jurisdiction_edit"] = None
-if "jurisdiction_edit_submitted" not in st.session_state:
-    st.session_state["jurisdiction_edit_submitted"] = False
-if "jurisdiction_confirmed" not in st.session_state:
-    st.session_state["jurisdiction_confirmed"] = False
 
 # Load valid themes list immediately after imports
 themes_csv = Path(__file__).parent / 'data' / 'themes.csv'
@@ -110,178 +97,8 @@ chosen_model = st.selectbox(
 )
 config.llm = config.get_llm(chosen_model)
 
-# Custom CSS for chat styling
-st.markdown("""
-<style>
-/* Import Inter font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
-/* Base styles */
-body {
-    font-family: 'Inter', sans-serif;
-    color: #0F0035 !important;
-}
-
-/* Typography */
-h1 {
-    font-size: 32px !important;
-    font-weight: 700 !important;
-    color: #0F0035 !important;
-}
-
-h2 {
-    font-size: 20px !important;
-    font-weight: 600 !important;
-    color: #0F0035 !important;
-}
-
-h3 {
-    font-size: 20px !important;
-    font-weight: 400 !important;
-    color: #0F0035 !important;
-}
-
-p {
-    font-size: 14px !important;
-    line-height: 28px !important;
-    color: #0F0035 !important;
-}
-
-/* Message containers */
-.message-container {
-    display: flex;
-    flex-direction: column;
-    margin: 12px 0;
-}
-
-.message-header {
-    font-size: 12px !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    color: #0F0035;
-}
-
-/* User messages */
-.user-message {
-    background-color: #f3f2fa;  /* cold-purple-fake-alpha */
-    color: #0F0035;  /* cold-night */
-    padding: 15px;
-    border-radius: 0;
-    margin: 8px 0;
-    max-width: 80%;
-    margin-left: auto;
-    margin-right: 0;
-    border: 1px solid #6F4DFA;  /* cold-purple */
-    font-size: 14px !important;
-    line-height: 28px !important;
-}
-
-/* Machine messages */
-.machine-message {
-    background-color: #FAFAFA;  /* cold-bg */
-    color: #0F0035;  /* cold-night */
-    padding: 15px;
-    border-radius: 0;
-    margin: 8px 0;
-    max-width: 80%;
-    margin-left: 0;
-    margin-right: auto;
-    border: 1px solid #E2E8F0;  /* cold-gray */
-    font-size: 14px !important;
-    line-height: 28px !important;
-}
-
-/* Input areas */
-.stTextArea textarea {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px !important;
-    line-height: 28px !important;
-    color: #0F0035 !important;
-    caret-color: #0F0035 !important;
-    border: 1px solid #E2E8F0 !important;  /* cold-gray */
-    border-radius: 0 !important;
-    padding: 12px !important;
-    background-color: #FAFAFA; !important;
-}
-
-.stTextArea textarea:focus {
-    border-color: #6F4DFA !important;  /* cold-purple */
-    box-shadow: none !important;
-}
-
-/* Buttons */
-.stButton button {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px !important;
-    font-weight: 400 !important;
-    background-color: #6F4DFA !important;  /* cold-purple */
-    color: white !important;
-    border-radius: 0 !important;
-    padding: 8px 16px !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.stButton button:hover {
-    background-color: #5a3fd9 !important;  /* slightly darker cold-purple */
-}
-
-/* Sliders */
-.stSlider {
-    /* constrain slider width */
-    max-width: 400px;
-}
-
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #FAFAFA !important;
-    color: #0F0035 !important;
-    border-right: 1px solid #E2E8F0 !important; /* optional, clean border */
-}
-
-/* Header */
-header[data-testid="stHeader"] {
-    background-color: white !important;
-    /*border-bottom: 1px solid #E2E8F0 !important;   cold-gray */
-}
-
-/* Warnings */
-.stWarning {
-    background-color: #FFF0D9 !important;  /* cold-cream */
-    border: 1px solid #FF9D00 !important;  /* label-legal-instrument */
-    color: #0F0035 !important;  /* cold-night */
-}
-
-/* Main container */
-.stApp {
-    background-color: white !important;
-}
-
-/* Lists */
-ul {
-    list-style-type: disc;
-    margin: 0 !important;
-    padding: 0.5rem 0 1.5rem 1.5rem !important;
-}
-
-li {
-    margin: 0 !important;
-    color: #0F0035 !important;  /* cold-night */
-}
-
-li::marker {
-    color: #0F0035 !important;  /* cold-night */
-}
-
-/* Links */
-a {
-    color: #6F4DFA !important;  /* cold-purple */
-    text-decoration: none !important;
-    font-weight: 400 !important;
-}
-</style>
-""", unsafe_allow_html=True)
+load_css()
+render_sidebar()
 
 # Title and description
 st.title("CoLD Case Analyzer")
@@ -329,88 +146,73 @@ if not st.session_state.col_state.get("full_text"):
         key="full_text_input"
     )
 
-    # Place Detect Jurisdiction and Use Demo Case buttons on the same line
-    button_col1, button_col2 = st.columns([2, 1])
-    with button_col1:
-        detect_clicked = st.button("Detect Jurisdiction", key="detect_jurisdiction_btn")
-    with button_col2:
-        demo_clicked = False
-        if not full_text.strip():
-            demo_clicked = st.button("Use Demo Case", on_click=load_demo_case, key="demo_button")
+    # Use Demo Case button
+    if not full_text.strip():
+        if st.button("Use Demo Case", on_click=load_demo_case, key="demo_button"):
+            pass  # The on_click callback handles the logic
 
-    if detect_clicked:
-        if full_text.strip():
-            detected = detect_jurisdiction(full_text)
-            st.session_state["jurisdiction"] = detected
-            st.session_state["jurisdiction_detected"] = True
-            st.session_state["jurisdiction_eval_score"] = None
-            st.session_state["jurisdiction_eval_submitted"] = False
-            st.session_state["jurisdiction_edit"] = detected
-            st.session_state["jurisdiction_edit_submitted"] = False
-            st.session_state["jurisdiction_confirmed"] = False
-            st.rerun()
-        else:
-            st.warning("Please enter the court decision text before detecting jurisdiction.")
-
-    if st.session_state["jurisdiction_detected"]:
-        st.markdown(f"**Detected Jurisdiction:** <span style='color:#6F4DFA'>{st.session_state['jurisdiction']}</span>", unsafe_allow_html=True)
-        # Evaluation step
-        if not st.session_state["jurisdiction_eval_submitted"]:
-            score = st.slider(
-                "How accurate is this jurisdiction detection? (0-100)",
-                min_value=0, max_value=100, value=100, step=1, key="jurisdiction_eval_slider"
-            )
-            if st.button("Submit Jurisdiction Evaluation", key="submit_jurisdiction_eval"):
-                st.session_state["jurisdiction_eval_score"] = score
-                st.session_state["jurisdiction_eval_submitted"] = True
-                st.rerun()
-        else:
-            st.markdown(f"**Your evaluation score:** <span class='user-message'>Score: {st.session_state['jurisdiction_eval_score']}</span>", unsafe_allow_html=True)
-        # Edit step
-        if st.session_state["jurisdiction_eval_submitted"] and not st.session_state["jurisdiction_edit_submitted"]:
-            edited = st.selectbox(
-                "Edit or confirm the jurisdiction classification:",
-                ["Civil-law jurisdiction", "Common-law jurisdiction", "No court decision"],
-                index=["Civil-law jurisdiction", "Common-law jurisdiction", "No court decision"].index(st.session_state["jurisdiction"]),
-                key="jurisdiction_edit_select"
-            )
-            if st.button("Confirm Jurisdiction", key="confirm_jurisdiction_edit"):
-                st.session_state["jurisdiction_edit"] = edited
-                st.session_state["jurisdiction_edit_submitted"] = True
-                st.session_state["jurisdiction_confirmed"] = True
-                st.rerun()
-        elif st.session_state["jurisdiction_edit_submitted"]:
-            st.markdown(f"**Final Jurisdiction:** <span style='color:#6F4DFA'>{st.session_state['jurisdiction_edit']}</span>", unsafe_allow_html=True)
+    # Enhanced Jurisdiction Detection
+    st.markdown("## Jurisdiction Identification")
+    st.markdown("The first step consists of identifying the precise jurisdiction and legal system type from the court decision.")
+    
+    jurisdiction_confirmed = render_jurisdiction_detection(full_text)
 
     # Only allow COL extraction after jurisdiction confirmed
-    if st.session_state["jurisdiction_edit_submitted"]:
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("Extract Choice of Law Section", type="primary"):
-                if full_text:
-                    # carry over case citation into analysis state
-                    state = {
-                        "case_citation": st.session_state.get("case_citation"),
-                        "username": st.session_state.get("user"),
-                        "model": st.session_state.get("llm_model_select"),
-                        "full_text": full_text,
-                        "col_section": [],
-                        "col_section_feedback": [],
-                        "col_section_eval_iter": 0,
-                        "jurisdiction": st.session_state["jurisdiction_edit"]
-                    }
-                    result = extract_col_section(state)
-                    state.update(result)
-                    st.session_state.col_state = state
-                    st.rerun()
-                else:
-                    st.warning("Please enter a court decision to analyze.")
+    if jurisdiction_confirmed:
+        st.markdown("## Choice of Law Analysis")
+        
+        if st.button("Extract Choice of Law Section", type="primary", key="extract_col_btn"):
+            if full_text:
+                # Get final jurisdiction data
+                final_jurisdiction_data = get_final_jurisdiction_data()
+                
+                # carry over case citation and jurisdiction data into analysis state
+                state = {
+                    "case_citation": st.session_state.get("case_citation"),
+                    "username": st.session_state.get("user"),
+                    "model": st.session_state.get("llm_model_select"),
+                    "full_text": full_text,
+                    "col_section": [],
+                    "col_section_feedback": [],
+                    "col_section_eval_iter": 0,
+                    "jurisdiction": final_jurisdiction_data.get("legal_system_type", "Unknown legal system"),
+                    "precise_jurisdiction": final_jurisdiction_data.get("jurisdiction_name"),
+                    "jurisdiction_eval_score": final_jurisdiction_data.get("evaluation_score")
+                }
+                result = extract_col_section(state)
+                state.update(result)
+                st.session_state.col_state = state
+                st.rerun()
+            else:
+                st.warning("Please enter a court decision to analyze.")
 else:
     # Display the case citation and full court decision text
     citation = st.session_state.col_state.get("case_citation")
     if citation:
         st.markdown("**Case Citation:**")
         st.markdown(f"<div class='user-message'>{citation}</div>", unsafe_allow_html=True)
+    
+    # Display jurisdiction information if available
+    precise_jurisdiction = st.session_state.col_state.get("precise_jurisdiction")
+    jurisdiction = st.session_state.col_state.get("jurisdiction")
+    jurisdiction_code = st.session_state.col_state.get("jurisdiction_code")
+    
+    if precise_jurisdiction or jurisdiction:
+        st.markdown("### Identified Jurisdiction")
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            if precise_jurisdiction and precise_jurisdiction != "Unknown":
+                jurisdiction_display = f"{precise_jurisdiction}"
+                if jurisdiction_code:
+                    jurisdiction_display += f" ({jurisdiction_code})"
+                st.markdown(f"**Specific Jurisdiction:** {jurisdiction_display}")
+            
+            if jurisdiction:
+                st.markdown(f"**Legal System:** {jurisdiction}")
+        
+        st.markdown("---")
+    
     # Display the full court decision text at the top as a user message
     st.markdown("**Your Input (Court Decision Text):**")
     st.markdown(f"<div class='user-message'>{st.session_state.col_state['full_text']}</div>", unsafe_allow_html=True)
@@ -590,15 +392,23 @@ else:
             from tools.case_analyzer import (
                 abstract, relevant_facts,
                 pil_provisions, col_issue,
-                courts_position
+                courts_position, obiter_dicta, dissenting_opinions
             )
+            # Build base pipeline - abstract moved to end
             steps = [
-                ("abstract", abstract),
                 ("relevant_facts", relevant_facts),
                 ("pil_provisions", pil_provisions),
                 ("col_issue", col_issue),
                 ("courts_position", courts_position)
             ]
+            # Add extra steps for common-law decisions
+            if state.get("jurisdiction") == "Common-law jurisdiction":
+                steps.extend([
+                    ("obiter_dicta", obiter_dicta),
+                    ("dissenting_opinions", dissenting_opinions)
+                ])
+            # Add abstract as final step for all jurisdictions
+            steps.append(("abstract", abstract))
             name, func = steps[state["analysis_step"]]
             # run node once, record machine output
             if not state.get(f"{name}_printed"):
@@ -656,68 +466,3 @@ else:
                     print_state("\n\n\nUpdated CoLD State after analysis step\n\n", st.session_state.col_state)
                     st.rerun()
 
-# Sidebar with login and instructions
-with st.sidebar:
-    st.subheader("Login")
-    # Display login form only if not logged in
-    if not st.session_state.get("logged_in"):
-        username = st.text_input("Username", key="login_user")
-        password = st.text_input("Password", type="password", key="login_pass")
-        if st.button("Login", key="login_button"):
-            if credentials.get(username) == password:
-                st.session_state["logged_in"] = True
-                st.session_state["user"] = username
-                st.success(f"Logged in as {username}")
-                st.rerun()
-            else:
-                st.error("Invalid username or password")
-    # Display logout only when logged in
-    else:
-        st.write(f"Logged in as: {st.session_state['user']}")
-        if st.button("Logout", key="logout_button"):
-            st.session_state["logged_in"] = False
-            st.session_state["user"] = ""
-            st.success("Logged out")
-            st.rerun()
-    
-    st.header("How to Use")
-    st.markdown("""
-    1. (Optional) Log in to access more advanced models
-    2. Select the model you want to use
-    3. Enter the case citation for the court decision
-    4. Paste the full text of the court decision
-    5. Click "Detect Jurisdiction" to classify the jurisdiction of the decision, evaluate its accuracy and optionally edit it
-    6. Extract the Choice of Law section, evaluate it, and provide feedback
-    7. Classify the court decision into themes, evaluate the classification, and edit if necessary
-    8. Analyze the decision step-by-step, providing evaluations and edits as needed
-    
-    The analysis will include:
-    - Abstract
-    - Relevant Facts
-    - Private International Law Provisions
-    - Choice of Law Issue
-    - Court's Position
-                
-    After evaluating and optionally editing the Court's Position, the analysis will be saved to a database. Note that results are only saved if you complete the analysis steps and click "Submit" at the end.
-    You can clear the history at any time to start fresh.
-    """)
-    
-    # Add documentation download button
-    doc_path = Path(__file__).parent / 'user_documentation.pdf'
-    try:
-        with open(doc_path, 'rb') as doc_file:
-            doc_bytes = doc_file.read()
-        st.download_button(
-            label='Download User Documentation',
-            data=doc_bytes,
-            file_name='user_documentation.pdf',
-            mime='application/pdf'
-        )
-    except Exception as e:
-        st.error(f"Unable to load documentation: {e}")
-    
-    # Add a button to clear history and reset all inputs
-    if st.button("Clear History", key="clear_history"):
-        # Clear all session state to reset the interface completely
-        st.session_state.clear()
-        st.rerun()
