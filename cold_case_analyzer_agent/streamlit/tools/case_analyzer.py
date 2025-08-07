@@ -33,7 +33,8 @@ def relevant_facts(state):
     print("\n--- RELEVANT FACTS ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis').FACTS_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    FACTS_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).FACTS_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -62,7 +63,8 @@ def pil_provisions(state):
     print("\n--- PIL PROVISIONS ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis').PIL_PROVISIONS_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    PIL_PROVISIONS_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).PIL_PROVISIONS_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -95,7 +97,8 @@ def col_issue(state):
     print("\n--- CHOICE OF LAW ISSUE ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis').COL_ISSUE_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    COL_ISSUE_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).COL_ISSUE_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -141,7 +144,8 @@ def courts_position(state):
     print("\n--- COURT'S POSITION ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis').COURTS_POSITION_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    COURTS_POSITION_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).COURTS_POSITION_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
@@ -185,7 +189,8 @@ def obiter_dicta(state):
     print("\n--- OBITER DICTA ---")
     text = state.get("full_text", "")
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    prompt_module = get_prompt_module(jurisdiction, 'analysis')
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction)
     OBITER_PROMPT = prompt_module.COURTS_POSITION_OBITER_DICTA_PROMPT
     col_section = state.get("col_section", [""])[-1]
     classification = state.get("classification", [""])[-1]
@@ -210,7 +215,8 @@ def dissenting_opinions(state):
     print("\n--- DISSENTING OPINIONS ---")
     text = state.get("full_text", "")
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    prompt_module = get_prompt_module(jurisdiction, 'analysis')
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    prompt_module = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction)
     DISSENT_PROMPT = prompt_module.COURTS_POSITION_DISSENTING_OPINIONS_PROMPT
     col_section = state.get("col_section", [""])[-1]
     classification = state.get("classification", [""])[-1]
@@ -236,7 +242,8 @@ def abstract(state):
     print("\n--- ABSTRACT ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
-    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis').ABSTRACT_PROMPT
+    specific_jurisdiction = state.get("precise_jurisdiction")
+    ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).ABSTRACT_PROMPT
     prompt = ABSTRACT_PROMPT.format(text=text)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()

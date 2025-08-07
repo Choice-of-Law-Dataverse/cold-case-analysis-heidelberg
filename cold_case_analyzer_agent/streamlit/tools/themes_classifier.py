@@ -13,8 +13,9 @@ def theme_classification_node(state):
     print("\n--- THEME CLASSIFICATION ---")
     text = state["full_text"]
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
+    specific_jurisdiction = state.get("precise_jurisdiction")
     # Dynamically select the correct prompt
-    PIL_THEME_PROMPT = get_prompt_module(jurisdiction, 'theme').PIL_THEME_PROMPT
+    PIL_THEME_PROMPT = get_prompt_module(jurisdiction, 'theme', specific_jurisdiction).PIL_THEME_PROMPT
     # get last col_section (string)
     col_section = ""
     sections = state.get("col_section", [])
