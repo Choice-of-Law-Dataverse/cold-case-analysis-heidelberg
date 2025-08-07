@@ -394,9 +394,8 @@ else:
                 pil_provisions, col_issue,
                 courts_position, obiter_dicta, dissenting_opinions
             )
-            # Build base pipeline
+            # Build base pipeline - abstract moved to end
             steps = [
-                ("abstract", abstract),
                 ("relevant_facts", relevant_facts),
                 ("pil_provisions", pil_provisions),
                 ("col_issue", col_issue),
@@ -408,6 +407,8 @@ else:
                     ("obiter_dicta", obiter_dicta),
                     ("dissenting_opinions", dissenting_opinions)
                 ])
+            # Add abstract as final step for all jurisdictions
+            steps.append(("abstract", abstract))
             name, func = steps[state["analysis_step"]]
             # run node once, record machine output
             if not state.get(f"{name}_printed"):

@@ -244,7 +244,34 @@ def abstract(state):
     jurisdiction = state.get("jurisdiction", "Civil-law jurisdiction")
     specific_jurisdiction = state.get("precise_jurisdiction")
     ABSTRACT_PROMPT = get_prompt_module(jurisdiction, 'analysis', specific_jurisdiction).ABSTRACT_PROMPT
-    prompt = ABSTRACT_PROMPT.format(text=text)
+    
+    # Get required variables for all jurisdictions
+    classification = state.get("classification", [""])[-1] if state.get("classification") else ""
+    facts = state.get("relevant_facts", [""])[-1] if state.get("relevant_facts") else ""
+    pil_provisions = state.get("pil_provisions", [""])[-1] if state.get("pil_provisions") else ""
+    col_issue = state.get("col_issue", [""])[-1] if state.get("col_issue") else ""
+    court_position = state.get("courts_position", [""])[-1] if state.get("courts_position") else ""
+    
+    # Prepare base prompt variables
+    prompt_vars = {
+        "text": text,
+        "classification": classification,
+        "facts": facts,
+        "pil_provisions": pil_provisions,
+        "col_issue": col_issue,
+        "court_position": court_position
+    }
+    
+    # Add common law / India specific variables if available
+    if jurisdiction == "Common-law jurisdiction" or (specific_jurisdiction and specific_jurisdiction.lower() == "india"):
+        obiter_dicta = state.get("obiter_dicta", [""])[-1] if state.get("obiter_dicta") else ""
+        dissenting_opinions = state.get("dissenting_opinions", [""])[-1] if state.get("dissenting_opinions") else ""
+        prompt_vars.update({
+            "obiter_dicta": obiter_dicta,
+            "dissenting_opinions": dissenting_opinions
+        })
+    
+    prompt = ABSTRACT_PROMPT.format(**prompt_vars)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
     response = llm.invoke([

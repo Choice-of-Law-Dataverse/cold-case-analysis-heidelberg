@@ -102,7 +102,7 @@ def render_jurisdiction_detection(full_text: str):
 
         # Phase 4: Manual Override Option
         if st.session_state["precise_jurisdiction_eval_submitted"]:
-            st.markdown("### Manual Override (Optional)")
+            st.markdown("### Manual Override")
             
             # Load all jurisdictions for selection
             from tools.precise_jurisdiction_detector import load_jurisdictions
@@ -122,7 +122,6 @@ def render_jurisdiction_detection(full_text: str):
                 "Keep Current Detection",
                 "Civil-law jurisdiction", 
                 "Common-law jurisdiction",
-                "Mixed or unclear legal system",
                 "Unknown legal system"
             ]
             
