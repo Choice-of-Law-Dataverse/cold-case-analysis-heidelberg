@@ -3,7 +3,8 @@
 Streamlit component for enhanced jurisdiction detection with precise jurisdiction identification.
 """
 import streamlit as st
-from tools.precise_jurisdiction_detector import detect_precise_jurisdiction, determine_legal_system_type
+from tools.precise_jurisdiction_detector import detect_precise_jurisdiction
+from tools.jurisdiction_detector import detect_legal_system_type
 
 def render_jurisdiction_detection(full_text: str):
     """
@@ -39,32 +40,20 @@ def render_jurisdiction_detection(full_text: str):
         if detect_clicked:
             if full_text.strip():
                 with st.spinner("Analyzing jurisdiction..."):
-                    # Detect precise jurisdiction
-                    jurisdiction_result = detect_precise_jurisdiction(full_text)
+                    # Detect precise jurisdiction (now returns just the jurisdiction name)
+                    jurisdiction_name = detect_precise_jurisdiction(full_text)
                     
-                    st.session_state["precise_jurisdiction"] = jurisdiction_result
+                    st.session_state["precise_jurisdiction"] = jurisdiction_name
                     st.session_state["precise_jurisdiction_detected"] = True
                     
                     # Determine legal system type using the existing jurisdiction detection logic
-                    if (jurisdiction_result["jurisdiction_name"] and 
-                        jurisdiction_result["jurisdiction_name"] != "Unknown"):
-                        legal_system = determine_legal_system_type(
-                            jurisdiction_result["jurisdiction_name"],
-                            jurisdiction_result.get("jurisdiction_code", ""),
-                            jurisdiction_result.get("jurisdiction_summary", ""),
-                            full_text  # Pass the original text to use existing detection logic
-                        )
-                        # Handle the case where the existing detector says "No court decision"
-                        if legal_system == "No court decision":
-                            legal_system = "Unknown legal system"
-                        st.session_state["legal_system_type"] = legal_system
-                    else:
-                        # Even if we can't identify the specific jurisdiction, 
-                        # we can still try to determine the legal system type
-                        legal_system = determine_legal_system_type("", full_text)
-                        if legal_system == "No court decision":
-                            legal_system = "Unknown legal system"
-                        st.session_state["legal_system_type"] = legal_system
+                    legal_system = detect_legal_system_type(jurisdiction_name, full_text)
+                    
+                    # Handle the case where the existing detector says "No court decision"
+                    if legal_system == "No court decision":
+                        legal_system = "Unknown legal system"
+                    
+                    st.session_state["legal_system_type"] = legal_system
                     
                     st.rerun()
             else:
@@ -74,7 +63,7 @@ def render_jurisdiction_detection(full_text: str):
 
     # Phase 2: Display Results and Evaluation
     if st.session_state["precise_jurisdiction_detected"]:
-        jurisdiction_data = st.session_state["precise_jurisdiction"]
+        jurisdiction_name = st.session_state["precise_jurisdiction"]  # Now this is just a string
         
         # Display results in an attractive format
         st.markdown("### Jurisdiction Detection Results")
@@ -83,8 +72,8 @@ def render_jurisdiction_detection(full_text: str):
         col1, col2 = st.columns([2, 1])
         
         with col1:
-            if jurisdiction_data["jurisdiction_name"] != "Unknown":
-                st.markdown(f"**Jurisdiction:** {jurisdiction_data['jurisdiction_name']}")
+            if jurisdiction_name != "Unknown":
+                st.markdown(f"**Jurisdiction:** {jurisdiction_name}")
             else:
                 st.markdown("**Jurisdiction:** Could not identify specific jurisdiction")
 
@@ -97,7 +86,7 @@ def render_jurisdiction_detection(full_text: str):
             st.markdown("### Evaluate Detection Accuracy")
             score = st.slider(
                 "How accurate is this jurisdiction identification? (0-100)",
-                min_value=0, max_value=100, value=0, step=1,
+                min_value=0, max_value=100, value=100, step=1,
                 key="precise_jurisdiction_eval_slider",
                 help="Rate the accuracy of both the specific jurisdiction and legal system identification"
             )
@@ -152,9 +141,7 @@ def render_jurisdiction_detection(full_text: str):
                     selected_data = next((j for j in jurisdictions if j['name'] == selected_jurisdiction), None)
                     if selected_data:
                         st.session_state["jurisdiction_manual_override"] = {
-                            "jurisdiction_name": selected_data['name'],
-                            "jurisdiction_code": selected_data['code'],
-                            "jurisdiction_summary": selected_data['summary']
+                            "jurisdiction_name": selected_data['name']
                         }
                 
                 if selected_legal_system != "Keep Current Detection":
@@ -178,20 +165,16 @@ def get_final_jurisdiction_data():
         override_data = st.session_state["jurisdiction_manual_override"]
         return {
             "jurisdiction_name": override_data["jurisdiction_name"],
-            "jurisdiction_code": override_data["jurisdiction_code"],
             "legal_system_type": st.session_state.get("legal_system_type"),
-            "jurisdiction_summary": override_data.get("jurisdiction_summary"),
             "confidence": "manual_override",
             "evaluation_score": st.session_state.get("precise_jurisdiction_eval_score")
         }
     else:
-        # Use detected data
-        jurisdiction_data = st.session_state.get("precise_jurisdiction", {})
+        # Use detected data (now just a string)
+        jurisdiction_name = st.session_state.get("precise_jurisdiction", "Unknown")
         return {
-            "jurisdiction_name": jurisdiction_data.get("jurisdiction_name"),
-            "jurisdiction_code": jurisdiction_data.get("jurisdiction_code"),
+            "jurisdiction_name": jurisdiction_name,
             "legal_system_type": st.session_state.get("legal_system_type"),
-            "jurisdiction_summary": jurisdiction_data.get("jurisdiction_summary"),
-            "confidence": st.session_state.get("jurisdiction_confidence"),
+            "confidence": "auto_detected",
             "evaluation_score": st.session_state.get("precise_jurisdiction_eval_score")
         }

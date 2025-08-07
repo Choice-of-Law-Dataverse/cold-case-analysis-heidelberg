@@ -40,8 +40,8 @@ RESPONSE REQUIREMENTS:
 - If no clear jurisdiction can be determined, respond with "Unknown"
 - Provide clear reasoning for your identification
 
-Respond in JSON format with:
-- jurisdiction_name: Exact name from the list or "Unknown"
+Respond in the following format:
+/"Jurisdiction/"
 
 COURT DECISION TEXT:
 {text}

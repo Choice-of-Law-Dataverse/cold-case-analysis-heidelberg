@@ -34,24 +34,17 @@ def create_jurisdiction_list():
     jurisdiction_list = []
     
     for jurisdiction in jurisdictions:
-        if jurisdiction['code']:  # Only include jurisdictions with codes
-            jurisdiction_list.append(f"- {jurisdiction['name']} ({jurisdiction['code']})")
-        else:
-            jurisdiction_list.append(f"- {jurisdiction['name']}")
+        jurisdiction_list.append(f"- {jurisdiction['name']}")
     
     return "\n".join(jurisdiction_list)
 
-def detect_precise_jurisdiction(text: str) -> dict:
+def detect_precise_jurisdiction(text: str) -> str:
     """
     Uses an LLM to identify the precise jurisdiction from court decision text.
-    Returns a dictionary with jurisdiction details and confidence.
+    Returns the jurisdiction name as a string in the format "Jurisdiction".
     """
     if not text or len(text.strip()) < 50:
-        return {
-            "jurisdiction_name": None,
-            "jurisdiction_code": None,
-            "jurisdiction_summary": None
-        }
+        return "Unknown"
     
     jurisdiction_list = create_jurisdiction_list()
     
@@ -59,79 +52,54 @@ def detect_precise_jurisdiction(text: str) -> dict:
         jurisdiction_list=jurisdiction_list,
         text=text[:5000]  # Limit text length to avoid token limits
     )
+    print(f"\nPrompting LLM with:\n{prompt}\n")
 
     try:
         response = llm.invoke([
-            SystemMessage(content="You are an expert in legal systems and court jurisdictions worldwide. Respond only with valid JSON."),
+            SystemMessage(content="You are an expert in legal systems and court jurisdictions worldwide. Follow the format exactly as requested."),
             HumanMessage(content=prompt)
         ])
         
         result_text = response.content.strip()
+        print(f"\nLLM Response: {result_text}\n")
         
-        # Extract JSON from response if it's wrapped in markdown
-        json_match = re.search(r'```json\s*(.*?)\s*```', result_text, re.DOTALL)
-        if json_match:
-            result_text = json_match.group(1)
-        elif result_text.startswith('```') and result_text.endswith('```'):
-            result_text = result_text[3:-3].strip()
-            if result_text.startswith('json'):
-                result_text = result_text[4:].strip()
-        
-        try:
-            result = json.loads(result_text)
-            
-            # Validate the result
-            if not isinstance(result, dict):
-                raise ValueError("Result is not a dictionary")
-            
-            # Ensure required fields exist
-            jurisdiction_name = result.get("jurisdiction_name", "Unknown")
-            
-            # Validate jurisdiction against our list
-            jurisdictions = load_jurisdictions()
-            valid_jurisdiction = None
-            
-            if jurisdiction_name and jurisdiction_name != "Unknown":
-                for jurisdiction in jurisdictions:
-                    if (jurisdiction['name'].lower() == jurisdiction_name.lower() or
-                        (jurisdiction['code'] and jurisdiction['code'].lower() == jurisdiction_name.lower())):
-                        valid_jurisdiction = jurisdiction
-                        break
-            
-            if valid_jurisdiction:
-                return {
-                    "jurisdiction_name": valid_jurisdiction['name'],
-                    "jurisdiction_code": valid_jurisdiction['code'],
-                    "jurisdiction_summary": valid_jurisdiction['summary']
-                }
+        # Extract jurisdiction from the /"Jurisdiction"/ format
+        # Look for text between /" and "/
+        jurisdiction_match = re.search(r'/\"([^\"]+)\"/', result_text)
+        if jurisdiction_match:
+            jurisdiction_name = jurisdiction_match.group(1)
+        else:
+            # Fallback: try to extract any quoted jurisdiction name
+            quote_match = re.search(r'\"([^\"]+)\"', result_text)
+            if quote_match:
+                jurisdiction_name = quote_match.group(1)
             else:
-                return {
-                    "jurisdiction_name": "Unknown",
-                    "jurisdiction_code": None,
-                    "jurisdiction_summary": None
-                }
-                
-        except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e}")
-            print(f"Raw response: {result_text}")
-            return {
-                "jurisdiction_name": "Unknown",
-                "jurisdiction_code": None,
-                "jurisdiction_summary": None
-            }
+                # Final fallback: use the entire response if it's reasonable
+                if len(result_text) < 100 and result_text not in ['Unknown', 'unknown']:
+                    jurisdiction_name = result_text.strip()
+                else:
+                    jurisdiction_name = "Unknown"
+        
+        # Validate jurisdiction against our list
+        jurisdictions = load_jurisdictions()
+        
+        if jurisdiction_name and jurisdiction_name != "Unknown":
+            # First try exact match
+            for jurisdiction in jurisdictions:
+                if jurisdiction['name'].lower() == jurisdiction_name.lower():
+                    return jurisdiction['name']
             
+            # Then try partial match (contains)
+            for jurisdiction in jurisdictions:
+                if jurisdiction_name.lower() in jurisdiction['name'].lower() or jurisdiction['name'].lower() in jurisdiction_name.lower():
+                    return jurisdiction['name']
+            
+            # If no match found but we have a reasonable response, return it
+            if len(jurisdiction_name) > 2 and jurisdiction_name not in ['Unknown', 'unknown', 'N/A', 'None']:
+                return jurisdiction_name
+        
+        return "Unknown"
+                
     except Exception as e:
         print(f"Error in jurisdiction detection: {e}")
-        return {
-            "jurisdiction_name": "Unknown",
-            "jurisdiction_code": None,
-            "jurisdiction_summary": None
-        }
-
-def determine_legal_system_type(jurisdiction_name: str, original_text: str) -> str:
-    """
-    Determine if the jurisdiction follows civil law or common law.
-    
-    Uses the existing jurisdiction detection logic with the original text as the primary method.
-    """
-    return "foo"
+        return "Unknown"

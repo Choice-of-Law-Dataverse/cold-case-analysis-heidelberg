@@ -10,7 +10,6 @@ import psycopg2
 from components.css import load_css
 from components.sidebar import render_sidebar
 from components.jurisdiction_detection import render_jurisdiction_detection, get_final_jurisdiction_data
-from tools.jurisdiction_detector import detect_jurisdiction
 from utils.pdf_handler import extract_text_from_pdf
 
 # Database persistence helper
