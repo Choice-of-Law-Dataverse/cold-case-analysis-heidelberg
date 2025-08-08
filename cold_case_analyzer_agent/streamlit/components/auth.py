@@ -23,9 +23,9 @@ def render_model_selector():
     """
     # Set available models based on authentication status
     if st.session_state.get("logged_in"):
-        model_options = ["gpt-4.1-nano", "o4-mini", "o3"]
+        model_options = ["gpt-5-nano", "gpt-4.1-nano", "o4-mini", "gpt-5-mini", "o3"]
     else:
-        model_options = ["gpt-4.1-nano"]
+        model_options = ["gpt-5-nano"]
     
     chosen_model = st.selectbox(
         "Select LLM Model:",
