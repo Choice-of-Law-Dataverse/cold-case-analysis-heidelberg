@@ -19,7 +19,6 @@ Elaborate on facts including, but not limited to the following, as long as they 
 -	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
 -	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
 5.	OUTPUT FORMAT:
-**FACTS:**
 [Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis.]
 6.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
@@ -51,8 +50,6 @@ INSTRUCTIONS:
 -	Authorities cited but not used in the court's actual reasoning
 -	General legal background citations not supporting the specific decision
 5.	OUTPUT FORMAT:
-**LEGAL AUTHORITIES RELIED UPON:**
-
 **Judicial Precedents:**
 -	[Case name 1]
 -	[Case name 2]
@@ -87,7 +84,6 @@ Frame each issue as a precise legal question using "Whether..." format. Examples
 -	Order issues from primary to secondary based on their importance to the court's reasoning
 5.	Quality Check: Each identified issue should be answerable by pointing to specific court reasoning in the choice of law analysis.
 6.	OUTPUT FORMAT:
-**LEGAL ISSUES:**
 1. Whether [specific choice of law question court resolved]
 2. Whether [additional issue if present]
 7.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
@@ -117,7 +113,6 @@ INSTRUCTIONS:
 -	Principles should be neither too narrow (case-specific) nor too broad (unhelpful generalization)
 -	Focus on what the court held must be done, not what it suggested or considered
 5.	OUTPUT FORMAT:
-**COURT’S POSITION**
 [Legal principle 1 - complete rule in 1-2 sentences]
 [Legal principle 2 - if applicable]
 6.	CONSTRAINT: Extract principles solely from the court's binding determinations in the provided judgment text, ensuring each principle was necessary for the court's choice of law conclusion.
@@ -149,7 +144,6 @@ INSTRUCTIONS:
 -	If no relevant obiter exists, state: "No obiter dicta on choice of law issues identified"
 -	Organize multiple obiter statements logically (by topic or sequence in judgment)
 5.	OUTPUT FORMAT:
-**OBITER DICTA:**
 [Legal observation 1 - court's non-essential commentary on PIL/choice of law]
 
 [Legal observation 2 - if applicable]
@@ -178,7 +172,6 @@ INSTRUCTIONS:
 -	If multiple dissents exist, address each separately
 -	If partial agreement exists, specify areas of PIL agreement vs. disagreement
 5.	OUTPUT FORMAT:
-**DISSENTING/MINORITY OPINIONS:**
 [Judge name (if provided)]: [Summary of PIL disagreement and alternative approach]
 OR
 "No dissenting opinion or minority opinion on the choice of law issue."

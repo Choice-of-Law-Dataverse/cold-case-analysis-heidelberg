@@ -26,7 +26,7 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Reproduce the court's exact language using quotation marks
 -	Extract complete sentences with essential context only
 -	Focus primarily on the court's own reasoning and analysis
-3.	Output Format: EXTRACTED CHOICE OF LAW SECTIONS: 
+3.	Output Format:
 [Section 1:] 
 "[Exact court language]" 
 [Section 2:] 
