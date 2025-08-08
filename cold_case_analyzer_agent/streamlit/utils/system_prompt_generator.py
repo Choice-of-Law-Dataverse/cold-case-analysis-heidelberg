@@ -62,7 +62,7 @@ CORE INSTRUCTIONS:
 
 OUTPUT LANGUAGE:
 - Always provide your final output in English, even when the court decision text is in another language
-- EXCEPTION: When exact quotes are required for legal analysis, preserve the original language and provide an English translation in brackets [English translation]
+- EXCEPTION: When exact quotes are required for legal analysis, preserve the original language
 - When translating legal concepts, use established English legal terminology
 
 ANALYSIS STANDARDS:
