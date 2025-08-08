@@ -7,6 +7,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import config
 from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import THEMES_TABLE_STR
+from utils.system_prompt_generator import get_system_prompt_for_analysis
 
 
 def theme_classification_node(state):
@@ -44,8 +45,12 @@ def theme_classification_node(state):
     for attempt in range(1, max_attempts + 1):
         print(f"\nPrompting LLM (attempt {attempt}/{max_attempts}) with:\n{prompt}\n")
         start_time = time.time()
+        
+        # Get dynamic system prompt based on jurisdiction
+        system_prompt = get_system_prompt_for_analysis(state)
+        
         response = config.llm.invoke([
-            SystemMessage(content="You are an expert in private international law"),
+            SystemMessage(content=system_prompt),
             HumanMessage(content=prompt)
         ])
         theme_time = time.time() - start_time

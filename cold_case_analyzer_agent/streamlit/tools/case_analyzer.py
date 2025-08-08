@@ -5,6 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 import config
 from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import filter_themes_by_list
+from utils.system_prompt_generator import get_system_prompt_for_analysis
 
 
 # Helper function to extract content from the last message in a list of messages
@@ -43,8 +44,12 @@ def relevant_facts(state):
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     facts_time = time.time() - start_time
@@ -73,8 +78,12 @@ def pil_provisions(state):
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     provisions_time = time.time() - start_time
@@ -124,8 +133,12 @@ def col_issue(state):
     )
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     issue_time = time.time() - start_time
@@ -170,8 +183,12 @@ def courts_position(state):
     )
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     position_time = time.time() - start_time
@@ -202,8 +219,12 @@ def obiter_dicta(state):
         col_issue=col_issue
     )
     print(f"\nPrompting LLM for obiter dicta with:\n{prompt}\n")
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     obiter = response.content
@@ -228,8 +249,12 @@ def dissenting_opinions(state):
         col_issue=col_issue
     )
     print(f"\nPrompting LLM for dissenting opinions with:\n{prompt}\n")
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     dissent = response.content
@@ -274,8 +299,12 @@ def abstract(state):
     prompt = ABSTRACT_PROMPT.format(**prompt_vars)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     abstract_time = time.time() - start_time

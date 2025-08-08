@@ -1,6 +1,9 @@
-# test_pil_handler.py - Quick test for PIL provisions handler
+# tests/test_pil_handler.py - Quick test for PIL provisions handler
 import sys
-sys.path.append('/home/simon/dev/cold-case-analysis/cold_case_analyzer_agent/streamlit')
+from pathlib import Path
+
+# Add the parent directory (streamlit) to the Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from components.pil_provisions_handler import parse_pil_provisions, format_pil_for_display
 

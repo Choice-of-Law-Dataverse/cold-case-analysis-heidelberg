@@ -4,6 +4,7 @@ import time
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 import config
 from prompts.prompt_selector import get_prompt_module
+from utils.system_prompt_generator import get_system_prompt_for_analysis
 
 
 def extract_col_section(state):
@@ -35,8 +36,12 @@ def extract_col_section(state):
         prompt += f"\n\nFeedback: {last_fb}\n"
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
+    
+    # Get dynamic system prompt based on jurisdiction
+    system_prompt = get_system_prompt_for_analysis(state)
+    
     response = config.llm.invoke([
-        SystemMessage(content="You are an expert in private international law"),
+        SystemMessage(content=system_prompt),
         HumanMessage(content=prompt)
     ])
     col_time = time.time() - start_time
