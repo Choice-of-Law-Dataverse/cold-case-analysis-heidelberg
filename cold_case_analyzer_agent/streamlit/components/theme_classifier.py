@@ -66,10 +66,6 @@ def handle_theme_editing(state, last_theme, valid_themes):
         # Parse default selection and filter to only include valid themes
         default_sel = [t.strip() for t in last_theme.split(",") if t.strip()]
         
-        # Debug: Show what themes were suggested vs what's valid
-        st.write(f"Debug - Suggested themes: {default_sel}")
-        st.write(f"Debug - Valid themes count: {len(valid_themes)}")
-        
         # Create a case-insensitive mapping for matching
         theme_mapping = {theme.lower(): theme for theme in valid_themes}
         

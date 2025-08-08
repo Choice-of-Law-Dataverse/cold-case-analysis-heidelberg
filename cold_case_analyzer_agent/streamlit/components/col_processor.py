@@ -136,10 +136,10 @@ def render_feedback_input(col_state):
         col_state: The current analysis state
     """
     feedback = st.text_area(
-        "Enter feedback to improve COL section:",
+        "Enter feedback to improve the Choice of Law Section:",
         height=150,
         key="col_feedback",
-        help="Provide feedback to refine the extracted Choice of Law section."
+        help="Provide feedback to refine the extracted Choice of Law Section."
     )
     
     col1, col2 = st.columns(2)

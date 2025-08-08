@@ -7,6 +7,33 @@ from components.database import save_to_db
 from utils.debug_print_state import print_state
 
 
+def get_step_display_name(step_name, state):
+    """
+    Get the proper display name for an analysis step based on jurisdiction.
+    
+    Args:
+        step_name: The internal step name (e.g., "relevant_facts")
+        state: The current analysis state (to determine jurisdiction)
+        
+    Returns:
+        str: The formatted display name for the step
+    """
+    jurisdiction = state.get("jurisdiction", "")
+    is_common_law_or_indian = jurisdiction == "Common-law jurisdiction" or jurisdiction == "Indian jurisdiction"
+    
+    step_names = {
+        "relevant_facts": "Relevant Facts",
+        "pil_provisions": "Private International Law Sources", 
+        "col_issue": "Choice of Law Issue(s)",
+        "courts_position": "Court's Position (Ratio Decidendi)" if is_common_law_or_indian else "Court's Position",
+        "obiter_dicta": "Court's Position (Obiter Dicta)",
+        "dissenting_opinions": "Dissenting Opinions",
+        "abstract": "Abstract"
+    }
+    
+    return step_names.get(step_name, step_name.replace('_', ' ').title())
+
+
 def display_analysis_history(state):
     """
     Display chronological chat history of analysis.
@@ -106,12 +133,15 @@ def execute_analysis_step(state, name, func):
         out = state.get(name)
         last = out[-1] if isinstance(out, list) else out
         
+        # Get proper display name for the step
+        display_name = get_step_display_name(name, state)
+        
         # Display analysis step label
-        st.markdown(f"**{name.replace('_',' ').title()}**")
+        st.markdown(f"**{display_name}**")
         # Use st.markdown to display the analysis content
         st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
         
-        state.setdefault("chat_history", []).append(("machine", f"{name.replace('_',' ').title()}: {last}"))
+        state.setdefault("chat_history", []).append(("machine", f"{display_name}: {last}"))
         state[f"{name}_printed"] = True
         st.rerun()
         return True
@@ -130,22 +160,23 @@ def handle_step_scoring(state, name):
         bool: True if scoring is complete
     """
     score_key = f"{name}_score_submitted"
+    display_name = get_step_display_name(name, state)
     
     if not state.get(score_key):
         # Score input restricted to 0–100
         score = st.slider(
-            f"Evaluate this {name.replace('_',' ')} (0-100):",
+            f"Evaluate this {display_name} (0-100):",
             min_value=0,
             max_value=100,
             value=100,
             step=1,
             key=f"{name}_score_input"
         )
-        if st.button(f"Submit {name.replace('_',' ').title()} Score", key=f"submit_{name}_score"):
+        if st.button(f"Submit {display_name} Score", key=f"submit_{name}_score"):
             # Record user score and add to history
             state[f"{name}_score"] = score
             state[score_key] = True
-            state.setdefault("chat_history", []).append(("user", f"Score for {name.replace('_',' ').title()}: {score}"))
+            state.setdefault("chat_history", []).append(("user", f"Score for {display_name}: {score}"))
             st.rerun()
         return False
     return True
@@ -164,15 +195,17 @@ def handle_step_editing(state, name, steps):
     content = state.get(name)
     last = content[-1] if isinstance(content, list) else content
     
+    display_name = get_step_display_name(name, state)
+    
     edit_key = f"{name}_edited"
     edited = st.text_area(
-        f"Edit {name.replace('_',' ')}:",
+        f"Edit {display_name}:",
         value=state.get(edit_key, last),
         height=200,
         key=f"{name}_edit_area"
     )
     
-    if st.button(f"Submit Edited {name.replace('_',' ').title()}", key=f"submit_edited_{name}"):
+    if st.button(f"Submit Edited {display_name}", key=f"submit_edited_{name}"):
         # Record user edit and advance to next step
         state[name][-1] = edited
         state[edit_key] = edited
