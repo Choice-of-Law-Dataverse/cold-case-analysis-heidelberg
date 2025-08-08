@@ -4,6 +4,7 @@ Analysis workflow components for the CoLD Case Analyzer.
 """
 import streamlit as st
 from components.database import save_to_db
+from components.pil_provisions_handler import display_pil_provisions, handle_pil_provisions_editing, update_pil_provisions_state
 from utils.debug_print_state import print_state
 
 
@@ -129,19 +130,32 @@ def execute_analysis_step(state, name, func):
         result = func(state)
         state.update(result)
         
-        # Append machine message to history
-        out = state.get(name)
-        last = out[-1] if isinstance(out, list) else out
-        
         # Get proper display name for the step
         display_name = get_step_display_name(name, state)
         
         # Display analysis step label
         st.markdown(f"**{display_name}**")
-        # Use st.markdown to display the analysis content
-        st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
         
-        state.setdefault("chat_history", []).append(("machine", f"{display_name}: {last}"))
+        # Special handling for PIL provisions
+        if name == "pil_provisions":
+            formatted_content = display_pil_provisions(state, name)
+            if formatted_content:
+                st.markdown(f"<div class='machine-message'>{formatted_content}</div>", unsafe_allow_html=True)
+                # Store formatted content for chat history
+                state.setdefault("chat_history", []).append(("machine", f"{display_name}: {formatted_content}"))
+            else:
+                # Fallback to original format
+                out = state.get(name)
+                last = out[-1] if isinstance(out, list) else out
+                st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
+                state.setdefault("chat_history", []).append(("machine", f"{display_name}: {last}"))
+        else:
+            # Standard handling for other steps
+            out = state.get(name)
+            last = out[-1] if isinstance(out, list) else out
+            st.markdown(f"<div class='machine-message'>{last}</div>", unsafe_allow_html=True)
+            state.setdefault("chat_history", []).append(("machine", f"{display_name}: {last}"))
+        
         state[f"{name}_printed"] = True
         st.rerun()
         return True
@@ -191,26 +205,49 @@ def handle_step_editing(state, name, steps):
         name: Name of the analysis step
         steps: List of all analysis steps
     """
-    # Determine last output for default in edit area
-    content = state.get(name)
-    last = content[-1] if isinstance(content, list) else content
-    
     display_name = get_step_display_name(name, state)
     
-    edit_key = f"{name}_edited"
-    edited = st.text_area(
-        f"Edit {display_name}:",
-        value=state.get(edit_key, last),
-        height=200,
-        key=f"{name}_edit_area"
-    )
+    # Special handling for PIL provisions
+    if name == "pil_provisions":
+        formatted_content = display_pil_provisions(state, name)
+        if formatted_content:
+            edited = handle_pil_provisions_editing(state, name, display_name, formatted_content)
+        else:
+            # Fallback to standard editing
+            content = state.get(name)
+            last = content[-1] if isinstance(content, list) else content
+            edit_key = f"{name}_edited"
+            edited = st.text_area(
+                f"Edit {display_name}:",
+                value=state.get(edit_key, last),
+                height=200,
+                key=f"{name}_edit_area"
+            )
+    else:
+        # Standard editing for other steps
+        content = state.get(name)
+        last = content[-1] if isinstance(content, list) else content
+        edit_key = f"{name}_edited"
+        edited = st.text_area(
+            f"Edit {display_name}:",
+            value=state.get(edit_key, last),
+            height=200,
+            key=f"{name}_edit_area"
+        )
     
     if st.button(f"Submit Edited {display_name}", key=f"submit_edited_{name}"):
-        # Record user edit and advance to next step
-        state[name][-1] = edited
-        state[edit_key] = edited
+        # Special handling for PIL provisions storage
+        if name == "pil_provisions":
+            update_pil_provisions_state(state, name, edited)
+        else:
+            # Standard handling for other steps
+            state[name][-1] = edited
+            state[f"{name}_edited"] = edited
+        
+        # Add to chat history
         state.setdefault("chat_history", []).append(("user", edited))
         
+        # Advance to next step or complete analysis
         if state["analysis_step"] < len(steps) - 1:
             state["analysis_step"] += 1
         else:
