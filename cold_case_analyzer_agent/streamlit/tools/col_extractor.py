@@ -2,7 +2,7 @@ import re
 import time
 
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from config import llm
+import config
 from prompts.prompt_selector import get_prompt_module
 
 
@@ -35,7 +35,7 @@ def extract_col_section(state):
         prompt += f"\n\nFeedback: {last_fb}\n"
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])

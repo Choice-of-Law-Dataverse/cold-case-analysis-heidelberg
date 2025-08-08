@@ -2,7 +2,7 @@ import json
 import re
 import time
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
-from config import llm
+import config
 from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import filter_themes_by_list
 
@@ -43,7 +43,7 @@ def relevant_facts(state):
     prompt = FACTS_PROMPT.format(text=text, col_section=col_section)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -73,7 +73,7 @@ def pil_provisions(state):
     prompt = PIL_PROVISIONS_PROMPT.format(text=text, col_section=col_section)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -124,7 +124,7 @@ def col_issue(state):
     )
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -170,7 +170,7 @@ def courts_position(state):
     )
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -202,7 +202,7 @@ def obiter_dicta(state):
         col_issue=col_issue
     )
     print(f"\nPrompting LLM for obiter dicta with:\n{prompt}\n")
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -228,7 +228,7 @@ def dissenting_opinions(state):
         col_issue=col_issue
     )
     print(f"\nPrompting LLM for dissenting opinions with:\n{prompt}\n")
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])
@@ -274,7 +274,7 @@ def abstract(state):
     prompt = ABSTRACT_PROMPT.format(**prompt_vars)
     print(f"\nPrompting LLM with:\n{prompt}\n")
     start_time = time.time()
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in private international law"),
         HumanMessage(content=prompt)
     ])

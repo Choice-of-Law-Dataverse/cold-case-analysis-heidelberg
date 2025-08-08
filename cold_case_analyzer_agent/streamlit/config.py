@@ -13,8 +13,8 @@ def get_llm(model: str | None = None):
     """
     Return a ChatOpenAI instance. If `model` is provided, use it; otherwise fallback to env var or default.
     """
-    selected = model or os.getenv("OPENAI_MODEL") or "gpt-4.1-nano"
-    return ChatOpenAI(model=selected, temperature=0)
+    selected = model or os.getenv("OPENAI_MODEL") or "gpt-5-nano"
+    return ChatOpenAI(model=selected)
 
 # default llm instance
 llm = get_llm()

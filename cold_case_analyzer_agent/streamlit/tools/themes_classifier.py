@@ -4,7 +4,7 @@ import time
 import csv
 from pathlib import Path
 from langchain_core.messages import HumanMessage, SystemMessage
-from config import llm, thread_id
+import config
 from prompts.prompt_selector import get_prompt_module
 from utils.themes_extractor import THEMES_TABLE_STR
 
@@ -44,7 +44,7 @@ def theme_classification_node(state):
     for attempt in range(1, max_attempts + 1):
         print(f"\nPrompting LLM (attempt {attempt}/{max_attempts}) with:\n{prompt}\n")
         start_time = time.time()
-        response = llm.invoke([
+        response = config.llm.invoke([
             SystemMessage(content="You are an expert in private international law"),
             HumanMessage(content=prompt)
         ])

@@ -5,7 +5,7 @@ Detects the jurisdiction type of a court decision: Civil-law, Common-law, or No 
 import re
 import csv
 from pathlib import Path
-from config import llm
+import config
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from prompts.legal_system_type_detection import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
 
@@ -94,7 +94,7 @@ def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
     print(f"\nUsing LLM analysis for jurisdiction: {jurisdiction_name}")
     print(f"Prompting LLM with:\n{prompt}\n")
     
-    response = llm.invoke([
+    response = config.llm.invoke([
         SystemMessage(content="You are an expert in legal systems and court decisions."),
         HumanMessage(content=prompt)
     ])
