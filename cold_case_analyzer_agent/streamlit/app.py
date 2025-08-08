@@ -1,5 +1,4 @@
 import streamlit as st
-import config
 from components.css import load_css
 from components.sidebar import render_sidebar
 from components.auth import initialize_auth, render_model_selector
