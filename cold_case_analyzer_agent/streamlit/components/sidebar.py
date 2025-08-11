@@ -2,6 +2,7 @@ import streamlit as st
 from pathlib import Path
 import config
 
+
 def render_sidebar():
     """
     Render the sidebar with login controls, instructions, and documentation.
@@ -49,6 +50,34 @@ def render_sidebar():
         After evaluating and optionally editing the Court's Position, the analysis will be saved to a database. Note that results are only saved if you complete the analysis steps and click "Submit" at the end.
         You can clear the history at any time to start fresh.
         """)
+        
+        # Add dynamic system prompt testing section
+        if st.session_state.get("logged_in"):
+            with st.expander("🧪 Dynamic System Prompts", expanded=False):
+                st.markdown("**New Feature: Jurisdiction-Specific AI Instructions**")
+                st.markdown("""
+                The system now automatically customizes AI instructions based on:
+                - Detected jurisdiction (e.g., Germany, USA, India)
+                - Legal system type (Civil law vs. Common law)
+                - Jurisdiction-specific legal context
+                
+                This improves analysis accuracy by providing relevant legal framework information to the AI model.
+                """)
+                
+                # Show current prompt if available
+                if (st.session_state.get("precise_jurisdiction_confirmed") and 
+                    st.session_state.get("precise_jurisdiction")):
+                    
+                    jurisdiction_name = st.session_state.get("precise_jurisdiction")
+                    legal_system_type = st.session_state.get("legal_system_type", "Unknown")
+                    
+                    st.write(f"**Current Jurisdiction:** {jurisdiction_name}")
+                    st.write(f"**Legal System:** {legal_system_type}")
+                    
+                    if st.button("Preview System Prompt", key="preview_prompt"):
+                        from utils.system_prompt_generator import generate_jurisdiction_specific_prompt
+                        prompt = generate_jurisdiction_specific_prompt(jurisdiction_name, legal_system_type)
+                        st.text_area("AI System Prompt:", value=prompt, height=200, disabled=True)
 
         # documentation download
         doc_path = Path(__file__).parent.parent / 'user_documentation.pdf'

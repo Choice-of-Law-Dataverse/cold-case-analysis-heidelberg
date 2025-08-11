@@ -4,7 +4,7 @@ Identifies the precise jurisdiction from court decision text using the jurisdict
 """
 import csv
 from pathlib import Path
-from config import llm
+import config
 from langchain_core.messages import HumanMessage, SystemMessage
 from prompts.precise_jurisdiction_detection_prompt import PRECISE_JURISDICTION_DETECTION_PROMPT
 import re
@@ -55,7 +55,7 @@ def detect_precise_jurisdiction(text: str) -> str:
     print(f"\nPrompting LLM with:\n{prompt}\n")
 
     try:
-        response = llm.invoke([
+        response = config.llm.invoke([
             SystemMessage(content="You are an expert in legal systems and court jurisdictions worldwide. Follow the format exactly as requested."),
             HumanMessage(content=prompt)
         ])
