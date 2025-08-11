@@ -21,13 +21,13 @@ Elaborate on facts including, but not limited to the following, as long as they 
 5.	OUTPUT FORMAT:
 [Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis.]
 6.	CONSTRAINT:
-Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
+Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section. Use a maximum of four sentences.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
 """
 
 # ===== PIL PROVISIONS =====
 PIL_PROVISIONS_PROMPT = """
-Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In Switzerland, for instance, it is usually the PILA. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"]. If any language other than English is used to cite a provision, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
+Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"]. If any language other than English is used to cite a provision, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
 """
 
 # ===== CHOICE OF LAW ISSUE =====
@@ -42,7 +42,12 @@ The issue you extract will have to do with choice of law and the output has to b
 
 # ===== COURT'S POSITION =====
 COURTS_POSITION_PROMPT = """
-Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
+Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the issue laid out here:\n{col_issue}\n
+CONSTRAINTS:
+- Base the response on the provided judgment text and extracted sections.
+- Maintain a neutral and objective tone.
+- Use a maximum of four sentences.
+\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
 """
 
 # ===== ABSTRACT =====
@@ -75,7 +80,7 @@ B.	**ABSTRACT WHEN A SUMMARY IS AVAILABLE IN THE DECISION:**
 [Extracted and translated paragraph adding (verbatim) at the end].
 
 
-7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
+7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
 
 Court Decision Text:\n{text}
 
