@@ -97,3 +97,14 @@ def render_sidebar():
         if st.button("Clear History", key="clear_history"):
             st.session_state.clear()
             st.rerun()
+
+        # Footer endorsement and logo at the bottom of the sidebar
+        st.markdown(
+            """
+            <div class="cold-sidebar-footer">
+                <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universitaet-luzern-logo.svg" alt="University of Lucerne Logo" />
+                <span class="label">Endorsed by the University of Lucerne</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )

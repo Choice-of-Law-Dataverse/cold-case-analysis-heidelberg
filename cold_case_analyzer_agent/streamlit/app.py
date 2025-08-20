@@ -15,6 +15,18 @@ st.set_page_config(
     layout="wide"
 )
 
+# Top-centered logo
+st.markdown(
+    """
+    <div class="cold-main-logo">
+        <a href="https://cold.global" target="_blank" rel="noopener noreferrer" aria-label="Open CoLD Global website in a new tab">
+            <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg" alt="CoLD Logo" />
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 # Render model selector
 render_model_selector()
 
