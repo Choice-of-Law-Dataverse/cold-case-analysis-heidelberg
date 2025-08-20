@@ -21,6 +21,11 @@ def render_initial_input_phase():
     """
     # Render input components
     case_citation, full_text = render_input_phase()
+
+    # Enforce mandatory case citation
+    if not case_citation or not case_citation.strip():
+        st.warning("Please enter a Case Citation before proceeding.")
+        return False
     
     if not full_text.strip():
         return False
@@ -36,28 +41,31 @@ def render_initial_input_phase():
         st.markdown("## Choice of Law Analysis")
         
         if st.button("Extract Choice of Law Section", type="primary", key="extract_col_btn"):
-            if full_text:
-                # Get final jurisdiction data
-                final_jurisdiction_data = get_final_jurisdiction_data()
-                
-                # Create initial analysis state
-                state = create_initial_analysis_state(
-                    case_citation=st.session_state.get("case_citation"),
-                    username=st.session_state.get("user"),
-                    model=st.session_state.get("llm_model_select"),
-                    full_text=full_text,
-                    final_jurisdiction_data=final_jurisdiction_data
-                )
-                
-                # Extract COL section
-                result = extract_col_section(state)
-                state.update(result)
-                
-                # Update session state
-                st.session_state.col_state = state
-                st.rerun()
+            if full_text and case_citation.strip():
+                    # Get final jurisdiction data
+                    final_jurisdiction_data = get_final_jurisdiction_data()
+                    
+                    # Create initial analysis state
+                    state = create_initial_analysis_state(
+                case_citation=st.session_state.get("case_citation"),
+                        username=st.session_state.get("user"),
+                        model=st.session_state.get("llm_model_select"),
+                        full_text=full_text,
+                        final_jurisdiction_data=final_jurisdiction_data
+                    )
+                    
+                    # Extract COL section
+                    result = extract_col_section(state)
+                    state.update(result)
+                    
+                    # Update session state
+                    st.session_state.col_state = state
+                    st.rerun()
             else:
-                st.warning("Please enter a court decision to analyze.")
+                if not full_text:
+                    st.warning("Please enter a court decision to analyze.")
+                if not case_citation.strip():
+                    st.warning("Please enter a Case Citation before extracting.")
     
     return False
 

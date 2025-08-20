@@ -63,3 +63,5 @@ def load_demo_case():
     """Demo loader callback to populate the text widget state."""
     from utils.data_loaders import get_demo_case_text
     st.session_state.full_text_input = get_demo_case_text()
+    # Also set a representative demo case citation
+    st.session_state.case_citation = "Federal Court, 20.12.2005 - BGE 132 III 285"

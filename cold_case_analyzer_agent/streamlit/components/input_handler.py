@@ -14,10 +14,15 @@ def render_case_citation_input():
     Returns:
         str: The entered case citation
     """
+    st.markdown("**Case Citation (required):**")
+    st.caption(
+        "This field should include the issuing court, party names (claimant/respondent), the official case or docket number, and the decision date. Citation styles differ by jurisdiction; use the native format. Examples — CH: Federal Court, 20.12.2005 - BGE 132 III 285; CAN: Nike Informatic Systems v Avac, 1979 CanLII 667 (British Columbia)."
+    )
     return st.text_input(
-        "Case Citation:",
+        label="Case Citation",
         key="case_citation",
-        help="Enter the case citation for this decision"
+        placeholder="e.g., Federal Court, 20.12.2005 - BGE 132 III 285",
+        label_visibility="collapsed",
     )
 
 
