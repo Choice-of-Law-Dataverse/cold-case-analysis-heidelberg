@@ -11,7 +11,7 @@ def initialize_col_state():
         st.session_state.col_state = {}
 
 
-def create_initial_analysis_state(case_citation, username, model, full_text, final_jurisdiction_data):
+def create_initial_analysis_state(case_citation, username, model, full_text, final_jurisdiction_data, user_email=None):
     """
     Create the initial analysis state dictionary.
     
@@ -33,9 +33,10 @@ def create_initial_analysis_state(case_citation, username, model, full_text, fin
         "col_section": [],
         "col_section_feedback": [],
         "col_section_eval_iter": 0,
-        "jurisdiction": final_jurisdiction_data.get("legal_system_type", "Unknown legal system"),
+    "jurisdiction": final_jurisdiction_data.get("legal_system_type", "Unknown legal system"),
         "precise_jurisdiction": final_jurisdiction_data.get("jurisdiction_name"),
-        "jurisdiction_eval_score": final_jurisdiction_data.get("evaluation_score")
+    "jurisdiction_eval_score": final_jurisdiction_data.get("evaluation_score"),
+    "user_email": user_email,
     }
 
 

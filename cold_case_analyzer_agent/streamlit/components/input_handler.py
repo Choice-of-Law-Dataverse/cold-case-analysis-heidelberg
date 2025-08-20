@@ -26,6 +26,18 @@ def render_case_citation_input():
     )
 
 
+def render_email_input():
+    """Render optional email input for contact consent."""
+    st.markdown("**Contact Email (optional):**")
+    st.caption("If you agree to be contacted about your contributed cases and analyses, provide an email address.")
+    return st.text_input(
+        label="Email",
+        key="user_email",
+        placeholder="name@example.com",
+        label_visibility="collapsed",
+    )
+
+
 def render_pdf_uploader():
     """
     Render the PDF uploader and handle automatic text extraction.
@@ -95,6 +107,7 @@ def render_input_phase():
     Returns:
         tuple: (case_citation, full_text) - the citation and decision text
     """
+    render_email_input()
     case_citation = render_case_citation_input()
     render_pdf_uploader()
     full_text = render_text_input()

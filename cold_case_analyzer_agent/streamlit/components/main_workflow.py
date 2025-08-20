@@ -51,7 +51,8 @@ def render_initial_input_phase():
                         username=st.session_state.get("user"),
                         model=st.session_state.get("llm_model_select"),
                         full_text=full_text,
-                        final_jurisdiction_data=final_jurisdiction_data
+                        final_jurisdiction_data=final_jurisdiction_data,
+                        user_email=st.session_state.get("user_email")
                     )
                     
                     # Extract COL section
