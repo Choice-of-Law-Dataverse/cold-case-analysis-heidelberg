@@ -1,7 +1,7 @@
 COL_SECTION_PROMPT = """
 TASK: Extract all portions of the judgment that discuss choice of law in private international law (PIL) contexts.
 INSTRUCTIONS:
-1.	Scope of Extraction: Identify and extract ALL paragraphs, sentences, or sections where the court:
+1.	Scope of Extraction: Identify and extract the most important paragraphs, sentences, or sections where the court:
 -	Determines the choice of law of the parties as per any rules of private international law
 -	Discusses "applicable law," "proper law," "governing law," or "choice of law"
 -	Analyzes party autonomy in law selection
@@ -23,7 +23,7 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Lengthy quotes from cited cases unless the court explicitly adopts them as part of its analysis
 
 2.	Extraction Method:
--	Reproduce the court's exact language using quotation marks
+-	Reproduce the court's exact language using quotation marks, abbreviating text using brackets [...] when necessary
 -	Extract complete sentences with essential context only
 -	Focus primarily on the court's own reasoning and analysis
 3.	Output Format:

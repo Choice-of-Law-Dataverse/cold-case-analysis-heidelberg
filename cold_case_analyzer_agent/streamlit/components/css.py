@@ -132,6 +132,24 @@ def load_css():
         background-color: #FAFAFA !important;
         color: #0F0035 !important;
         border-right: 1px solid #E2E8F0 !important; /* optional, clean border */
+        position: relative;
+    }
+                
+    .cold-sidebar-footer {
+        margin: 24px 0 0 0;            
+    }
+
+    .cold-sidebar-footer img {
+        max-width: 140px;
+        height: auto;
+        opacity: 0.9;
+    }
+
+    .cold-sidebar-footer .label {
+        font-size: 12px !important;
+        color: #334155 !important; /* slate-700-ish */
+        margin-top: 6px;
+        display: block;
     }
 
     /* Header */
@@ -150,6 +168,21 @@ def load_css():
     /* Main container */
     .stApp {
         background-color: white !important;
+    }
+
+    /* Main top logo */
+    .cold-main-logo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 8px 0 4px 0;
+    }
+
+    .cold-main-logo img {
+        max-width: 120px;
+        height: auto;
+        margin: 0 0 40px 0;
     }
 
     /* Lists */

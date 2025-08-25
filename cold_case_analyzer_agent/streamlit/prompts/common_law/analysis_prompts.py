@@ -3,7 +3,7 @@ FACTS_PROMPT = """
 TASK: Extract and synthesize factual elements essential for understanding the choice of law analysis into a single, coherent paragraph.
 INSTRUCTIONS:
 1.	Output Requirement: 
-Provide exactly ONE paragraph containing all relevant facts in narrative form.
+Provide an answer as concise as possible, up to 300 words containing all relevant facts in narrative form.
 2.	Content Priority:
 Elaborate on facts including, but not limited to the following, as long as they are relevant for the private international law (PIL) and choice of law discussion in the decision: 
 -	Party characteristics (nationality, domicile, place of business/incorporation)
@@ -17,9 +17,9 @@ Elaborate on facts including, but not limited to the following, as long as they 
 -	Keep sentences concise but substantive
 4.	Inclusion Standards: 
 -	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
--	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
+-	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms, conclusion of the case
 5.	OUTPUT FORMAT:
-[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis.]
+[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis. MAXIMUM 300 WORDS.]
 6.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
@@ -49,6 +49,7 @@ INSTRUCTIONS:
 -	Cases mentioned for historical context without direct application
 -	Authorities cited but not used in the court's actual reasoning
 -	General legal background citations not supporting the specific decision
+-   Sources that do not have precedential value
 5.	OUTPUT FORMAT:
 **Judicial Precedents:**
 -	[Case name 1]
@@ -66,7 +67,7 @@ COL_ISSUE_PROMPT = """
 TASK: Identify the specific choice of law questions that the court actually decided in this private international law (PIL) case. 
 INSTRUCTIONS:
 1.	Issue Identification Criteria: 
-Extract only questions about applicable law that the court explicitly or implicitly resolved to reach its decision. Focus on what the court needed to determine, not what parties argued or preliminary questions considered but not decided. There may be one or more issues. If there is only one issue, then return only one question.
+Extract only questions about applicable law that the court explicitly or implicitly resolved to reach its decision. Focus on what the court needed to determine, not what parties argued or preliminary questions considered but not decided. If there is only one issue, then return only one question.
 2.	Question Formulation: 
 Frame each issue as a precise legal question. Examples:
 -	“Can the parties validly choose the law of a country with no connection to their contract?”
@@ -77,10 +78,9 @@ Frame each issue as a precise legal question. Examples:
 -	Include: Issues about connecting factors, party autonomy limitations, public policy exceptions
 -	Exclude: Pure jurisdictional questions, procedural law issues, enforcement matters unrelated to choice of law
 4.	Output Requirements: 
--	List each issue as a separate numbered question
+-	Return a concise question. Only if the choice of law issues present in the case thematically exceed the possibility of phrasing it in one single questions, return more.
 -	Use precise, legally accurate terminology
 -	Ensure each question reflects a choice of law determination actually made by the court
--	Order issues from primary to secondary based on their importance to the court's reasoning
 5.	Quality Check: Each identified issue should be answerable by pointing to specific court reasoning in the choice of law analysis.
 6.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
 \nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
@@ -139,6 +139,8 @@ INSTRUCTIONS:
 -	Use the court's language where possible, but may paraphrase for clarity
 -	If no relevant obiter exists, state: "No obiter dicta on choice of law issues identified"
 -	Organize multiple obiter statements logically (by topic or sequence in judgment)
+-   Use a maximum of 300 words in total
+-   Do not include unnecessary titles, use only verbatim quotations, and do not display inversion test reasoning
 5.	OUTPUT FORMAT:
 [Legal observation 1 - court's non-essential commentary on PIL/choice of law]
 

@@ -14,10 +14,27 @@ def render_case_citation_input():
     Returns:
         str: The entered case citation
     """
+    st.markdown("**Case Citation (required):**")
+    st.caption(
+        "This field should include the issuing court, party names (claimant/respondent), the official case or docket number, and the decision date. Citation styles differ by jurisdiction; use the native format. Examples — CH: Federal Court, 20.12.2005 - BGE 132 III 285; CAN: Nike Informatic Systems v Avac, 1979 CanLII 667 (British Columbia)."
+    )
     return st.text_input(
-        "Case Citation:",
+        label="Case Citation",
         key="case_citation",
-        help="Enter the case citation for this decision"
+        placeholder="e.g., Federal Court, 20.12.2005 - BGE 132 III 285",
+        label_visibility="collapsed",
+    )
+
+
+def render_email_input():
+    """Render optional email input for contact consent."""
+    st.markdown("**Contact Email (optional):**")
+    st.caption("If you agree to be contacted about your contributed cases and analyses, provide an email address.")
+    return st.text_input(
+        label="Email",
+        key="user_email",
+        placeholder="name@example.com",
+        label_visibility="collapsed",
     )
 
 
@@ -90,6 +107,7 @@ def render_input_phase():
     Returns:
         tuple: (case_citation, full_text) - the citation and decision text
     """
+    render_email_input()
     case_citation = render_case_citation_input()
     render_pdf_uploader()
     full_text = render_text_input()
