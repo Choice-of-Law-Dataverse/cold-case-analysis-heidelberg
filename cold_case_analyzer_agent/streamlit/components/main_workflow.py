@@ -39,6 +39,7 @@ def render_initial_input_phase():
     # Only allow COL extraction after jurisdiction confirmed
     if jurisdiction_confirmed:
         st.markdown("## Choice of Law Analysis")
+        st.markdown("The Case Analyzer tends to over-extract. Please make sure only the relevant passages are left after your final review.")
         
         if st.button("Extract Choice of Law Section", type="primary", key="extract_col_btn"):
             if full_text and case_citation.strip():
