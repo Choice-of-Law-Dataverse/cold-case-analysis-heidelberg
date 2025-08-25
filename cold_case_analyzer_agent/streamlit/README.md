@@ -1,5 +1,11 @@
 # CoLD Case Analyzer in Streamlit
 
+The CoLD Case Analyzer is a Streamlit-based web application that processes court decisions for private international law (PIL) content extraction and analysis. The system implements an eight-phase workflow where users input judicial decisions through PDF upload, text entry, or pre-loaded examples, and the application applies AI models to extract and categorize PIL-relevant information. The tool requires initial jurisdiction classification (Civil Law, Common Law, or Indian legal systems) which determines which prompt templates are applied during subsequent processing phases.
+
+The application processes cases through sequential steps: jurisdiction detection, choice of law section identification, theme classification against a predefined taxonomy, and a five-component legal analysis covering abstracts, factual background, applicable provisions, legal issues, and court reasoning. Each phase generates AI output that requires user validation through numerical scoring (0-100) and manual editing before progression to the next step. The system maintains session state throughout the workflow and stores completed analyses in a database with user identification, model information, and timestamped interaction history.
+
+The codebase separates concerns across modular components handling authentication, input processing, database operations, and analysis phases, with jurisdiction-specific prompt engineering implemented through separate template sets for different legal systems. Users can access different AI models based on authentication status, with guest access limited to basic models and authenticated users having access to advanced options. The application outputs structured English-language analysis regardless of input language and integrates with the broader CoLD project database for case storage. The tool serves as a systematic processing interface for legal professionals working with international private law cases, though it requires manual oversight and validation at each analytical step.
+
 ## Structure
 
 `App.py` is a minimal orchestration script that handles: page config, authentication initialization, model selection, CSS/sidebar loading, and main workflow rendering.
