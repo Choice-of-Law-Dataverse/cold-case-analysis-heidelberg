@@ -3,7 +3,7 @@ FACTS_PROMPT = """
 TASK: Extract and synthesize factual elements essential for understanding the choice of law analysis into a single, coherent paragraph.
 INSTRUCTIONS:
 1.	Output Requirement: 
-Provide exactly ONE paragraph containing all relevant facts in narrative form.
+Provide an answer as concise as possible, up to 300 words containing all relevant facts in narrative form.
 2.	Content Priority:
 Elaborate on facts including, but not limited to the following, as long as they are relevant for the private international law (PIL) and choice of law discussion in the decision: 
 -	Party characteristics (nationality, domicile, place of business/incorporation)
@@ -19,7 +19,7 @@ Elaborate on facts including, but not limited to the following, as long as they 
 -	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
 -	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
 5.	OUTPUT FORMAT:
-[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis.]
+[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis. MAXIMUM 300 WORDS.]
 6.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section. Use a maximum of four sentences.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
@@ -27,7 +27,16 @@ Base the factual narrative solely on the provided judgment text, synthesizing in
 
 # ===== PIL PROVISIONS =====
 PIL_PROVISIONS_PROMPT = """
-Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent. The output adheres to this format: ["provision_1", "provision_2", ...]. If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"]. If any language other than English is used to cite a provision, use their English abbreviation.\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
+Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent.
+OUTPUT FORMAT:
+- The output adheres to this format: ["<provision>, <abbreviated name of the instrument>", "<provision>, <abbreviated name of the instrument>", ...]
+- Example for Switzerland: ["Art. 187, PILA"]
+- If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"]. If any language other than English is used to cite a provision, use their English abbreviation.
+LIMITATIONS:
+- No literature or other doctrinal remarks
+- Do not use the paragraph symbol (§). If necessary use the abbreviation "Para."
+
+Court Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe private international law provisions are:\n
 """
 
 # ===== CHOICE OF LAW ISSUE =====
@@ -44,9 +53,9 @@ The issue you extract will have to do with choice of law and the output has to b
 COURTS_POSITION_PROMPT = """
 Summarize the court's position on the choice-of-law issue(s) within the decision. Your response is phrased in a general way, generalizing the issue(s) so that your generalization could be applied to other private international law cases. If any legal provisions are mentioned, use their English abbreviation. Your output is a direct answer to the issue laid out here:\n{col_issue}\n
 CONSTRAINTS:
-- Base the response on the provided judgment text and extracted sections.
+- Base the response on the provided judgment text and extracted sections only.
 - Maintain a neutral and objective tone.
-- Use a maximum of four sentences.
+- Use a maximum of 300 words.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
 """
 
@@ -78,7 +87,7 @@ A.	**ABSTRACT WHEN NOTHING IS AVAILABLE IN THE DECISION:**
 [Single paragraph synthesizing facts, PIL issues, court's reasoning, and precedential outcome]
 B.	**ABSTRACT WHEN A SUMMARY IS AVAILABLE IN THE DECISION:**
 [Extracted and translated paragraph adding (verbatim) at the end].
-
+- Use a maximum of 300 words.
 
 7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
 
