@@ -102,8 +102,12 @@ def render_sidebar():
         st.markdown(
             """
             <div class="cold-sidebar-footer">
-                <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universitaet-luzern-logo.svg" alt="University of Lucerne Logo" />
+                <hr/>
+                <img src="https://choiceoflaw.blob.core.windows.net/assets/universitaet-luzern-logo.svg" alt="University of Lucerne Logo" />
                 <span class="label">Endorsed by the University of Lucerne</span>
+                <br/>
+                <img src="https://choiceoflaw.blob.core.windows.net/assets/snf-logo.svg" alt="Swiss National Science Foundation Logo" />
+                <span class="label">Funded by the Swiss National Science Foundation</span>
             </div>
             """,
             unsafe_allow_html=True,

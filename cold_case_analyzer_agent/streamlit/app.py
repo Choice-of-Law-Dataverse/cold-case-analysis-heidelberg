@@ -11,7 +11,7 @@ initialize_auth()
 # Set page config
 st.set_page_config(
     page_title="CoLD Case Analyzer",
-    page_icon="https://choiceoflawdataverse.blob.core.windows.net/assets/favicon/favicon.ico",
+    page_icon="https://choiceoflaw.blob.core.windows.net/assets/favicon/favicon.ico",
     layout="wide"
 )
 
@@ -20,7 +20,7 @@ st.markdown(
     """
     <div class="cold-main-logo">
         <a href="https://cold.global" target="_blank" rel="noopener noreferrer" aria-label="Open CoLD Global website in a new tab">
-            <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg" alt="CoLD Logo" />
+            <img src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg" alt="CoLD Logo" />
         </a>
     </div>
     """,
